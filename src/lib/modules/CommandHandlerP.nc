@@ -16,13 +16,9 @@ implementation
 		// Check if this packet was given via command
 		if(Packet->protocol == PROTOCOL_CMD)
 		{
-			dbg ("genDebug", "Injecting packet\n");
 			call CommandHandler.processCommand(Packet);
 			return SUCCESS;
 		}
-		
-		dbg("genDebug", "Ooops.\n");
-		dbg("genDebug", "PROTOCOL_ERROR: \"%s\" does not match any known protocols.\n", Packet->protocol);
 		
 		return FAIL;
 		

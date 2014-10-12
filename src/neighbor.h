@@ -18,13 +18,14 @@ enum
 // Define EMPTY as 0 for improved code readability
 enum
 {
-	EMPTY = 0
+	EMPTY = 0,
+	NONE = 0
 };
 
 // Max size of tables
 enum
 {
-	NEIGHBOR_TABLE_SIZE = 255,
+	NEIGHBOR_TABLE_SIZE = 20,
 	SEQUENCE_TABLE_SIZE = 16
 };
 

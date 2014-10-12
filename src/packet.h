@@ -5,9 +5,11 @@
 enum
 {
 	PACKET_HEADER_LENGTH = 8,
-	PACKET_MAX_PAYLOAD_SIZE = 28 - PACKET_HEADER_LENGTH,
+	PACKET_MAX_PAYLOAD_SIZE8 = 28 - PACKET_HEADER_LENGTH,
+	PACKET_MAX_PAYLOAD_SIZE16 = PACKET_MAX_PAYLOAD_SIZE8 / 2,
+	PACKET_MAX_PAYLOAD_SIZE32 = PACKET_MAX_PAYLOAD_SIZE8 / 4,
 	
-	NO_DESTINATION = 0,
+	UNSPECIFIED = 0,
 	SEQUENCE_START = 0,
 	
 	TTL_ONE_HOP = 1,
@@ -22,7 +24,7 @@ typedef nx_struct pack
 	nx_uint16_t seq;		// Sequence Number
 	nx_uint8_t TTL;			// Time to Live
 	nx_uint8_t protocol;	// Packet protocol
-	nx_uint8_t payload[PACKET_MAX_PAYLOAD_SIZE];
+	nx_uint8_t payload[PACKET_MAX_PAYLOAD_SIZE8];
 	
 } pack;
 
@@ -40,7 +42,7 @@ void logPack(pack *input)
 
 enum
 {
-	AM_PACK=6
+	AM_PACK = 6
 };
 
 #endif

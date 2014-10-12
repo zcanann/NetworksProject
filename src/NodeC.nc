@@ -1,15 +1,18 @@
 #include <Timer.h>
 
-configuration NodeC { }
+configuration NodeC
+{
+	
+}
 
 implementation
 {
-	components MainC;
 	components Node;
-	components new AMReceiverC(6);
 	
+	components MainC;
 	Node -> MainC.Boot;
 	
+	components new AMReceiverC(6);
 	Node.Receive -> AMReceiverC;
 
 	components ActiveMessageC;
@@ -29,4 +32,24 @@ implementation
 	// Neighbor discovery component
 	components NeighborDiscoveryC;
 	Node.NeighborDiscovery -> NeighborDiscoveryC;
+	
+	// Link state routing component
+	components LinkStateRoutingC;
+	Node.LinkStateRouting -> LinkStateRoutingC;
+	
+	// Random component
+	components RandomC as Random;
+	Node.Random -> Random;
+	
+	// Frequent timer component
+	components new TimerMilliC() as FrequentUpdate;
+	Node.FrequentUpdate -> FrequentUpdate;
+	
+	// Moderate timer component
+	components new TimerMilliC() as ModerateUpdate;
+	Node.ModerateUpdate -> ModerateUpdate;
+	
+	// Sparse timer component
+	components new TimerMilliC() as SparseUpdate;
+	Node.SparseUpdate -> SparseUpdate;
 }

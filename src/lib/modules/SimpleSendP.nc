@@ -94,10 +94,10 @@ implementation
 	{
 		if(!busy)
 		{
-			pack* msg = (pack *)(call Packet.getPayload(&pkt, sizeof(pack) ));			
+			pack* msg = (pack *)(call Packet.getPayload(&pkt, sizeof(pack)));			
 			*msg = *message;
 			
-			if(call AMSend.send(dest, &pkt, sizeof(pack)) ==SUCCESS)
+			if(call AMSend.send(dest, &pkt, sizeof(pack)) == SUCCESS)
 			{
 				busy = TRUE;
 				return SUCCESS;
