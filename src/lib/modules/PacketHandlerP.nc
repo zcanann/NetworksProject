@@ -9,17 +9,8 @@ module PacketHandlerP
 
 implementation
 {
-	// Sequence tables
-	uint16_t* sequenceTableSeq;
-	uint16_t* sequenceTableSrc;
-	uint16_t* sequenceTableAge;
-	
-	command void PacketHandler.initialize(uint16_t* sequenceTableSrcPtr, uint16_t* sequenceTableSeqPtr, uint16_t* sequenceTableAgePtr)
+	command void PacketHandler.initialize()
 	{
-		// Get pointers to our sequence table data
-		sequenceTableSrc = sequenceTableSrcPtr;
-		sequenceTableSeq = sequenceTableSeqPtr;
-		sequenceTableAge = sequenceTableAgePtr;
 		
 	}
 	
@@ -31,41 +22,38 @@ implementation
 		// Handle packet based on protocol
 		if(Packet->protocol == PROTOCOL_PING)
 		{
-			// Do not process single-ping broadcast packets (important)
-			if (Packet->dest != UNSPECIFIED)
+			// Reply to packet
+			signal PacketHandler.reply(Packet->src);
+			
+			// Do not process single-ping broadcast packets (lots of speed gained here)
+			if (Packet->dest == UNSPECIFIED)
+				return FAIL;
+			
+			// Update sequence table
+			call PacketHandler.processSequence(Packet);
+			
+			if (Packet->dest == TOS_NODE_ID)
 			{
-				call PacketHandler.processSequence(Packet);
-				
 				// Received packet addressed to this node!
-				if (Packet->dest == TOS_NODE_ID)
-				{
-					dbg ("Project1F", "Received packet %d->%d. Payload: %s\n", Packet->src, TOS_NODE_ID, Packet->payload);
-				}
-				
-				if (Packet->dest != TOS_NODE_ID)
-				{
-					// Received packet addressed to another node; forward it
-					signal PacketHandler.send(Packet, AM_BROADCAST_ADDR, TRUE);
-					
-					return SUCCESS;
-				}
+				dbg ("Project2", "\tReceived packet %d->%d. Payload: %s\n", Packet->src, TOS_NODE_ID, Packet->payload);
+			}
+			else
+			{
+				// Received packet addressed to another node; forward it
+				signal PacketHandler.send(Packet, AM_BROADCAST_ADDR, TRUE);
 			}
 			
-			signal PacketHandler.reply(Packet->src);
-				
 			return SUCCESS;
 		}
 		else if (Packet->protocol == PROTOCOL_PINGREPLY)
 		{
-			//if (Packet->dest == TOS_NODE_ID)
-			{
-				//dbg ("Project1F", "Received ping reply %d->%d. Payload: %s\n", Packet->src, TOS_NODE_ID, Packet->payload);
-			}
+			
 		}
 		else if (Packet->protocol == PROTOCOL_LINKSTATE)
 		{
 			call PacketHandler.processSequence(Packet);
 			signal PacketHandler.send(Packet, AM_BROADCAST_ADDR, TRUE);
+			return SUCCESS;
 		}
 		
 		return FAIL;
@@ -74,20 +62,11 @@ implementation
 	
 	command error_t PacketHandler.processSequence(pack* Packet)
 	{
-		uint32_t ind;
+		// Age everything as a precaution (aging also done via sparse timer)
+		call PacketHandler.ageSequenceTable();
 		
-		// Insert our entry in the first empty spot
-		for (ind = 0; ind < SEQUENCE_TABLE_SIZE; ind++)
-		{
-			if (sequenceTableAge[ind] == 0)
-			{
-				//dbg ("Project1F", "Saving src/sequence keys %d/%d\n", Packet->src, Packet->seq);
-				sequenceTableSrc[ind] = Packet->src;
-				sequenceTableSeq[ind] = Packet->seq;
-				sequenceTableAge[ind] = SEQUENCE_TABLE_SIZE - 1;
-				break;
-			}
-		}
+		// Insert the sequence and age
+		signal PacketHandler.insertAge(Packet->src, Packet->seq, SEQUENCE_TABLE_MAX_AGE);
 		
 		return SUCCESS;
 	}
@@ -95,36 +74,31 @@ implementation
 	// Ages each entry in the sequence table
 	command void PacketHandler.ageSequenceTable()
 	{
-		uint32_t ind;
-		for (ind = 0; ind < SEQUENCE_TABLE_SIZE; ind++)
+		uint32_t *keys;	//Pointer to seq/src key
+		uint32_t keyInd;
+		
+		// Fetch all keys
+		keys = signal PacketHandler.getSeqSrcKeys();
+		
+		// Age all entries
+		for (keyInd = 0; keyInd < SEQUENCE_TABLE_SIZE; keyInd++)
 		{
-			// Age all entries
-			if (sequenceTableAge[ind] > 0)
-				sequenceTableAge[ind]--;
+			if (keys[keyInd] == EMPTY)
+				continue;
 			
-			// Clear data once it has aged out
-			if (sequenceTableAge[ind] == 0)
-			{
-				sequenceTableSrc[ind] = 0;
-				sequenceTableSeq[ind] = 0;
-			}
+			signal PacketHandler.decreaseAge(keys[keyInd]);
 		}
 	}
 	
-	command bool PacketHandler.isPacketLooping(pack *Packet)
+	command bool PacketHandler.isPacketDuplicate(pack *Packet)
 	{
-		uint32_t ind;
-		
 		// Check SRC/SEQ pair to see if we have received this packet already
-		for (ind = 0; ind < SEQUENCE_TABLE_SIZE; ind++)
+		if (signal PacketHandler.containsSrcSeqPair(Packet->src, Packet->seq))
 		{
-				if (sequenceTableSrc[ind] == Packet->src && sequenceTableSeq[ind] == Packet->seq)
-				{
-					// dbg("Project1F", "Denied duplicate packet\n");
-					return TRUE;
-				}
+			//dbg ("Project1F", "\tDenied packet %d->%d. Payload: %s\n", Packet->src, TOS_NODE_ID, Packet->payload);
+			return TRUE;
 		}
-		
+		//dbg ("Project1F", "\tAccpted packet %d->%d. Payload: %s\n", Packet->src, TOS_NODE_ID, Packet->payload);
 		// Packet is not a looping packet
 		return FALSE;	
 	}

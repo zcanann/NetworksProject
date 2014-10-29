@@ -46,14 +46,16 @@ implementation
 		do
 		{
 			j = hash(k, i);
-			if(map[j].key==0 || map[j].key==k)
+			
+			if(map[j].key == 0 || map[j].key == k)
 			{
-				if(map[j].key==0)
+				if(map[j].key == 0)
 				{
-					keys[numofVals]=k;
+					keys[numofVals] = k;
 					numofVals++;
 				}
-		        map[j].value=input;
+				
+		        map[j].value = input;
 		        map[j].key = k;
 				// dbg("hashmap","Entry: %hhu was placed in %hhu\n", k, j);
 				return;
@@ -64,7 +66,14 @@ implementation
 		} while(i < HASH_MAX_SIZE);
       
 	}
-
+	
+	command void Hashmap.clear()
+	{
+		memset(keys, 0, sizeof(uint32_t) * n);
+		memset(map, 0, sizeof(hashmapEntry) * n);
+		numofVals = 0;
+	}
+	
 	command void Hashmap.remove(uint32_t k)
 	{
 		uint32_t i = 0;
@@ -85,13 +94,13 @@ implementation
 		
 		dbg("hashmap", "Removing entry %d\n", k);
 		
-		for(i=0; i < numofVals; i++)
+		for(i = 0; i < numofVals; i++)
 		{
 			if(keys[i] == k)
 			{
 				dbg("hashmap", "Key found at %d\n", i);
 				
-				for(j=i; j<HASH_MAX_SIZE; j++)
+				for(j = i; j<HASH_MAX_SIZE; j++)
 				{
 					if(keys[j] == 0)
 						break;
@@ -126,6 +135,25 @@ implementation
 		} while(i < HASH_MAX_SIZE);
 		
 		return map[0].value;
+	}
+	
+	command uint32_t Hashmap.getIndex(uint32_t k)
+	{
+		uint32_t i = 0;
+		uint32_t j = 0;
+		
+		do
+		{
+			j = hash(k, i);
+			
+			if(map[j].key == k)
+				return j;
+			
+			i++;
+			
+		} while(i < HASH_MAX_SIZE);
+		
+		return -1;
 	}
 	
 	command bool Hashmap.contains(uint32_t k)

@@ -8,7 +8,7 @@ enum
 {
 	INF = 0,
 	NEIGHBOR_COST = 1,
-	FORWARD_TABLE_SIZE = 40,
+	ROUTING_TABLE_SIZE = 32,
 };
 
 #endif /* LINKEDSTATE_H */

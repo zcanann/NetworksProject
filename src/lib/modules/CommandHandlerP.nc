@@ -63,14 +63,14 @@ implementation
 		}
 		else if(commandID == CMD_TEST_CLIENT)
 		{
-			dbg("cmdDebug", "Command Type: Client\n");
-			signal CommandHandler.setTestClient();
+			dbg("cmdDebug", "Command Type: Client (Preparing for %d, %d connecting with %d, %d)\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
+			signal CommandHandler.setTestClient(buff[2], buff[3], buff[1], buff[4]);
 			return SUCCESS;
 		}
 		else if(commandID == CMD_TEST_SERVER)
 		{
-			dbg("cmdDebug", "Command Type: Client\n");
-			signal CommandHandler.setTestServer();
+			dbg("cmdDebug", "Command Type: Server (Opening socket %d for Listening)\n", buff[1]);
+			signal CommandHandler.setTestServer(buff[1]);
 			return SUCCESS;
 		}
 		dbg("cmdDebug", "Ooops.\n");

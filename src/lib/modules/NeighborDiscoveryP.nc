@@ -11,64 +11,59 @@ module NeighborDiscoveryP
 	
 implementation
 {
-	uint16_t* neighborIDs;	// Pointer to neighbor table in Node
-	uint16_t* neighborTable;	// Pointer to neighbor table in Node
 	bool TimeOutState = TRUE;	// Alternates state of waiting for a response and declaring a time-out
 	
-	command void NeighborDiscovery.initialize(uint16_t* neighborIDsPointer, uint16_t* neighborTablePointer)
+	command void NeighborDiscovery.initialize()
 	{
-		neighborIDs = neighborIDsPointer;		// Set pointer to neighbor IDs table
-		neighborTable = neighborTablePointer;	// Set pointer to neighbor table
+		
 	}
 	
 	command error_t NeighborDiscovery.receive(pack* Packet)
 	{
-		uint32_t ind = -1;
-		uint32_t emptyIndex = -1;
+		uint16_t connectionStateOriginal;
+		uint16_t connectionState;
 		
 		// Ignore packets that are not from immediate neighbors
 		if (Packet->TTL != MAX_TTL)
 			return FAIL;
 		
-		// Find
-		for (ind = 0; ind < NEIGHBOR_TABLE_SIZE; ind++)
-		{
-			// Save locations of empty indexes in case we dont have a neighbor yet
-			if (emptyIndex == -1 && neighborIDs[ind] == EMPTY)
-				emptyIndex = ind;
+		// Neighbors are determined exclusively through ping and ping replies
+		if (Packet->protocol != PROTOCOL_PING && Packet->protocol != PROTOCOL_PINGREPLY)
+			return FAIL;
 			
-			if (neighborIDs[ind] == Packet->src)
-				goto found;
-		}
-		
-		// No neighbor found from this src, we have to create a place for it
-		ind = emptyIndex;
-		neighborIDs[ind] = Packet->src;
-		
-		found:
+		// Initialize to an unspecified connection type
+		if (!signal NeighborDiscovery.containsNeighbor(Packet->src))
+				signal NeighborDiscovery.insertNeighbor(Packet->src, CONNECTION_NONE);
 		
 		// Clear waiting/time out flags
-		if (Packet->protocol == PROTOCOL_PING || Packet->protocol == PROTOCOL_PINGREPLY)
-		{
-			neighborTable[ind] &= ~CONNECTION_WAITING_RESPONSE;
-			neighborTable[ind] &= ~CONNECTION_TIMED_OUT;
-		}
+		connectionStateOriginal =  connectionState = signal NeighborDiscovery.getNeighborConnection(Packet->src);
+		connectionState &= ~CONNECTION_WAITING_RESPONSE;
+		connectionState &= ~CONNECTION_TIMED_OUT;
+		signal NeighborDiscovery.insertNeighbor(Packet->src, connectionState);
 			
 		if(Packet->protocol == PROTOCOL_PING)
 		{
-			// We are getting pinged by a neighbor. They can connect to us. PacketHandler will reply.
-			if (neighborTable[ind] == CONNECTION_NONE)
+			// We are getting pinged by a neighbor and they can connect to us -- packetHandler will reply
+			if (connectionState == CONNECTION_NONE || (connectionStateOriginal & CONNECTION_TIMED_OUT))
+			{
+				signal NeighborDiscovery.neighborChanged();
 				dbg ("Project1N", "Connection discovered:\t %d -> %d\n", Packet->src, TOS_NODE_ID);
-				
-			neighborTable[ind] |= CONNECTION_RECEIVE;
+			}
+			
+			connectionState |= CONNECTION_RECEIVE;
+			signal NeighborDiscovery.insertNeighbor(Packet->src, connectionState);
 		}
 		else if(Packet->protocol == PROTOCOL_PINGREPLY)
 		{
-			// The neighbor pinged us back. We have a 2 way connection.
-			if ((neighborTable[ind] & CONNECTION_SEND) == 0)
+			// The neighbor replied -- we have a 2 way connection
+			if ((connectionState & CONNECTION_SEND) == 0 || (connectionStateOriginal & CONNECTION_TIMED_OUT))
+			{
+				signal NeighborDiscovery.neighborChanged();
 				dbg("Project1N", "Conection discovered:\t %d <-> %d\n", Packet->src, TOS_NODE_ID);
+			}
+			connectionState |= CONNECTION_SEND;
+			signal NeighborDiscovery.insertNeighbor(Packet->src, connectionState);
 			
-			neighborTable[ind] |= CONNECTION_SEND;
 		}
 		
 		return SUCCESS;
@@ -77,61 +72,81 @@ implementation
 	// Determines if a neighbor has been dropped based on lack of responses
 	command void NeighborDiscovery.timeOutCheck()
 	{
-		uint32_t ind;
+		uint32_t *keys;
+		uint32_t keyInd;
+		uint16_t connectionState;
 		
-		for (ind = 0; ind < NEIGHBOR_TABLE_SIZE; ind++)
+		keys = signal NeighborDiscovery.getNeighborKeys();
+		
+		// Check if neighbor should be marked as waiting for response or timed out
+		for (keyInd = 0; keyInd < NEIGHBOR_TABLE_SIZE; keyInd++)
 		{
 			// Ignore empty entries
-			if (neighborIDs[ind] == EMPTY)
+			if (keys[keyInd] == EMPTY)
 				continue;
 			
+			// Retrieve connection state
+			connectionState = signal NeighborDiscovery.getNeighborConnection(keys[keyInd]);
+			
 			// Ignore connectionless neighbors
-			if (neighborTable[ind] == CONNECTION_NONE)
+			if (connectionState == CONNECTION_NONE)
 				continue;
+			
 			
 			// STATE 1: Mark neighbors as waiting for a response
 			if (TimeOutState)
 			{
 				// Mark as waiting for a response
-				neighborTable[ind] |= CONNECTION_WAITING_RESPONSE;
+				connectionState |= CONNECTION_WAITING_RESPONSE;
 			}
-			// STATE 2: Mark neighbors who still havent pinged us as timed-out
+			// STATE 2: Mark neighbors who still have not sent a ping as timed-out
 			else
 			{
-				if ((neighborTable[ind] & CONNECTION_WAITING_RESPONSE) != 0)
+				if ((connectionState & CONNECTION_WAITING_RESPONSE) != 0)
 				{
 					
-					if ((neighborTable[ind] & CONNECTION_TIMED_OUT) == 0)
-						dbg ("Project1N", "Connection timed out:\t %d -> %d\n", TOS_NODE_ID, neighborIDs[ind]);
+					if ((connectionState & CONNECTION_TIMED_OUT) == 0)
+					{
+						signal NeighborDiscovery.neighborChanged();
+						dbg ("Project1N", "Connection timed out:\t %d -> %d\n", TOS_NODE_ID, keys[keyInd]);
+					}
 					
-					neighborTable[ind] |= CONNECTION_TIMED_OUT;
+					connectionState |= CONNECTION_TIMED_OUT;
 				}
 			}
+			
+			// Update with new value
+			signal NeighborDiscovery.insertNeighbor(keys[keyInd], connectionState);
 		}
 		
+		// Flip the state for the next timer call
 		TimeOutState = !TimeOutState;
 	}
 	
 	command void NeighborDiscovery.printNeighbors()
 	{
-		uint32_t ind;
+		uint32_t *keys;
+		uint32_t keyInd;
+		uint16_t connectionState;
+		
+		keys = signal NeighborDiscovery.getNeighborKeys();
 		
 		dbg("Project1N", "Neighbors (%d):\n", TOS_NODE_ID);
-		for (ind = 0; ind < NEIGHBOR_TABLE_SIZE; ind++)
+		for (keyInd = 0; keyInd < NEIGHBOR_TABLE_SIZE; keyInd++)
 		{
-			if (neighborIDs[ind] == EMPTY)
-				continue;
-				
-			if (neighborTable[ind] == CONNECTION_NONE)
+			// Ignore empty entries
+			if (keys[keyInd] == EMPTY)
 				continue;
 			
-			if (neighborTable[ind] & CONNECTION_TIMED_OUT)
-				dbg("Project1N", "\tNeighbor %d -/- %d\n", neighborIDs[ind], TOS_NODE_ID);
-			else if (neighborTable[ind] & CONNECTION_SEND) // Assuming two way connection since we only know we can send if they told us
-				dbg("Project1N", "\tNeighbor %d <-> %d\n", neighborIDs[ind], TOS_NODE_ID);
-			else if (neighborTable[ind] & CONNECTION_RECEIVE)
-				dbg("Project1N", "\tNeighbor %d ->  %d\n", neighborIDs[ind], TOS_NODE_ID);
+			// Retrieve connection state
+			connectionState = signal NeighborDiscovery.getNeighborConnection(keys[keyInd]);
+			
+			if (connectionState & CONNECTION_TIMED_OUT)
+				dbg("Project1N", "\tNeighbor %d -/- %d\n", keys[keyInd], TOS_NODE_ID);
+			else if (connectionState & CONNECTION_SEND) // Assuming two way connection since we only know we can send if they told us
+				dbg("Project1N", "\tNeighbor %d <-> %d\n", keys[keyInd], TOS_NODE_ID);
+			else if (connectionState & CONNECTION_RECEIVE)
+				dbg("Project1N", "\tNeighbor %d ->  %d\n", keys[keyInd], TOS_NODE_ID);
 		}
 	}
-		
 }

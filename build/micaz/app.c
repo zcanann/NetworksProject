@@ -901,7 +901,8 @@ enum __nesc_unnamed4305 {
 enum __nesc_unnamed4306 {
 
   NEIGHBOR_TABLE_SIZE = 20, 
-  SEQUENCE_TABLE_SIZE = 16
+  SEQUENCE_TABLE_SIZE = 192, 
+  SEQUENCE_TABLE_MAX_AGE = 144
 };
 # 5 "/root/workspace/Project1/src/sendInfo.h"
 enum __nesc_unnamed4307 {
@@ -928,8 +929,61 @@ enum __nesc_unnamed4308 {
 
   INF = 0, 
   NEIGHBOR_COST = 1, 
-  FORWARD_TABLE_SIZE = 40
+  ROUTING_TABLE_SIZE = 32
 };
+# 13 "/root/workspace/Project1/src/socket.h"
+#line 4
+typedef enum socketState {
+
+  SOCK_ESTABLISHED = 0, 
+  SOCK_LISTEN = 1, 
+  SOCK_CLOSED = 2, 
+  SOCK_SYN_SENT = 3, 
+  SOCK_CLOSE_WAIT = 4, 
+  SOCK_FIN_WAIT = 5
+} 
+socketState;
+
+enum __nesc_unnamed4309 {
+
+  POINTER_NULL = 0, 
+  SOCKET_SEND_BUFFER_SIZE = 128, 
+  SOCKET_RECEIVE_BUFFER_SIZE = 128, 
+  NULL_SOCKET = 0, 
+  TOTAL_PORTS = 255
+};
+
+
+
+
+
+
+
+#line 24
+typedef nx_struct socket_addr_t {
+
+  nx_uint8_t srcPort;
+  nx_uint8_t destPort;
+  nx_uint16_t srcAddr;
+  nx_uint16_t destAddr;
+} __attribute__((packed)) socket_addr_t;
+#line 44
+#line 32
+typedef struct socket_storage_t {
+
+  socketState state;
+  socket_addr_t sockAddr;
+  uint8_t sendBuff[SOCKET_SEND_BUFFER_SIZE];
+  uint8_t recBuff[SOCKET_RECEIVE_BUFFER_SIZE];
+  uint16_t lastByteSent;
+  uint16_t lastByteWritten;
+  uint16_t lastByteAck;
+  uint16_t lastByteRec;
+  uint16_t lastByteRead;
+  uint16_t lastByteExpected;
+} socket_storage_t;
+
+typedef uint16_t socket_t;
 # 39 "/root/local/tinyos-2.1.1/tos/chips/cc2420/CC2420.h"
 typedef uint8_t cc2420_status_t;
 #line 93
@@ -999,7 +1053,7 @@ typedef nx_struct cc2420_packet_t {
   nx_uint8_t data[];
 } __attribute__((packed)) cc2420_packet_t;
 #line 179
-enum __nesc_unnamed4309 {
+enum __nesc_unnamed4310 {
 
   MAC_HEADER_SIZE = sizeof(cc2420_header_t ) - 1, 
 
@@ -1256,7 +1310,7 @@ enum cc2420_security_enums {
 };
 
 
-enum __nesc_unnamed4310 {
+enum __nesc_unnamed4311 {
 
   CC2420_INVALID_TIMESTAMP = 0x80000000L
 };
@@ -1269,7 +1323,7 @@ typedef uint8_t am_id_t;
 typedef uint8_t am_group_t;
 typedef uint16_t am_addr_t;
 
-enum __nesc_unnamed4311 {
+enum __nesc_unnamed4312 {
   AM_BROADCAST_ADDR = 0xffff
 };
 
@@ -1281,7 +1335,7 @@ enum __nesc_unnamed4311 {
 
 
 
-enum __nesc_unnamed4312 {
+enum __nesc_unnamed4313 {
   TOS_AM_GROUP = 0x22, 
   TOS_AM_ADDRESS = 1
 };
@@ -1290,14 +1344,14 @@ typedef uint8_t uart_id_t;
 
 
 
-enum __nesc_unnamed4313 {
+enum __nesc_unnamed4314 {
   HDLC_FLAG_BYTE = 0x7e, 
   HDLC_CTLESC_BYTE = 0x7d
 };
 
 
 
-enum __nesc_unnamed4314 {
+enum __nesc_unnamed4315 {
   TOS_SERIAL_ACTIVE_MESSAGE_ID = 0, 
   TOS_SERIAL_CC1000_ID = 1, 
   TOS_SERIAL_802_15_4_ID = 2, 
@@ -1305,7 +1359,7 @@ enum __nesc_unnamed4314 {
 };
 
 
-enum __nesc_unnamed4315 {
+enum __nesc_unnamed4316 {
   SERIAL_PROTO_ACK = 67, 
   SERIAL_PROTO_PACKET_ACK = 68, 
   SERIAL_PROTO_PACKET_NOACK = 69, 
@@ -1387,10 +1441,59 @@ typedef nx_struct message_t {
   nx_uint8_t footer[sizeof(message_footer_t )];
   nx_uint8_t metadata[sizeof(message_metadata_t )];
 } __attribute__((packed)) message_t;
-# 61 "/root/local/tinyos-2.1.1/tos/system/SchedulerBasicP.nc"
-enum SchedulerBasicP____nesc_unnamed4316 {
+typedef uint16_t Node__neighborTable__t;
+typedef TMilli Node__RareUpdate__precision_tag;
+typedef TMilli Node__ModerateUpdate__precision_tag;
+typedef uint16_t Node__sequenceTable__t;
+typedef TMilli Node__FrequentUpdate__precision_tag;
+typedef uint32_t Node__routingTable__t;
+typedef socket_storage_t *Node__TCPTablePTR__t;
+typedef TMilli Node__SparseUpdate__precision_tag;
+# 102 "/root/workspace/Project1/src/Node.nc"
+enum Node____nesc_unnamed4317 {
+#line 102
+  Node__doFrequentEvents = 0U
+};
+#line 102
+typedef int Node____nesc_sillytask_doFrequentEvents[Node__doFrequentEvents];
 
-  SchedulerBasicP__NUM_TASKS = 0U, 
+
+
+
+
+
+
+enum Node____nesc_unnamed4318 {
+#line 110
+  Node__doModerateEvents = 1U
+};
+#line 110
+typedef int Node____nesc_sillytask_doModerateEvents[Node__doModerateEvents];
+#line 126
+enum Node____nesc_unnamed4319 {
+#line 126
+  Node__doSparseEvents = 2U
+};
+#line 126
+typedef int Node____nesc_sillytask_doSparseEvents[Node__doSparseEvents];
+
+
+
+
+
+
+
+
+enum Node____nesc_unnamed4320 {
+#line 135
+  Node__doRareEvents = 3U
+};
+#line 135
+typedef int Node____nesc_sillytask_doRareEvents[Node__doRareEvents];
+# 61 "/root/local/tinyos-2.1.1/tos/system/SchedulerBasicP.nc"
+enum SchedulerBasicP____nesc_unnamed4321 {
+
+  SchedulerBasicP__NUM_TASKS = 4U, 
   SchedulerBasicP__NO_TASK = 255
 };
 # 92 "/root/local/tinyos-2.1.1/tos/chips/atm128/atm128hardware.h"

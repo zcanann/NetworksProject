@@ -5,7 +5,6 @@
 #! /usr/bin/python
 import sys
 
-
 from TOSSIM import *
 from packet import *
 
@@ -15,20 +14,19 @@ numMote=0
 
 # Load a topo file and use it.
 def loadTopo(topoFile):
-   print 'Creating Topo!'
-   # Read topology file.
-   topoFile = 'topo/'+topoFile
-   f = open(topoFile, "r")
-   global numMote
-   numMote = int(f.readline());
-
-   print 'Number of Motes', numMote
-
-   for line in f:
-      s = line.split()
-      if s:
-         print " ", s[0], " ", s[1], " ", s[2];
-         r.add(int(s[0]), int(s[1]), float(s[2]))
+    print 'Creating Topo!'
+    # Read topology file.
+    topoFile = 'topo/'+topoFile
+    f = open(topoFile, "r")
+    global numMote
+    numMote = int(f.readline());
+    
+    print 'Number of Motes', numMote
+    for line in f:
+        s = line.split()
+        if s:
+            print " ", s[0], " ", s[1], " ", s[2];
+            r.add(int(s[0]), int(s[1]), float(s[2]))
 
 # Load a noise file and apply it.
 def loadNoise(noiseFile):
@@ -50,39 +48,39 @@ def loadNoise(noiseFile):
       t.getNode(i).createNoiseModel()
 
 def bootNode(nodeID):
-   if numMote == 0:
-      print "Create a topo first"
-      exit();
+    if numMote == 0:
+        print "Create a topo first"
+        exit();
 
-   t.getNode(nodeID).bootAtTime(1333*nodeID);
+    t.getNode(nodeID).bootAtTime(1333*nodeID);
 
 def bootAll():
-   i=0;
-   for i in range(1, numMote+1):
-      bootNode(i);
+    i=0;
+    for i in range(1, numMote+1):
+        bootNode(i);
 
 def moteOff(nodeID):
-   t.getNode(nodeID).turnOff();
+    t.getNode(nodeID).turnOff();
 
 def moteOn(nodeID):
-   t.getNode(nodeID).turnOn();
+    t.getNode(nodeID).turnOn();
 
 def package(string):
- 	ints = []
-	for c in string:
-		ints.append(ord(c))
-	return ints
+    ints = []
+    for c in string:
+        ints.append(ord(c))
+    return ints
 
 def run(ticks):
-	for i in range(ticks):
-		t.runNextEvent()
+    for i in range(ticks):
+        t.runNextEvent()
 
 # Rough run time. tickPerSecond does not work.
 def runTime(amount):
-   i=0
-   while i<amount*1000:
-      t.runNextEvent() 
-      i=i+1
+    i = 0
+    while i < amount * 1000:
+        t.runNextEvent() 
+        i = i + 1
 
 #Create a Command Packet
 msg = pack()
@@ -97,39 +95,47 @@ pkt.setType(msg.get_amType())
 # COMMAND TYPES
 CMD_PING = "0"
 CMD_NEIGHBOR_DUMP = "1"
-CMD_ROUTE_DUMP="3"
+CMD_ROUTE_DUMP = "3"
+CMD_TEST_CLIENT = "4"
+CMD_TEST_SERVER = "5"
 
 # Generic Command
 def sendCMD(string):
-   args = string.split(' ');
-   msg.set_src(int(args[0]));
-   msg.set_dest(int(args[0]));
-   msg.set_protocol(99);
-   payload=args[1]
-
-   for i in range(2, len(args)):
-      payload= payload + ' '+ args[i]
+    args = string.split(' ');
+    msg.set_src(int(args[0]));
+    msg.set_dest(int(args[0]));
+    msg.set_protocol(99);
+    payload=args[1]
+    
+    for i in range(2, len(args)):
+        payload= payload + ' '+ args[i]
 	
-   msg.setString_payload(payload)
-   
-   pkt.setData(msg.data)
-   pkt.setDestination(int(args[0]))
-   
-   pkt.deliver(int(args[0]), t.time()+5)
+    msg.setString_payload(payload)
+    
+    pkt.setData(msg.data)
+    pkt.setDestination(int(args[0]))
+    
+    pkt.deliver(int(args[0]), t.time()+5)
 
 def cmdPing(source, destination, msg):
-   dest = chr(int(destination));
-   sendCMD(source +" "+ CMD_PING + dest + msg);
+    dest = chr(int(destination));
+    sendCMD(source +" "+ CMD_PING + dest + msg);
 
 def cmdNeighborDMP(destination):
-   sendCMD(str(destination) +" "+ CMD_NEIGHBOR_DUMP);
+    sendCMD(str(destination) +" "+ CMD_NEIGHBOR_DUMP);
 
 def cmdRouteDMP(destination):
-   sendCMD(str(destination) +" "+ CMD_ROUTE_DUMP);
+    sendCMD(str(destination) +" "+ CMD_ROUTE_DUMP);
+
+def cmdTestServer(destination, port):
+    sendCMD(str(destination) +" "+ CMD_TEST_SERVER + chr(int(port)));
+
+def cmdTestClient(source, destination, srcPort, destPort, transfer):
+    sendCMD(str(source) +" "+ CMD_TEST_CLIENT + chr(int(srcPort)) + chr(int(destPort)) + chr(int(destination)) + str(transfer));
 
 def addChannel(channelName):
-   print 'Adding Channel', channelName;
-   t.addChannel(channelName, sys.stdout);
+    print 'Adding Channel', channelName;
+    t.addChannel(channelName, sys.stdout);
 
 ###################################################
 ###################################################
@@ -140,24 +146,44 @@ runTime(10);
 loadTopo("short_line.topo");
 #loadTopo("linkstate.topo");
 #loadTopo("complex.topo");
+#loadTopo("complex2.topo");
+#loadTopo("pizza.topo");
+#loadTopo("well_connected.topo");
+#loadTopo("diamond.topo");
+#loadTopo("diamond_dexter.topo");
 #loadTopo("long_circle.topo");
+#loadTopo("long_circle_connected.topo");
 loadNoise("no_noise.txt");
 bootAll();
 addChannel("cmdDebug");
-#addChannel("genDebug");
+addChannel("genDebug");
 addChannel("Project1F");
-#addChannel("Project1N");
+addChannel("Project1N");
 addChannel("Project2");
+addChannel("Project3");
 
-runTime(222);
-#cmdNeighborDMP(1);
-#cmdRouteDMP(3);
-#cmdNeighborDMP(3);
+runTime(100);
+cmdRouteDMP(1);
+#runTime(10);
+#cmdPing("6", "3", "Hello, World 1");
+#runTime(10);
+#cmdPing("2", "4", "Hello, World 1");
 runTime(10);
-cmdPing("1", "9", "Hello, World 1");
-runTime(25);
-cmdPing("1", "10", "Goodbye, World 1");
+cmdTestServer("1", "9");
 runTime(10);
+cmdTestServer("1", "9");
+runTime(10);
+cmdTestClient("2", "12", "9", "1", "666");
+#cmdPing("1", "12", "Hello, World 1");
+#runTime(50);
+#moteOff(6);
+#runTime(100);
+#cmdRouteDMP(1);
+#runTime(10);
+#cmdPing("1", "12", "Hello, World 1");
+#runTime(25);
+#cmdPing("1", "10", "Goodbye, World 1");
+#runTime(10);
 #cmdNeighborDMP(2);
 #runTime(10);
 #cmdNeighborDMP(3);

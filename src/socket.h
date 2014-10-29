@@ -8,14 +8,17 @@ typedef enum socketState
 	SOCK_CLOSED       = 2,
 	SOCK_SYN_SENT     = 3,
 	SOCK_CLOSE_WAIT   = 4,
-	SOCK_FIN_WAIT     = 5
+	SOCK_FIN_WAIT     = 5,
+	
 } socketState;
 
 enum
 {
+	POINTER_NULL = 0,					// Temporary socket value
 	SOCKET_SEND_BUFFER_SIZE = 128,
 	SOCKET_RECEIVE_BUFFER_SIZE = 128,
-	NULL_SOCKET = 0
+	NULL_SOCKET = 0,
+	TOTAL_PORTS = 255
 };
 
 typedef nx_struct socket_addr_t

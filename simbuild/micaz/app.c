@@ -1253,7 +1253,7 @@ typedef struct sim_log_channel {
 } sim_log_channel_t;
 
 enum __nesc_unnamed4269 {
-  SIM_LOG_OUTPUT_COUNT = 222U
+  SIM_LOG_OUTPUT_COUNT = 254U
 };
 
 sim_log_output_t outputs[SIM_LOG_OUTPUT_COUNT];
@@ -2290,7 +2290,8 @@ enum __nesc_unnamed4287 {
 enum __nesc_unnamed4288 {
 
   NEIGHBOR_TABLE_SIZE = 20, 
-  SEQUENCE_TABLE_SIZE = 16
+  SEQUENCE_TABLE_SIZE = 192, 
+  SEQUENCE_TABLE_MAX_AGE = 144
 };
 # 5 "/root/workspace/Project1/src/sendInfo.h"
 enum __nesc_unnamed4289 {
@@ -2317,10 +2318,63 @@ enum __nesc_unnamed4290 {
 
   INF = 0, 
   NEIGHBOR_COST = 1, 
-  FORWARD_TABLE_SIZE = 40
+  ROUTING_TABLE_SIZE = 32
 };
-# 25 "/root/local/tinyos-2.1.1/tos/chips/atm128/sim/atm128_sim.h"
+# 13 "/root/workspace/Project1/src/socket.h"
+#line 4
+typedef enum socketState {
+
+  SOCK_ESTABLISHED = 0, 
+  SOCK_LISTEN = 1, 
+  SOCK_CLOSED = 2, 
+  SOCK_SYN_SENT = 3, 
+  SOCK_CLOSE_WAIT = 4, 
+  SOCK_FIN_WAIT = 5
+} 
+socketState;
+
 enum __nesc_unnamed4291 {
+
+  POINTER_NULL = 0, 
+  SOCKET_SEND_BUFFER_SIZE = 128, 
+  SOCKET_RECEIVE_BUFFER_SIZE = 128, 
+  NULL_SOCKET = 0, 
+  TOTAL_PORTS = 255
+};
+
+
+
+
+
+
+
+#line 24
+typedef nx_struct socket_addr_t {
+
+  nx_uint8_t srcPort;
+  nx_uint8_t destPort;
+  nx_uint16_t srcAddr;
+  nx_uint16_t destAddr;
+} __attribute__((packed)) socket_addr_t;
+#line 44
+#line 32
+typedef struct socket_storage_t {
+
+  socketState state;
+  socket_addr_t sockAddr;
+  uint8_t sendBuff[SOCKET_SEND_BUFFER_SIZE];
+  uint8_t recBuff[SOCKET_RECEIVE_BUFFER_SIZE];
+  uint16_t lastByteSent;
+  uint16_t lastByteWritten;
+  uint16_t lastByteAck;
+  uint16_t lastByteRec;
+  uint16_t lastByteRead;
+  uint16_t lastByteExpected;
+} socket_storage_t;
+
+typedef uint16_t socket_t;
+# 25 "/root/local/tinyos-2.1.1/tos/chips/atm128/sim/atm128_sim.h"
+enum __nesc_unnamed4292 {
 
   ATM128_PINF = 0x00, 
 
@@ -2620,7 +2674,7 @@ enum __nesc_unnamed4291 {
   ATM128_UCSR1C = 0x9D
 };
 #line 673
-enum __nesc_unnamed4292 {
+enum __nesc_unnamed4293 {
 
   TWINT = 7, 
   TWEA = 6, 
@@ -3285,7 +3339,7 @@ typedef uint8_t mcu_power_t  ;
 
 
 
-enum __nesc_unnamed4293 {
+enum __nesc_unnamed4294 {
   ATM128_POWER_IDLE = 0, 
   ATM128_POWER_ADC_NR = 1, 
   ATM128_POWER_EXT_STANDBY = 2, 
@@ -3294,7 +3348,7 @@ enum __nesc_unnamed4293 {
   ATM128_POWER_DOWN = 5
 };
 # 43 "/root/local/tinyos-2.1.1/tos/chips/atm128/adc/Atm128Adc.h"
-enum __nesc_unnamed4294 {
+enum __nesc_unnamed4295 {
   ATM128_ADC_VREF_OFF = 0, 
   ATM128_ADC_VREF_AVCC = 1, 
   ATM128_ADC_VREF_RSVD, 
@@ -3302,14 +3356,14 @@ enum __nesc_unnamed4294 {
 };
 
 
-enum __nesc_unnamed4295 {
+enum __nesc_unnamed4296 {
   ATM128_ADC_RIGHT_ADJUST = 0, 
   ATM128_ADC_LEFT_ADJUST = 1
 };
 
 
 
-enum __nesc_unnamed4296 {
+enum __nesc_unnamed4297 {
   ATM128_ADC_SNGL_ADC0 = 0, 
   ATM128_ADC_SNGL_ADC1, 
   ATM128_ADC_SNGL_ADC2, 
@@ -3351,7 +3405,7 @@ enum __nesc_unnamed4296 {
 
 
 #line 94
-typedef struct __nesc_unnamed4297 {
+typedef struct __nesc_unnamed4298 {
 
   uint8_t mux : 5;
   uint8_t adlar : 1;
@@ -3361,7 +3415,7 @@ typedef struct __nesc_unnamed4297 {
 
 
 
-enum __nesc_unnamed4298 {
+enum __nesc_unnamed4299 {
   ATM128_ADC_PRESCALE_2 = 0, 
   ATM128_ADC_PRESCALE_2b, 
   ATM128_ADC_PRESCALE_4, 
@@ -3377,31 +3431,31 @@ enum __nesc_unnamed4298 {
 };
 
 
-enum __nesc_unnamed4299 {
+enum __nesc_unnamed4300 {
   ATM128_ADC_ENABLE_OFF = 0, 
   ATM128_ADC_ENABLE_ON
 };
 
 
-enum __nesc_unnamed4300 {
+enum __nesc_unnamed4301 {
   ATM128_ADC_START_CONVERSION_OFF = 0, 
   ATM128_ADC_START_CONVERSION_ON
 };
 
 
-enum __nesc_unnamed4301 {
+enum __nesc_unnamed4302 {
   ATM128_ADC_FREE_RUNNING_OFF = 0, 
   ATM128_ADC_FREE_RUNNING_ON
 };
 
 
-enum __nesc_unnamed4302 {
+enum __nesc_unnamed4303 {
   ATM128_ADC_INT_FLAG_OFF = 0, 
   ATM128_ADC_INT_FLAG_ON
 };
 
 
-enum __nesc_unnamed4303 {
+enum __nesc_unnamed4304 {
   ATM128_ADC_INT_ENABLE_OFF = 0, 
   ATM128_ADC_INT_ENABLE_ON
 };
@@ -3416,7 +3470,7 @@ enum __nesc_unnamed4303 {
 
 
 #line 150
-typedef struct __nesc_unnamed4304 {
+typedef struct __nesc_unnamed4305 {
 
   uint8_t adps : 3;
   uint8_t adie : 1;
@@ -3429,7 +3483,7 @@ typedef struct __nesc_unnamed4304 {
 typedef uint8_t Atm128_ADCH_t;
 typedef uint8_t Atm128_ADCL_t;
 # 54 "/root/local/tinyos-2.1.1/tos/platforms/micaz/sim/platform_hardware.h"
-enum __nesc_unnamed4305 {
+enum __nesc_unnamed4306 {
   CHANNEL_RSSI = ATM128_ADC_SNGL_ADC0, 
   CHANNEL_THERMISTOR = ATM128_ADC_SNGL_ADC1, 
   CHANNEL_BATTERY = ATM128_ADC_SNGL_ADC7, 
@@ -3441,7 +3495,7 @@ enum __nesc_unnamed4305 {
 # 41 "/root/local/tinyos-2.1.1/tos/lib/tossim/SimMainP.nc"
 static void __nesc_nido_initialise(int node);
 # 52 "/root/local/tinyos-2.1.1/tos/chips/atm128/timer/Atm128Timer.h"
-enum __nesc_unnamed4306 {
+enum __nesc_unnamed4307 {
   ATM128_CLK8_OFF = 0x0, 
   ATM128_CLK8_NORMAL = 0x1, 
   ATM128_CLK8_DIVIDE_8 = 0x2, 
@@ -3452,7 +3506,7 @@ enum __nesc_unnamed4306 {
   ATM128_CLK8_DIVIDE_1024 = 0x7
 };
 
-enum __nesc_unnamed4307 {
+enum __nesc_unnamed4308 {
   ATM128_CLK16_OFF = 0x0, 
   ATM128_CLK16_NORMAL = 0x1, 
   ATM128_CLK16_DIVIDE_8 = 0x2, 
@@ -3464,14 +3518,14 @@ enum __nesc_unnamed4307 {
 };
 
 
-enum __nesc_unnamed4308 {
+enum __nesc_unnamed4309 {
   AVR_CLOCK_OFF = 0, 
   AVR_CLOCK_ON = 1, 
   AVR_CLOCK_DIVIDE_8 = 2
 };
 
 
-enum __nesc_unnamed4309 {
+enum __nesc_unnamed4310 {
   ATM128_WAVE8_NORMAL = 0, 
   ATM128_WAVE8_PWM, 
   ATM128_WAVE8_CTC, 
@@ -3479,7 +3533,7 @@ enum __nesc_unnamed4309 {
 };
 
 
-enum __nesc_unnamed4310 {
+enum __nesc_unnamed4311 {
   ATM128_COMPARE_OFF = 0, 
   ATM128_COMPARE_TOGGLE, 
   ATM128_COMPARE_CLEAR, 
@@ -3487,10 +3541,10 @@ enum __nesc_unnamed4310 {
 };
 #line 108
 #line 98
-typedef union __nesc_unnamed4311 {
+typedef union __nesc_unnamed4312 {
 
   uint8_t flat;
-  struct __nesc_unnamed4312 {
+  struct __nesc_unnamed4313 {
     uint8_t cs : 3;
     uint8_t wgm1 : 1;
     uint8_t com : 2;
@@ -3508,10 +3562,10 @@ typedef uint8_t Atm128_TCNT2_t;
 typedef uint8_t Atm128_OCR2_t;
 #line 130
 #line 120
-typedef union __nesc_unnamed4313 {
+typedef union __nesc_unnamed4314 {
 
   uint8_t flat;
-  struct __nesc_unnamed4314 {
+  struct __nesc_unnamed4315 {
     uint8_t tcr0ub : 1;
     uint8_t ocr0ub : 1;
     uint8_t tcn0ub : 1;
@@ -3521,10 +3575,10 @@ typedef union __nesc_unnamed4313 {
 } Atm128Assr_t;
 #line 146
 #line 133
-typedef union __nesc_unnamed4315 {
+typedef union __nesc_unnamed4316 {
 
   uint8_t flat;
-  struct __nesc_unnamed4316 {
+  struct __nesc_unnamed4317 {
     uint8_t toie0 : 1;
     uint8_t ocie0 : 1;
     uint8_t toie1 : 1;
@@ -3537,10 +3591,10 @@ typedef union __nesc_unnamed4315 {
 } Atm128_TIMSK_t;
 #line 163
 #line 150
-typedef union __nesc_unnamed4317 {
+typedef union __nesc_unnamed4318 {
 
   uint8_t flat;
-  struct __nesc_unnamed4318 {
+  struct __nesc_unnamed4319 {
     uint8_t tov0 : 1;
     uint8_t ocf0 : 1;
     uint8_t tov1 : 1;
@@ -3553,10 +3607,10 @@ typedef union __nesc_unnamed4317 {
 } Atm128_TIFR_t;
 #line 178
 #line 167
-typedef union __nesc_unnamed4319 {
+typedef union __nesc_unnamed4320 {
 
   uint8_t flat;
-  struct __nesc_unnamed4320 {
+  struct __nesc_unnamed4321 {
     uint8_t psr321 : 1;
     uint8_t psr0 : 1;
     uint8_t pud : 1;
@@ -3571,7 +3625,7 @@ typedef union __nesc_unnamed4319 {
 
 
 
-enum __nesc_unnamed4321 {
+enum __nesc_unnamed4322 {
   ATM128_TIMER_COMPARE_NORMAL = 0, 
   ATM128_TIMER_COMPARE_TOGGLE, 
   ATM128_TIMER_COMPARE_CLEAR, 
@@ -3579,10 +3633,10 @@ enum __nesc_unnamed4321 {
 };
 #line 202
 #line 193
-typedef union __nesc_unnamed4322 {
+typedef union __nesc_unnamed4323 {
 
   uint8_t flat;
-  struct __nesc_unnamed4323 {
+  struct __nesc_unnamed4324 {
     uint8_t wgm10 : 2;
     uint8_t comC : 2;
     uint8_t comB : 2;
@@ -3597,7 +3651,7 @@ typedef Atm128TimerCtrlCompare_t Atm128_TCCR1A_t;
 typedef Atm128TimerCtrlCompare_t Atm128_TCCR3A_t;
 
 
-enum __nesc_unnamed4324 {
+enum __nesc_unnamed4325 {
   ATM128_WAVE16_NORMAL = 0, 
   ATM128_WAVE16_PWM_8BIT, 
   ATM128_WAVE16_PWM_9BIT, 
@@ -3617,10 +3671,10 @@ enum __nesc_unnamed4324 {
 };
 #line 241
 #line 231
-typedef union __nesc_unnamed4325 {
+typedef union __nesc_unnamed4326 {
 
   uint8_t flat;
-  struct __nesc_unnamed4326 {
+  struct __nesc_unnamed4327 {
     uint8_t cs : 3;
     uint8_t wgm32 : 2;
     uint8_t rsvd : 1;
@@ -3636,10 +3690,10 @@ typedef Atm128TimerCtrlCapture_t Atm128_TCCR1B_t;
 typedef Atm128TimerCtrlCapture_t Atm128_TCCR3B_t;
 #line 259
 #line 250
-typedef union __nesc_unnamed4327 {
+typedef union __nesc_unnamed4328 {
 
   uint8_t flat;
-  struct __nesc_unnamed4328 {
+  struct __nesc_unnamed4329 {
     uint8_t rsvd : 5;
     uint8_t focC : 1;
     uint8_t focB : 1;
@@ -3683,10 +3737,10 @@ typedef uint8_t Atm128_ICR3H_t;
 typedef uint8_t Atm128_ICR3L_t;
 #line 309
 #line 297
-typedef union __nesc_unnamed4329 {
+typedef union __nesc_unnamed4330 {
 
   uint8_t flat;
-  struct __nesc_unnamed4330 {
+  struct __nesc_unnamed4331 {
     uint8_t ocie1c : 1;
     uint8_t ocie3c : 1;
     uint8_t toie3 : 1;
@@ -3698,10 +3752,10 @@ typedef union __nesc_unnamed4329 {
 } Atm128_ETIMSK_t;
 #line 324
 #line 312
-typedef union __nesc_unnamed4331 {
+typedef union __nesc_unnamed4332 {
 
   uint8_t flat;
-  struct __nesc_unnamed4332 {
+  struct __nesc_unnamed4333 {
     uint8_t ocf1c : 1;
     uint8_t ocf3c : 1;
     uint8_t tov3 : 1;
@@ -3711,8 +3765,13 @@ typedef union __nesc_unnamed4331 {
     uint8_t rsvd : 2;
   } bits;
 } Atm128_ETIFR_t;
+typedef uint16_t Node$neighborTable$t;
+typedef TMilli Node$RareUpdate$precision_tag;
 typedef TMilli Node$ModerateUpdate$precision_tag;
+typedef uint16_t Node$sequenceTable$t;
 typedef TMilli Node$FrequentUpdate$precision_tag;
+typedef uint32_t Node$routingTable$t;
+typedef socket_storage_t *Node$TCPTablePTR$t;
 typedef TMilli Node$SparseUpdate$precision_tag;
 typedef sendInfo SimpleSendP$Pool$t;
 typedef sendInfo *SimpleSendP$Queue$t;
@@ -3739,7 +3798,7 @@ typedef /*HilTimerMilliC.CounterToLocalTimeC*/CounterToLocalTimeC$0$precision_ta
 typedef /*HilTimerMilliC.CounterToLocalTimeC*/CounterToLocalTimeC$0$precision_tag /*HilTimerMilliC.CounterToLocalTimeC*/CounterToLocalTimeC$0$Counter$precision_tag;
 typedef uint32_t /*HilTimerMilliC.CounterToLocalTimeC*/CounterToLocalTimeC$0$Counter$size_type;
 typedef uint16_t RandomMlcgC$SeedInit$parameter;
-enum AMQueueP$__nesc_unnamed4333 {
+enum AMQueueP$__nesc_unnamed4334 {
   AMQueueP$NUM_CLIENTS = 1U
 };
 typedef sendInfo /*SimpleSendC.PoolC*/PoolC$0$pool_t;
@@ -3747,19 +3806,80 @@ typedef /*SimpleSendC.PoolC*/PoolC$0$pool_t /*SimpleSendC.PoolC.PoolP*/PoolP$0$p
 typedef /*SimpleSendC.PoolC.PoolP*/PoolP$0$pool_t /*SimpleSendC.PoolC.PoolP*/PoolP$0$Pool$t;
 typedef sendInfo */*SimpleSendC.QueueC*/QueueC$0$queue_t;
 typedef /*SimpleSendC.QueueC*/QueueC$0$queue_t /*SimpleSendC.QueueC*/QueueC$0$Queue$t;
+typedef uint16_t /*NodeC.neighborTable*/HashmapC$0$t;
+typedef /*NodeC.neighborTable*/HashmapC$0$t /*NodeC.neighborTable*/HashmapC$0$Hashmap$t;
+typedef uint16_t /*NodeC.sequenceTable*/HashmapC$1$t;
+typedef /*NodeC.sequenceTable*/HashmapC$1$t /*NodeC.sequenceTable*/HashmapC$1$Hashmap$t;
+typedef uint32_t /*NodeC.routingTable*/HashmapC$2$t;
+typedef /*NodeC.routingTable*/HashmapC$2$t /*NodeC.routingTable*/HashmapC$2$Hashmap$t;
+typedef socket_storage_t */*NodeC.TCPTablePTR*/HashmapC$3$t;
+typedef /*NodeC.TCPTablePTR*/HashmapC$3$t /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$t;
 # 113 "/root/local/tinyos-2.1.1/tos/interfaces/SplitControl.nc"
 static void Node$AMControl$startDone(error_t error);
 #line 138
 static void Node$AMControl$stopDone(error_t error);
+# 16 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+static void Node$PacketHandler$reply(uint16_t destination);
+#line 14
+static void Node$PacketHandler$send(pack *msg, uint16_t address, bool updateTTL);
+
+
+
+
+
+
+
+static bool Node$PacketHandler$containsSrcSeqPair(uint32_t src, uint16_t seq);
+#line 20
+static void Node$PacketHandler$insertAge(uint32_t src, uint16_t seq, uint16_t age);
+#line 18
+static uint32_t *Node$PacketHandler$getSeqSrcKeys(void );
+
+
+static void Node$PacketHandler$decreaseAge(uint32_t key);
+#line 15
+static void Node$PacketHandler$createAndSend(uint8_t *payload, uint16_t destination);
 # 60 "/root/local/tinyos-2.1.1/tos/interfaces/Boot.nc"
 static void Node$Boot$booted(void );
-# 18 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
-static void Node$PacketHandler$reply(uint16_t destination);
-#line 16
-static void Node$PacketHandler$send(pack *msg, uint16_t address, bool updateTTL);
-static void Node$PacketHandler$createAndSend(uint8_t *payload, uint16_t destination);
-# 14 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+# 75 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+static void Node$doModerateEvents$runTask(void );
+# 83 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
+static void Node$RareUpdate$fired(void );
+# 28 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+static void Node$LinkStateRouting$insertCostHop(uint32_t src, uint16_t cost, uint16_t hop);
+#line 18
+static uint32_t *Node$LinkStateRouting$getNeighborKeys(void );
+
+
+
+
+
+
+
+static uint16_t Node$LinkStateRouting$getRoutingHop(uint32_t src);
+static void Node$LinkStateRouting$clearRoutingTable(void );
+#line 15
 static void Node$LinkStateRouting$sendLinkState(uint8_t *payload);
+
+
+
+
+
+static bool Node$LinkStateRouting$containsNeighbor(uint32_t src);
+
+
+
+static uint16_t Node$LinkStateRouting$getRoutingCost(uint32_t src);
+
+
+
+
+
+static bool Node$LinkStateRouting$containsNode(uint32_t src);
+#line 24
+static uint32_t *Node$LinkStateRouting$getRoutingKeys(void );
+#line 19
+static uint16_t Node$LinkStateRouting$getNeighborConnection(uint32_t src);
 # 83 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
 static void Node$ModerateUpdate$fired(void );
 # 78 "/root/local/tinyos-2.1.1/tos/interfaces/Receive.nc"
@@ -3779,10 +3899,41 @@ void * payload,
 
 
 uint8_t len);
-# 10 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+# 15 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+static void Node$NeighborDiscovery$neighborChanged(void );
+#line 11
+static uint32_t *Node$NeighborDiscovery$getNeighborKeys(void );
+#line 10
 static void Node$NeighborDiscovery$discoverNeighbors(void );
+
+
+static void Node$NeighborDiscovery$insertNeighbor(uint32_t src, uint16_t connection);
+static bool Node$NeighborDiscovery$containsNeighbor(uint32_t src);
+#line 12
+static uint16_t Node$NeighborDiscovery$getNeighborConnection(uint32_t src);
+# 75 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+static void Node$doSparseEvents$runTask(void );
 # 83 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
 static void Node$FrequentUpdate$fired(void );
+# 20 "/root/workspace/Project1/src/lib/interfaces/TCP.nc"
+static void Node$TCP$updateHeader(uint32_t connectionKey, uint16_t src, uint8_t srcPort, uint16_t dest, uint8_t destPort);
+#line 17
+static socket_storage_t *Node$TCP$getConnectionState(uint32_t connectionKey);
+
+
+
+static void Node$TCP$setConnectionState(uint32_t connectionKey, uint8_t state);
+#line 10
+static void Node$TCP$createAndSend(socket_storage_t *TCPHeader, uint16_t destination);
+
+
+
+
+static void Node$TCP$setConnectionPTR(uint32_t connectionKey, uint8_t initialState);
+# 75 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+static void Node$doFrequentEvents$runTask(void );
+#line 75
+static void Node$doRareEvents$runTask(void );
 # 15 "/root/workspace/Project1/src/lib/interfaces/CommandHandler.nc"
 static void Node$CommandHandler$printLinkState(void );
 #line 13
@@ -3792,9 +3943,9 @@ static void Node$CommandHandler$printNeighbors(void );
 
 
 
-static void Node$CommandHandler$setTestClient(void );
+static void Node$CommandHandler$setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint16_t transfer);
 #line 18
-static void Node$CommandHandler$setTestServer(void );
+static void Node$CommandHandler$setTestServer(uint8_t listenPort);
 #line 14
 static void Node$CommandHandler$printRouteTable(void );
 #line 11
@@ -3850,7 +4001,7 @@ static long long int SimMoteP$SimMote$getStartTime(void );
 # 80 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
 static error_t TossimActiveMessageC$AMSend$send(
 # 47 "/root/local/tinyos-2.1.1/tos/lib/tossim/TossimActiveMessageC.nc"
-am_id_t arg_0x408a18b0, 
+am_id_t arg_0x40907a60, 
 # 80 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
 am_addr_t addr, 
 #line 71
@@ -3873,7 +4024,7 @@ message_t *
 
 TossimActiveMessageC$Snoop$default$receive(
 # 49 "/root/local/tinyos-2.1.1/tos/lib/tossim/TossimActiveMessageC.nc"
-am_id_t arg_0x408ae930, 
+am_id_t arg_0x40915b00, 
 # 71 "/root/local/tinyos-2.1.1/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -3920,7 +4071,7 @@ message_t *
 
 TossimActiveMessageC$Receive$default$receive(
 # 48 "/root/local/tinyos-2.1.1/tos/lib/tossim/TossimActiveMessageC.nc"
-am_id_t arg_0x408ae298, 
+am_id_t arg_0x40915468, 
 # 71 "/root/local/tinyos-2.1.1/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -4099,28 +4250,15 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$TimerFrom$fire
 #line 83
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$default$fired(
 # 48 "/root/local/tinyos-2.1.1/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x40b41c70);
+uint8_t arg_0x40ba0c70);
 # 92 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
 static bool /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$isRunning(
 # 48 "/root/local/tinyos-2.1.1/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x40b41c70);
-# 64 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
-static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startPeriodic(
-# 48 "/root/local/tinyos-2.1.1/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x40b41c70, 
-# 64 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
-uint32_t dt);
-
-
-
-
-
-
-
-
+uint8_t arg_0x40ba0c70);
+# 73 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startOneShot(
 # 48 "/root/local/tinyos-2.1.1/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x40b41c70, 
+uint8_t arg_0x40ba0c70, 
 # 73 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
 uint32_t dt);
 # 82 "/root/local/tinyos-2.1.1/tos/lib/timer/Counter.nc"
@@ -4155,7 +4293,7 @@ error_t error);
 # 110 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
 static void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMSend$sendDone(
 # 48 "/root/local/tinyos-2.1.1/tos/system/AMQueueImplP.nc"
-am_id_t arg_0x40ba40a0, 
+am_id_t arg_0x40c0c0a0, 
 # 103 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -4168,7 +4306,7 @@ error_t error);
 # 75 "/root/local/tinyos-2.1.1/tos/interfaces/Send.nc"
 static error_t /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$send(
 # 46 "/root/local/tinyos-2.1.1/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x40ba56a8, 
+uint8_t arg_0x40c0e6a8, 
 # 67 "/root/local/tinyos-2.1.1/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -4182,7 +4320,7 @@ uint8_t len);
 #line 100
 static void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$default$sendDone(
 # 46 "/root/local/tinyos-2.1.1/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x40ba56a8, 
+uint8_t arg_0x40c0e6a8, 
 # 96 "/root/local/tinyos-2.1.1/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -4242,12 +4380,15 @@ static error_t CommandHandlerP$CommandHandler$processCommand(pack *Packet);
 # 6 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
 static error_t PacketHandlerP$PacketHandler$receive(pack *Packet);
 
-static bool PacketHandlerP$PacketHandler$isPacketLooping(pack *Packet);
+
 
 static void PacketHandlerP$PacketHandler$ageSequenceTable(void );
 static error_t PacketHandlerP$PacketHandler$processSequence(pack *Packet);
 #line 5
-static void PacketHandlerP$PacketHandler$initialize(uint16_t *sequenceTableSrcPtr, uint16_t *sequenceTableSeqPtr, uint16_t *sequenceTableAgePtr);
+static void PacketHandlerP$PacketHandler$initialize(void );
+
+
+static bool PacketHandlerP$PacketHandler$isPacketDuplicate(pack *Packet);
 # 5 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
 static error_t NeighborDiscoveryP$NeighborDiscovery$receive(pack *Packet);
 
@@ -4256,16 +4397,15 @@ static void NeighborDiscoveryP$NeighborDiscovery$printNeighbors(void );
 #line 7
 static void NeighborDiscoveryP$NeighborDiscovery$timeOutCheck(void );
 #line 6
-static void NeighborDiscoveryP$NeighborDiscovery$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer);
-# 7 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+static void NeighborDiscoveryP$NeighborDiscovery$initialize(void );
+# 11 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+static void LinkStateRoutingP$LinkStateRouting$printLinkState(void );
+#line 7
 static error_t LinkStateRoutingP$LinkStateRouting$receive(pack *Packet);
 
 static void LinkStateRoutingP$LinkStateRouting$calculateRoute(void );
-
-static void LinkStateRoutingP$LinkStateRouting$printLinkState(void );
-#line 5
-static void LinkStateRoutingP$LinkStateRouting$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer, 
-uint16_t *forwardTableDestPointer, uint16_t *forwardTableCostPointer, uint16_t *forwardTableHopPointer);
+#line 6
+static void LinkStateRoutingP$LinkStateRouting$initialize(void );
 
 static void LinkStateRoutingP$LinkStateRouting$shareLinkState(void );
 
@@ -4274,25 +4414,102 @@ static void LinkStateRoutingP$LinkStateRouting$shareLinkState(void );
 static void LinkStateRoutingP$LinkStateRouting$printRoutingTable(void );
 # 75 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
 static void LinkStateRoutingP$SendNeighbors$runTask(void );
+# 6 "/root/workspace/Project1/src/lib/interfaces/TCP.nc"
+static error_t TCPP$TCP$receive(pack *Packet);
+static void TCPP$TCP$initialize(void );
+# 6 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+static /*NodeC.neighborTable*/HashmapC$0$Hashmap$t /*NodeC.neighborTable*/HashmapC$0$Hashmap$get(uint32_t key);
+#line 3
+static void /*NodeC.neighborTable*/HashmapC$0$Hashmap$insert(uint32_t key, /*NodeC.neighborTable*/HashmapC$0$Hashmap$t input);
+
+
+
+
+
+
+
+static uint32_t */*NodeC.neighborTable*/HashmapC$0$Hashmap$getKeys(void );
+#line 8
+static bool /*NodeC.neighborTable*/HashmapC$0$Hashmap$contains(uint32_t key);
+#line 6
+static /*NodeC.sequenceTable*/HashmapC$1$Hashmap$t /*NodeC.sequenceTable*/HashmapC$1$Hashmap$get(uint32_t key);
+#line 4
+static void /*NodeC.sequenceTable*/HashmapC$1$Hashmap$remove(uint32_t key);
+#line 3
+static void /*NodeC.sequenceTable*/HashmapC$1$Hashmap$insert(uint32_t key, /*NodeC.sequenceTable*/HashmapC$1$Hashmap$t input);
+
+
+
+
+
+
+
+static uint32_t */*NodeC.sequenceTable*/HashmapC$1$Hashmap$getKeys(void );
+#line 8
+static bool /*NodeC.sequenceTable*/HashmapC$1$Hashmap$contains(uint32_t key);
+#line 5
+static void /*NodeC.routingTable*/HashmapC$2$Hashmap$clear(void );
+static /*NodeC.routingTable*/HashmapC$2$Hashmap$t /*NodeC.routingTable*/HashmapC$2$Hashmap$get(uint32_t key);
+#line 3
+static void /*NodeC.routingTable*/HashmapC$2$Hashmap$insert(uint32_t key, /*NodeC.routingTable*/HashmapC$2$Hashmap$t input);
+
+
+
+
+
+
+
+static uint32_t */*NodeC.routingTable*/HashmapC$2$Hashmap$getKeys(void );
+#line 8
+static bool /*NodeC.routingTable*/HashmapC$2$Hashmap$contains(uint32_t key);
+#line 3
+static void /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$insert(uint32_t key, /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$t input);
+
+
+
+
+static bool /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$contains(uint32_t key);
+#line 7
+static uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$getIndex(uint32_t key);
 # 104 "/root/local/tinyos-2.1.1/tos/interfaces/SplitControl.nc"
 static error_t Node$AMControl$start(void );
 # 6 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
 static error_t Node$PacketHandler$receive(pack *Packet);
 
-static bool Node$PacketHandler$isPacketLooping(pack *Packet);
+
 
 static void Node$PacketHandler$ageSequenceTable(void );
 #line 5
-static void Node$PacketHandler$initialize(uint16_t *sequenceTableSrcPtr, uint16_t *sequenceTableSeqPtr, uint16_t *sequenceTableAgePtr);
-# 7 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+static void Node$PacketHandler$initialize(void );
+
+
+static bool Node$PacketHandler$isPacketDuplicate(pack *Packet);
+# 6 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+static Node$neighborTable$t Node$neighborTable$get(uint32_t key);
+#line 3
+static void Node$neighborTable$insert(uint32_t key, Node$neighborTable$t input);
+
+
+
+
+
+
+
+static uint32_t *Node$neighborTable$getKeys(void );
+#line 8
+static bool Node$neighborTable$contains(uint32_t key);
+# 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+static error_t Node$doModerateEvents$postTask(void );
+# 73 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
+static void Node$RareUpdate$startOneShot(uint32_t dt);
+# 11 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+static void Node$LinkStateRouting$printLinkState(void );
+#line 7
 static error_t Node$LinkStateRouting$receive(pack *Packet);
 
 static void Node$LinkStateRouting$calculateRoute(void );
-
-static void Node$LinkStateRouting$printLinkState(void );
-#line 5
-static void Node$LinkStateRouting$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer, 
-uint16_t *forwardTableDestPointer, uint16_t *forwardTableCostPointer, uint16_t *forwardTableHopPointer);
+#line 6
+static void Node$LinkStateRouting$initialize(void );
 
 static void Node$LinkStateRouting$shareLinkState(void );
 
@@ -4301,8 +4518,8 @@ static void Node$LinkStateRouting$shareLinkState(void );
 static void Node$LinkStateRouting$printRoutingTable(void );
 # 46 "/root/local/tinyos-2.1.1/tos/interfaces/Random.nc"
 static uint32_t Node$Random$rand32(void );
-# 64 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
-static void Node$ModerateUpdate$startPeriodic(uint32_t dt);
+# 73 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
+static void Node$ModerateUpdate$startOneShot(uint32_t dt);
 # 5 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
 static error_t Node$NeighborDiscovery$receive(pack *Packet);
 
@@ -4311,40 +4528,157 @@ static void Node$NeighborDiscovery$printNeighbors(void );
 #line 7
 static void Node$NeighborDiscovery$timeOutCheck(void );
 #line 6
-static void Node$NeighborDiscovery$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer);
+static void Node$NeighborDiscovery$initialize(void );
+# 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+static error_t Node$doSparseEvents$postTask(void );
+# 6 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+static Node$sequenceTable$t Node$sequenceTable$get(uint32_t key);
+#line 4
+static void Node$sequenceTable$remove(uint32_t key);
+#line 3
+static void Node$sequenceTable$insert(uint32_t key, Node$sequenceTable$t input);
+
+
+
+
+
+
+
+static uint32_t *Node$sequenceTable$getKeys(void );
+#line 8
+static bool Node$sequenceTable$contains(uint32_t key);
 # 5 "/root/workspace/Project1/src/lib/interfaces/SimpleSend.nc"
 static error_t Node$Sender$send(pack msg, uint16_t dest);
-# 64 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
-static void Node$FrequentUpdate$startPeriodic(uint32_t dt);
+# 73 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
+static void Node$FrequentUpdate$startOneShot(uint32_t dt);
+# 6 "/root/workspace/Project1/src/lib/interfaces/TCP.nc"
+static error_t Node$TCP$receive(pack *Packet);
+static void Node$TCP$initialize(void );
+# 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+static error_t Node$doFrequentEvents$postTask(void );
+# 5 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+static void Node$routingTable$clear(void );
+static Node$routingTable$t Node$routingTable$get(uint32_t key);
+#line 3
+static void Node$routingTable$insert(uint32_t key, Node$routingTable$t input);
+
+
+
+
+
+
+
+static uint32_t *Node$routingTable$getKeys(void );
+#line 8
+static bool Node$routingTable$contains(uint32_t key);
+# 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+static error_t Node$doRareEvents$postTask(void );
 # 5 "/root/workspace/Project1/src/lib/interfaces/CommandHandler.nc"
 static error_t Node$CommandHandler$receive(pack *Packet);
-# 64 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
-static void Node$SparseUpdate$startPeriodic(uint32_t dt);
-# 28 "/root/workspace/Project1/src/Node.nc"
-pack Node$sendPackage[1000];
+# 3 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+static void Node$TCPTablePTR$insert(uint32_t key, Node$TCPTablePTR$t input);
+
+
+
+
+static bool Node$TCPTablePTR$contains(uint32_t key);
+#line 7
+static uint32_t Node$TCPTablePTR$getIndex(uint32_t key);
+# 73 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
+static void Node$SparseUpdate$startOneShot(uint32_t dt);
+# 103 "/root/workspace/Project1/src/Node.nc"
+enum Node$__nesc_unnamed4335 {
+#line 103
+  Node$doFrequentEvents = 0U
+};
+#line 103
+typedef int Node$__nesc_sillytask_doFrequentEvents[Node$doFrequentEvents];
+
+
+
+
+
+
+
+enum Node$__nesc_unnamed4336 {
+#line 111
+  Node$doModerateEvents = 1U
+};
+#line 111
+typedef int Node$__nesc_sillytask_doModerateEvents[Node$doModerateEvents];
+#line 127
+enum Node$__nesc_unnamed4337 {
+#line 127
+  Node$doSparseEvents = 2U
+};
+#line 127
+typedef int Node$__nesc_sillytask_doSparseEvents[Node$doSparseEvents];
+
+
+
+
+
+
+
+
+enum Node$__nesc_unnamed4338 {
+#line 136
+  Node$doRareEvents = 3U
+};
+#line 136
+typedef int Node$__nesc_sillytask_doRareEvents[Node$doRareEvents];
+#line 37
 uint8_t Node$pingPacket[1000][PACKET_MAX_PAYLOAD_SIZE8];
 
-
-uint16_t Node$neighborIDs[1000][NEIGHBOR_TABLE_SIZE];
-uint16_t Node$neighborTable[1000][NEIGHBOR_TABLE_SIZE];
-
-
-uint16_t Node$forwardTableDest[1000][FORWARD_TABLE_SIZE];
-uint16_t Node$forwardTableCost[1000][FORWARD_TABLE_SIZE];
-uint16_t Node$forwardTableHop[1000][FORWARD_TABLE_SIZE];
-
-
-uint16_t Node$sequenceTableSrc[1000][SEQUENCE_TABLE_SIZE];
-uint16_t Node$sequenceTableSeq[1000][SEQUENCE_TABLE_SIZE];
-uint16_t Node$sequenceTableAge[1000][SEQUENCE_TABLE_SIZE];
+pack Node$sendPackage[1000];
 
 uint16_t Node$SEQUENCE_NUMBER[1000];
+bool Node$NeighborsChanged[1000];
+socket_storage_t Node$TCPTable[1000][TOTAL_PORTS];
+
+uint32_t Node$PeriodFrequent[1000];
+uint32_t Node$PeriodModerate[1000];
+uint32_t Node$PeriodSparse[1000];
+uint32_t Node$PeriodRare[1000];
 
 
 static void Node$makePack(pack *Package, uint16_t src, uint16_t dest, uint8_t TTL, uint8_t Protocol, uint16_t seq, uint8_t *payload, uint8_t length);
 
+
+
+
+
 static inline void Node$Boot$booted(void );
-#line 82
+#line 84
+static inline void Node$AMControl$startDone(error_t err);
+#line 97
+static inline void Node$AMControl$stopDone(error_t err);
+
+
+
+
+
+static inline void Node$doFrequentEvents$runTask(void );
+
+
+
+
+
+
+
+static inline void Node$doModerateEvents$runTask(void );
+#line 127
+static inline void Node$doSparseEvents$runTask(void );
+
+
+
+
+
+
+
+
+static inline void Node$doRareEvents$runTask(void );
+#line 149
 static inline void Node$FrequentUpdate$fired(void );
 
 
@@ -4357,27 +4691,27 @@ static inline void Node$ModerateUpdate$fired(void );
 
 
 
-
 static inline void Node$SparseUpdate$fired(void );
 
 
 
 
 
+static inline void Node$RareUpdate$fired(void );
 
-static inline void Node$AMControl$startDone(error_t err);
-#line 115
-static inline void Node$AMControl$stopDone(error_t err);
+
+
+
 
 
 
 
 static inline message_t *Node$Receive$receive(message_t *msg, void *payload, uint8_t len);
-#line 148
+#line 205
 static void Node$makePack(pack *Package, uint16_t src, uint16_t dest, uint8_t TTL, uint8_t protocol, uint16_t seq, uint8_t *payload, uint8_t length);
-#line 167
+#line 224
 static void Node$PacketHandler$send(pack *Package, uint16_t address, bool updateTTL);
-#line 191
+#line 256
 static inline void Node$PacketHandler$createAndSend(uint8_t *payload, uint16_t destination);
 
 
@@ -4395,6 +4729,8 @@ static inline void Node$PacketHandler$reply(uint16_t destination);
 
 
 
+static inline void Node$TCP$createAndSend(socket_storage_t *TCPHeader, uint16_t destination);
+#line 285
 static inline void Node$LinkStateRouting$sendLinkState(uint8_t *payload);
 
 
@@ -4406,6 +4742,12 @@ static inline void Node$LinkStateRouting$sendLinkState(uint8_t *payload);
 
 
 static inline void Node$NeighborDiscovery$discoverNeighbors(void );
+
+
+
+
+
+static inline void Node$NeighborDiscovery$neighborChanged(void );
 
 
 
@@ -4441,12 +4783,118 @@ static inline void Node$CommandHandler$printLinkState(void );
 
 
 
-static inline void Node$CommandHandler$setTestServer(void );
+static inline void Node$CommandHandler$setTestServer(uint8_t listenPort);
+#line 351
+static inline void Node$CommandHandler$setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t targetPort, uint16_t transfer);
+#line 401
+static inline socket_storage_t *Node$TCP$getConnectionState(uint32_t connectionKey);
 
 
 
 
-static inline void Node$CommandHandler$setTestClient(void );
+
+
+static void Node$TCP$setConnectionPTR(uint32_t connectionKey, uint8_t initialState);
+#line 425
+static inline void Node$TCP$updateHeader(uint32_t connectionKey, uint16_t src, uint8_t srcPort, uint16_t dest, uint8_t destPort);
+#line 438
+static inline void Node$TCP$setConnectionState(uint32_t connectionKey, uint8_t state);
+#line 454
+static inline uint32_t *Node$NeighborDiscovery$getNeighborKeys(void );
+
+
+
+
+static inline uint16_t Node$NeighborDiscovery$getNeighborConnection(uint32_t src);
+
+
+
+
+static inline void Node$NeighborDiscovery$insertNeighbor(uint32_t src, uint16_t connection);
+
+
+
+
+static inline bool Node$NeighborDiscovery$containsNeighbor(uint32_t src);
+
+
+
+
+
+
+
+
+static inline uint32_t *Node$LinkStateRouting$getNeighborKeys(void );
+
+
+
+
+static inline uint16_t Node$LinkStateRouting$getNeighborConnection(uint32_t src);
+
+
+
+
+
+
+
+
+
+static inline bool Node$LinkStateRouting$containsNeighbor(uint32_t src);
+
+
+
+
+static inline uint32_t *Node$LinkStateRouting$getRoutingKeys(void );
+
+
+
+
+static inline uint16_t Node$LinkStateRouting$getRoutingCost(uint32_t src);
+
+
+
+
+static inline uint16_t Node$LinkStateRouting$getRoutingHop(uint32_t src);
+
+
+
+
+static inline void Node$LinkStateRouting$clearRoutingTable(void );
+
+
+
+
+static inline void Node$LinkStateRouting$insertCostHop(uint32_t src, uint16_t cost, uint16_t hop);
+#line 552
+static inline bool Node$LinkStateRouting$containsNode(uint32_t src);
+
+
+
+
+
+
+
+
+static inline uint32_t *Node$PacketHandler$getSeqSrcKeys(void );
+
+
+
+
+
+
+
+
+
+
+static inline void Node$PacketHandler$insertAge(uint32_t src, uint16_t seq, uint16_t age);
+
+
+
+
+
+static inline void Node$PacketHandler$decreaseAge(uint32_t key);
+#line 592
+static inline bool Node$PacketHandler$containsSrcSeqPair(uint32_t src, uint16_t seq);
 # 62 "/root/local/tinyos-2.1.1/tos/interfaces/Init.nc"
 static error_t PlatformP$MoteInit$init(void );
 #line 62
@@ -4495,9 +4943,9 @@ uint8_t arg_0x4068f1b8);
 
 
 
-enum SimSchedulerBasicP$__nesc_unnamed4334 {
+enum SimSchedulerBasicP$__nesc_unnamed4339 {
 
-  SimSchedulerBasicP$NUM_TASKS = 9U, 
+  SimSchedulerBasicP$NUM_TASKS = 13U, 
   SimSchedulerBasicP$NO_TASK = 255
 };
 
@@ -4659,7 +5107,7 @@ static am_addr_t TossimActiveMessageC$amAddress(void );
 # 110 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
 static void TossimActiveMessageC$AMSend$sendDone(
 # 47 "/root/local/tinyos-2.1.1/tos/lib/tossim/TossimActiveMessageC.nc"
-am_id_t arg_0x408a18b0, 
+am_id_t arg_0x40907a60, 
 # 103 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -4678,7 +5126,7 @@ message_t *
 
 TossimActiveMessageC$Snoop$receive(
 # 49 "/root/local/tinyos-2.1.1/tos/lib/tossim/TossimActiveMessageC.nc"
-am_id_t arg_0x408ae930, 
+am_id_t arg_0x40915b00, 
 # 71 "/root/local/tinyos-2.1.1/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -4697,7 +5145,7 @@ message_t *
 
 TossimActiveMessageC$Receive$receive(
 # 48 "/root/local/tinyos-2.1.1/tos/lib/tossim/TossimActiveMessageC.nc"
-am_id_t arg_0x408ae298, 
+am_id_t arg_0x40915468, 
 # 71 "/root/local/tinyos-2.1.1/tos/interfaces/Receive.nc"
 message_t * msg, 
 void * payload, 
@@ -4832,9 +5280,9 @@ double reverseGain);
 static bool TossimPacketModelC$GainRadioModel$clearChannel(void );
 static void TossimPacketModelC$GainRadioModel$setPendingTransmission(void );
 # 96 "/root/local/tinyos-2.1.1/tos/lib/tossim/TossimPacketModelC.nc"
-enum TossimPacketModelC$__nesc_unnamed4335 {
+enum TossimPacketModelC$__nesc_unnamed4340 {
 #line 96
-  TossimPacketModelC$startDoneTask = 0U
+  TossimPacketModelC$startDoneTask = 4U
 };
 #line 96
 typedef int TossimPacketModelC$__nesc_sillytask_startDoneTask[TossimPacketModelC$startDoneTask];
@@ -4842,16 +5290,16 @@ typedef int TossimPacketModelC$__nesc_sillytask_startDoneTask[TossimPacketModelC
 
 
 
-enum TossimPacketModelC$__nesc_unnamed4336 {
+enum TossimPacketModelC$__nesc_unnamed4341 {
 #line 101
-  TossimPacketModelC$stopDoneTask = 1U
+  TossimPacketModelC$stopDoneTask = 5U
 };
 #line 101
 typedef int TossimPacketModelC$__nesc_sillytask_stopDoneTask[TossimPacketModelC$stopDoneTask];
 #line 145
-enum TossimPacketModelC$__nesc_unnamed4337 {
+enum TossimPacketModelC$__nesc_unnamed4342 {
 #line 145
-  TossimPacketModelC$sendDoneTask = 2U
+  TossimPacketModelC$sendDoneTask = 6U
 };
 #line 145
 typedef int TossimPacketModelC$__nesc_sillytask_sendDoneTask[TossimPacketModelC$sendDoneTask];
@@ -5124,9 +5572,9 @@ static bool SimpleSendP$sendTimer$isRunning(void );
 #line 73
 static void SimpleSendP$sendTimer$startOneShot(uint32_t dt);
 # 56 "/root/workspace/Project1/src/lib/modules/SimpleSendP.nc"
-enum SimpleSendP$__nesc_unnamed4338 {
+enum SimpleSendP$__nesc_unnamed4343 {
 #line 56
-  SimpleSendP$sendBufferTask = 3U
+  SimpleSendP$sendBufferTask = 7U
 };
 #line 56
 typedef int SimpleSendP$__nesc_sillytask_sendBufferTask[SimpleSendP$sendBufferTask];
@@ -5196,7 +5644,7 @@ uint32_t /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAs
 
 
 
-enum /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$__nesc_unnamed4339 {
+enum /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$__nesc_unnamed4344 {
   Atm128AlarmAsyncP$0$MINDT = 2, 
   Atm128AlarmAsyncP$0$MAXT = 230
 };
@@ -5434,9 +5882,9 @@ static void /*HilTimerMilliC.AlarmToTimerC*/AlarmToTimerC$0$Alarm$stop(void );
 # 83 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
 static void /*HilTimerMilliC.AlarmToTimerC*/AlarmToTimerC$0$Timer$fired(void );
 # 74 "/root/local/tinyos-2.1.1/tos/lib/timer/AlarmToTimerC.nc"
-enum /*HilTimerMilliC.AlarmToTimerC*/AlarmToTimerC$0$__nesc_unnamed4340 {
+enum /*HilTimerMilliC.AlarmToTimerC*/AlarmToTimerC$0$__nesc_unnamed4345 {
 #line 74
-  AlarmToTimerC$0$fired = 4U
+  AlarmToTimerC$0$fired = 8U
 };
 #line 74
 typedef int /*HilTimerMilliC.AlarmToTimerC*/AlarmToTimerC$0$__nesc_sillytask_fired[/*HilTimerMilliC.AlarmToTimerC*/AlarmToTimerC$0$fired];
@@ -5476,18 +5924,18 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$TimerFrom$stop
 
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$fired(
 # 48 "/root/local/tinyos-2.1.1/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x40b41c70);
+uint8_t arg_0x40ba0c70);
 #line 71
-enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$__nesc_unnamed4341 {
+enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$__nesc_unnamed4346 {
 #line 71
-  VirtualizeTimerC$0$updateFromTimer = 5U
+  VirtualizeTimerC$0$updateFromTimer = 9U
 };
 #line 71
 typedef int /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$__nesc_sillytask_updateFromTimer[/*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$updateFromTimer];
 #line 53
-enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$__nesc_unnamed4342 {
+enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$__nesc_unnamed4347 {
 
-  VirtualizeTimerC$0$NUM_TIMERS = 4U, 
+  VirtualizeTimerC$0$NUM_TIMERS = 5U, 
   VirtualizeTimerC$0$END_OF_LIST = 255
 };
 
@@ -5499,7 +5947,7 @@ enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$__nesc_unnamed4342 {
 
 
 #line 59
-typedef struct /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$__nesc_unnamed4343 {
+typedef struct /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$__nesc_unnamed4348 {
 
   uint32_t t0;
   uint32_t dt;
@@ -5523,20 +5971,7 @@ static inline void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$TimerFr
 
 
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$startTimer(uint8_t num, uint32_t t0, uint32_t dt, bool isoneshot);
-
-
-
-
-
-
-
-
-
-static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startPeriodic(uint8_t num, uint32_t dt);
-
-
-
-
+#line 159
 static inline void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startOneShot(uint8_t num, uint32_t dt);
 
 
@@ -5617,7 +6052,7 @@ static inline void /*SimpleSendC.AMSenderC.SenderC.AMQueueEntryP*/AMQueueEntryP$
 # 80 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
 static error_t /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMSend$send(
 # 48 "/root/local/tinyos-2.1.1/tos/system/AMQueueImplP.nc"
-am_id_t arg_0x40ba40a0, 
+am_id_t arg_0x40c0c0a0, 
 # 80 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
 am_addr_t addr, 
 #line 71
@@ -5634,7 +6069,7 @@ uint8_t len);
 # 100 "/root/local/tinyos-2.1.1/tos/interfaces/Send.nc"
 static void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$sendDone(
 # 46 "/root/local/tinyos-2.1.1/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x40ba56a8, 
+uint8_t arg_0x40c0e6a8, 
 # 96 "/root/local/tinyos-2.1.1/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -5664,22 +6099,22 @@ static am_id_t /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMPacket$type(
 #line 143
 message_t * amsg);
 # 126 "/root/local/tinyos-2.1.1/tos/system/AMQueueImplP.nc"
-enum /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$__nesc_unnamed4344 {
+enum /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$__nesc_unnamed4349 {
 #line 126
-  AMQueueImplP$0$CancelTask = 6U
+  AMQueueImplP$0$CancelTask = 10U
 };
 #line 126
 typedef int /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$__nesc_sillytask_CancelTask[/*AMQueueP.AMQueueImplP*/AMQueueImplP$0$CancelTask];
 #line 169
-enum /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$__nesc_unnamed4345 {
+enum /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$__nesc_unnamed4350 {
 #line 169
-  AMQueueImplP$0$errorTask = 7U
+  AMQueueImplP$0$errorTask = 11U
 };
 #line 169
 typedef int /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$__nesc_sillytask_errorTask[/*AMQueueP.AMQueueImplP*/AMQueueImplP$0$errorTask];
 #line 57
 #line 55
-typedef struct /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$__nesc_unnamed4346 {
+typedef struct /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$__nesc_unnamed4351 {
   message_t * msg;
 } /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$queue_entry_t;
 
@@ -5769,9 +6204,9 @@ static void CommandHandlerP$CommandHandler$printNeighbors(void );
 
 
 
-static void CommandHandlerP$CommandHandler$setTestClient(void );
+static void CommandHandlerP$CommandHandler$setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint16_t transfer);
 #line 18
-static void CommandHandlerP$CommandHandler$setTestServer(void );
+static void CommandHandlerP$CommandHandler$setTestServer(uint8_t listenPort);
 #line 14
 static void CommandHandlerP$CommandHandler$printRouteTable(void );
 #line 11
@@ -5780,80 +6215,128 @@ static void CommandHandlerP$CommandHandler$broadCast(uint8_t *payload, uint16_t 
 static inline error_t CommandHandlerP$CommandHandler$receive(pack *Packet);
 #line 28
 static inline error_t CommandHandlerP$CommandHandler$processCommand(pack *Packet);
-# 18 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+# 16 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
 static void PacketHandlerP$PacketHandler$reply(uint16_t destination);
-#line 16
+#line 14
 static void PacketHandlerP$PacketHandler$send(pack *msg, uint16_t address, bool updateTTL);
-# 13 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
-uint16_t *PacketHandlerP$sequenceTableSeq[1000];
-uint16_t *PacketHandlerP$sequenceTableSrc[1000];
-uint16_t *PacketHandlerP$sequenceTableAge[1000];
-
-static inline void PacketHandlerP$PacketHandler$initialize(uint16_t *sequenceTableSrcPtr, uint16_t *sequenceTableSeqPtr, uint16_t *sequenceTableAgePtr);
 
 
 
 
+
+
+
+static bool PacketHandlerP$PacketHandler$containsSrcSeqPair(uint32_t src, uint16_t seq);
+#line 20
+static void PacketHandlerP$PacketHandler$insertAge(uint32_t src, uint16_t seq, uint16_t age);
+#line 18
+static uint32_t *PacketHandlerP$PacketHandler$getSeqSrcKeys(void );
+
+
+static void PacketHandlerP$PacketHandler$decreaseAge(uint32_t key);
+# 12 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
+static inline void PacketHandlerP$PacketHandler$initialize(void );
 
 
 
 
 
 static inline error_t PacketHandlerP$PacketHandler$receive(pack *Packet);
-#line 75
+#line 63
 static error_t PacketHandlerP$PacketHandler$processSequence(pack *Packet);
-#line 96
-static inline void PacketHandlerP$PacketHandler$ageSequenceTable(void );
-#line 114
-static inline bool PacketHandlerP$PacketHandler$isPacketLooping(pack *Packet);
+#line 75
+static void PacketHandlerP$PacketHandler$ageSequenceTable(void );
+#line 93
+static inline bool PacketHandlerP$PacketHandler$isPacketDuplicate(pack *Packet);
+# 15 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+static void NeighborDiscoveryP$NeighborDiscovery$neighborChanged(void );
+#line 11
+static uint32_t *NeighborDiscoveryP$NeighborDiscovery$getNeighborKeys(void );
+
+static void NeighborDiscoveryP$NeighborDiscovery$insertNeighbor(uint32_t src, uint16_t connection);
+static bool NeighborDiscoveryP$NeighborDiscovery$containsNeighbor(uint32_t src);
+#line 12
+static uint16_t NeighborDiscoveryP$NeighborDiscovery$getNeighborConnection(uint32_t src);
 # 14 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
-uint16_t *NeighborDiscoveryP$neighborIDs[1000];
-uint16_t *NeighborDiscoveryP$neighborTable[1000];
 bool NeighborDiscoveryP$TimeOutState[1000];
 
-static inline void NeighborDiscoveryP$NeighborDiscovery$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer);
-
+static inline void NeighborDiscoveryP$NeighborDiscovery$initialize(void );
 
 
 
 
 static inline error_t NeighborDiscoveryP$NeighborDiscovery$receive(pack *Packet);
-#line 78
+#line 73
 static inline void NeighborDiscoveryP$NeighborDiscovery$timeOutCheck(void );
-#line 115
+#line 126
 static inline void NeighborDiscoveryP$NeighborDiscovery$printNeighbors(void );
-# 14 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+# 28 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+static void LinkStateRoutingP$LinkStateRouting$insertCostHop(uint32_t src, uint16_t cost, uint16_t hop);
+#line 18
+static uint32_t *LinkStateRoutingP$LinkStateRouting$getNeighborKeys(void );
+
+
+
+
+
+
+
+static uint16_t LinkStateRoutingP$LinkStateRouting$getRoutingHop(uint32_t src);
+static void LinkStateRoutingP$LinkStateRouting$clearRoutingTable(void );
+#line 15
 static void LinkStateRoutingP$LinkStateRouting$sendLinkState(uint8_t *payload);
+
+
+
+
+
+static bool LinkStateRoutingP$LinkStateRouting$containsNeighbor(uint32_t src);
+
+
+
+static uint16_t LinkStateRoutingP$LinkStateRouting$getRoutingCost(uint32_t src);
+
+
+
+
+
+static bool LinkStateRoutingP$LinkStateRouting$containsNode(uint32_t src);
+#line 24
+static uint32_t *LinkStateRoutingP$LinkStateRouting$getRoutingKeys(void );
+#line 19
+static uint16_t LinkStateRoutingP$LinkStateRouting$getNeighborConnection(uint32_t src);
 # 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
 static error_t LinkStateRoutingP$SendNeighbors$postTask(void );
-# 149 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
-enum LinkStateRoutingP$__nesc_unnamed4347 {
-#line 149
-  LinkStateRoutingP$SendNeighbors = 8U
+# 212 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
+enum LinkStateRoutingP$__nesc_unnamed4352 {
+#line 212
+  LinkStateRoutingP$SendNeighbors = 12U
 };
-#line 149
+#line 212
 typedef int LinkStateRoutingP$__nesc_sillytask_SendNeighbors[LinkStateRoutingP$SendNeighbors];
 #line 15
 uint8_t LinkStateRoutingP$linkStatePacket[1000][PACKET_MAX_PAYLOAD_SIZE8];
 
-uint16_t LinkStateRoutingP$linkStates[1000][FORWARD_TABLE_SIZE][FORWARD_TABLE_SIZE];
-bool LinkStateRoutingP$existing[1000][FORWARD_TABLE_SIZE];
-bool LinkStateRoutingP$unconsidered[1000][FORWARD_TABLE_SIZE];
+uint16_t LinkStateRoutingP$linkStates[1000][ROUTING_TABLE_SIZE][ROUTING_TABLE_SIZE];
+uint16_t LinkStateRoutingP$compareBuffer[1000][ROUTING_TABLE_SIZE];
+uint16_t LinkStateRoutingP$hopThrough[1000][ROUTING_TABLE_SIZE];
+bool LinkStateRoutingP$unconsidered[1000][ROUTING_TABLE_SIZE];
+bool LinkStateRoutingP$existing[1000][ROUTING_TABLE_SIZE];
 
-uint16_t *LinkStateRoutingP$neighborIDs[1000];
-uint16_t *LinkStateRoutingP$neighborTable[1000];
+bool LinkStateRoutingP$LSChanged[1000];
 
-
-uint16_t *LinkStateRoutingP$forwardTableDest[1000];
-uint16_t *LinkStateRoutingP$forwardTableCost[1000];
-uint16_t *LinkStateRoutingP$forwardTableHop[1000];
+static inline void LinkStateRoutingP$LinkStateRouting$initialize(void );
 
 
-static inline void LinkStateRoutingP$LinkStateRouting$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer, 
-uint16_t *forwardTableDestPointer, uint16_t *forwardTableCostPointer, uint16_t *forwardTableHopPointer);
-#line 48
+
+
+
+
+
+
+
 static inline void LinkStateRoutingP$LinkStateRouting$calculateRoute(void );
-#line 149
+#line 212
 static inline void LinkStateRoutingP$SendNeighbors$runTask(void );
 
 
@@ -5864,13 +6347,183 @@ static inline void LinkStateRoutingP$SendNeighbors$runTask(void );
 
 
 
-static inline void LinkStateRoutingP$LinkStateRouting$shareLinkState(void );
-#line 206
+static void LinkStateRoutingP$LinkStateRouting$shareLinkState(void );
+#line 280
 static inline error_t LinkStateRoutingP$LinkStateRouting$receive(pack *Packet);
-#line 239
+#line 336
 static void LinkStateRoutingP$LinkStateRouting$printLinkState(void );
-#line 256
+#line 353
 static inline void LinkStateRoutingP$LinkStateRouting$printRoutingTable(void );
+# 17 "/root/workspace/Project1/src/lib/modules/TCPP.nc"
+static inline void TCPP$TCP$initialize(void );
+#line 36
+static inline error_t TCPP$TCP$receive(pack *Packet);
+# 8 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+uint16_t /*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE[1000];
+
+
+
+
+
+#line 10
+typedef struct /*NodeC.neighborTable*/HashmapC$0$hashmapEntry {
+
+  uint32_t key;
+  /*NodeC.neighborTable*/HashmapC$0$t value;
+} /*NodeC.neighborTable*/HashmapC$0$hashmapEntry;
+
+/*NodeC.neighborTable*/HashmapC$0$hashmapEntry /*NodeC.neighborTable*/HashmapC$0$map[1000][20];
+uint32_t /*NodeC.neighborTable*/HashmapC$0$keys[1000][20];
+uint16_t /*NodeC.neighborTable*/HashmapC$0$numofVals[1000];
+
+
+static inline uint32_t /*NodeC.neighborTable*/HashmapC$0$hash2(uint32_t k);
+
+
+
+
+static inline uint32_t /*NodeC.neighborTable*/HashmapC$0$hash3(uint32_t k);
+
+
+
+
+static inline uint32_t /*NodeC.neighborTable*/HashmapC$0$hash(uint32_t k, uint32_t i);
+
+
+
+
+static void /*NodeC.neighborTable*/HashmapC$0$Hashmap$insert(uint32_t k, /*NodeC.neighborTable*/HashmapC$0$t input);
+#line 121
+static /*NodeC.neighborTable*/HashmapC$0$t /*NodeC.neighborTable*/HashmapC$0$Hashmap$get(uint32_t k);
+#line 159
+static bool /*NodeC.neighborTable*/HashmapC$0$Hashmap$contains(uint32_t k);
+#line 184
+static inline uint32_t */*NodeC.neighborTable*/HashmapC$0$Hashmap$getKeys(void );
+#line 8
+uint16_t /*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[1000];
+
+
+
+
+
+#line 10
+typedef struct /*NodeC.sequenceTable*/HashmapC$1$hashmapEntry {
+
+  uint32_t key;
+  /*NodeC.sequenceTable*/HashmapC$1$t value;
+} /*NodeC.sequenceTable*/HashmapC$1$hashmapEntry;
+
+/*NodeC.sequenceTable*/HashmapC$1$hashmapEntry /*NodeC.sequenceTable*/HashmapC$1$map[1000][192];
+uint32_t /*NodeC.sequenceTable*/HashmapC$1$keys[1000][192];
+uint16_t /*NodeC.sequenceTable*/HashmapC$1$numofVals[1000];
+
+
+static inline uint32_t /*NodeC.sequenceTable*/HashmapC$1$hash2(uint32_t k);
+
+
+
+
+static inline uint32_t /*NodeC.sequenceTable*/HashmapC$1$hash3(uint32_t k);
+
+
+
+
+static inline uint32_t /*NodeC.sequenceTable*/HashmapC$1$hash(uint32_t k, uint32_t i);
+
+
+
+
+static void /*NodeC.sequenceTable*/HashmapC$1$Hashmap$insert(uint32_t k, /*NodeC.sequenceTable*/HashmapC$1$t input);
+#line 77
+static inline void /*NodeC.sequenceTable*/HashmapC$1$Hashmap$remove(uint32_t k);
+#line 121
+static inline /*NodeC.sequenceTable*/HashmapC$1$t /*NodeC.sequenceTable*/HashmapC$1$Hashmap$get(uint32_t k);
+#line 159
+static inline bool /*NodeC.sequenceTable*/HashmapC$1$Hashmap$contains(uint32_t k);
+#line 184
+static inline uint32_t */*NodeC.sequenceTable*/HashmapC$1$Hashmap$getKeys(void );
+#line 8
+uint16_t /*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE[1000];
+
+
+
+
+
+#line 10
+typedef struct /*NodeC.routingTable*/HashmapC$2$hashmapEntry {
+
+  uint32_t key;
+  /*NodeC.routingTable*/HashmapC$2$t value;
+} /*NodeC.routingTable*/HashmapC$2$hashmapEntry;
+
+/*NodeC.routingTable*/HashmapC$2$hashmapEntry /*NodeC.routingTable*/HashmapC$2$map[1000][32];
+uint32_t /*NodeC.routingTable*/HashmapC$2$keys[1000][32];
+uint16_t /*NodeC.routingTable*/HashmapC$2$numofVals[1000];
+
+
+static inline uint32_t /*NodeC.routingTable*/HashmapC$2$hash2(uint32_t k);
+
+
+
+
+static inline uint32_t /*NodeC.routingTable*/HashmapC$2$hash3(uint32_t k);
+
+
+
+
+static inline uint32_t /*NodeC.routingTable*/HashmapC$2$hash(uint32_t k, uint32_t i);
+
+
+
+
+static void /*NodeC.routingTable*/HashmapC$2$Hashmap$insert(uint32_t k, /*NodeC.routingTable*/HashmapC$2$t input);
+#line 70
+static inline void /*NodeC.routingTable*/HashmapC$2$Hashmap$clear(void );
+#line 121
+static /*NodeC.routingTable*/HashmapC$2$t /*NodeC.routingTable*/HashmapC$2$Hashmap$get(uint32_t k);
+#line 159
+static bool /*NodeC.routingTable*/HashmapC$2$Hashmap$contains(uint32_t k);
+#line 184
+static inline uint32_t */*NodeC.routingTable*/HashmapC$2$Hashmap$getKeys(void );
+#line 8
+uint16_t /*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE[1000];
+
+
+
+
+
+#line 10
+typedef struct /*NodeC.TCPTablePTR*/HashmapC$3$hashmapEntry {
+
+  uint32_t key;
+  /*NodeC.TCPTablePTR*/HashmapC$3$t value;
+} /*NodeC.TCPTablePTR*/HashmapC$3$hashmapEntry;
+
+/*NodeC.TCPTablePTR*/HashmapC$3$hashmapEntry /*NodeC.TCPTablePTR*/HashmapC$3$map[1000][255];
+uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$keys[1000][255];
+uint16_t /*NodeC.TCPTablePTR*/HashmapC$3$numofVals[1000];
+
+
+static inline uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$hash2(uint32_t k);
+
+
+
+
+static inline uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$hash3(uint32_t k);
+
+
+
+
+static inline uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$hash(uint32_t k, uint32_t i);
+
+
+
+
+static void /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$insert(uint32_t k, /*NodeC.TCPTablePTR*/HashmapC$3$t input);
+#line 140
+static uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$getIndex(uint32_t k);
+#line 159
+static bool /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$contains(uint32_t k);
 # 78 "/root/local/tinyos-2.1.1/tos/lib/tossim/heap.c"
 static inline void init_heap(heap_t *heap)
 #line 78
@@ -6173,7 +6826,7 @@ static inline void TossimActiveMessageC$active_message_deliver_handle(sim_event_
   message_t *m = (message_t *)evt->data;
 
 #line 238
-  sim_log_debug(114U, "Packet", "Delivering packet to %i at %s\n", (int )sim_node(), sim_time_string());
+  sim_log_debug(123U, "Packet", "Delivering packet to %i at %s\n", (int )sim_node(), sim_time_string());
   TossimActiveMessageC$Model$receive(m);
 }
 
@@ -6257,28 +6910,86 @@ static __inline  uint16_t __nesc_ntoh_uint16(const void * source)
   return ((uint16_t )base[0] << 8) | base[1];
 }
 
-# 16 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
-inline static void PacketHandlerP$PacketHandler$send(pack *msg, uint16_t address, bool updateTTL){
-#line 16
-  Node$PacketHandler$send(msg, address, updateTTL);
-#line 16
+# 36 "/root/workspace/Project1/src/lib/modules/TCPP.nc"
+static inline error_t TCPP$TCP$receive(pack *Packet)
+{
+  socket_storage_t *TCPHeader;
+
+
+
+  if (__nesc_ntoh_uint8(Packet->protocol.nxdata) != PROTOCOL_TCP || __nesc_ntoh_uint16(Packet->dest.nxdata) != TOS_NODE_ID) {
+    return FAIL;
+    }
+  TCPHeader = (socket_storage_t *)Packet->payload;
+
+  switch (TCPHeader->state) 
+    {
+      case SOCK_ESTABLISHED: 
+        break;
+      case SOCK_LISTEN: 
+
+        break;
+      case SOCK_CLOSED: 
+        break;
+      case SOCK_SYN_SENT: 
+        sim_log_debug(233U, "Project3", "Recieved sync packet from from %d, %d to %d, %d\n", __nesc_ntoh_uint16(TCPHeader->sockAddr.srcAddr.nxdata), __nesc_ntoh_uint8(TCPHeader->sockAddr.srcPort.nxdata), __nesc_ntoh_uint16(TCPHeader->sockAddr.destAddr.nxdata), __nesc_ntoh_uint8(TCPHeader->sockAddr.destPort.nxdata));
+
+      break;
+      case SOCK_CLOSE_WAIT: 
+        break;
+      case SOCK_FIN_WAIT: 
+        break;
+    }
+
+
+
+
+
+
+  {
+  }
+
+
+  return SUCCESS;
 }
-#line 16
-# 198 "/root/workspace/Project1/src/Node.nc"
+
+# 6 "/root/workspace/Project1/src/lib/interfaces/TCP.nc"
+inline static error_t Node$TCP$receive(pack *Packet){
+#line 6
+  unsigned char __nesc_result;
+#line 6
+
+#line 6
+  __nesc_result = TCPP$TCP$receive(Packet);
+#line 6
+
+#line 6
+  return __nesc_result;
+#line 6
+}
+#line 6
+# 14 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+inline static void PacketHandlerP$PacketHandler$send(pack *msg, uint16_t address, bool updateTTL){
+#line 14
+  Node$PacketHandler$send(msg, address, updateTTL);
+#line 14
+}
+#line 14
+# 263 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$PacketHandler$reply(uint16_t destination)
 {
   Node$makePack(&Node$sendPackage[sim_node()], TOS_NODE_ID, destination, MAX_TTL, PROTOCOL_PINGREPLY, SEQUENCE_START, Node$pingPacket[sim_node()], PACKET_MAX_PAYLOAD_SIZE8);
   Node$PacketHandler$send(&Node$sendPackage[sim_node()], destination, FALSE);
 }
 
-# 18 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+# 16 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
 inline static void PacketHandlerP$PacketHandler$reply(uint16_t destination){
-#line 18
+#line 16
   Node$PacketHandler$reply(destination);
-#line 18
+#line 16
 }
-#line 18
-# 27 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
+#line 16
+# 18 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
 static inline error_t PacketHandlerP$PacketHandler$receive(pack *Packet)
 {
 
@@ -6287,46 +6998,43 @@ static inline error_t PacketHandlerP$PacketHandler$receive(pack *Packet)
   if (__nesc_ntoh_uint8(Packet->protocol.nxdata) == PROTOCOL_PING) 
     {
 
-      if (__nesc_ntoh_uint16(Packet->dest.nxdata) != UNSPECIFIED) 
-        {
-          PacketHandlerP$PacketHandler$processSequence(Packet);
+      PacketHandlerP$PacketHandler$reply(__nesc_ntoh_uint16(Packet->src.nxdata));
 
 
-          if (__nesc_ntoh_uint16(Packet->dest.nxdata) == TOS_NODE_ID) 
-            {
-              sim_log_debug(210U, "Project1F", "Received packet %d->%d. Payload: %s\n", __nesc_ntoh_uint16(Packet->src.nxdata), TOS_NODE_ID, Packet->payload);
-            }
-
-          if (__nesc_ntoh_uint16(Packet->dest.nxdata) != TOS_NODE_ID) 
-            {
-
-              PacketHandlerP$PacketHandler$send(Packet, AM_BROADCAST_ADDR, TRUE);
-
-              return SUCCESS;
-            }
+      if (__nesc_ntoh_uint16(Packet->dest.nxdata) == UNSPECIFIED) {
+        return FAIL;
         }
 
-      PacketHandlerP$PacketHandler$reply(__nesc_ntoh_uint16(Packet->src.nxdata));
+      PacketHandlerP$PacketHandler$processSequence(Packet);
+
+      if (__nesc_ntoh_uint16(Packet->dest.nxdata) == TOS_NODE_ID) 
+        {
+
+          sim_log_debug(219U, "Project2", "\tReceived packet %d->%d. Payload: %s\n", __nesc_ntoh_uint16(Packet->src.nxdata), TOS_NODE_ID, Packet->payload);
+        }
+      else 
+        {
+
+          PacketHandlerP$PacketHandler$send(Packet, AM_BROADCAST_ADDR, TRUE);
+        }
 
       return SUCCESS;
     }
   else {
-#line 58
+#line 48
     if (__nesc_ntoh_uint8(Packet->protocol.nxdata) == PROTOCOL_PINGREPLY) 
       {
-
-        {
-        }
       }
     else {
       if (__nesc_ntoh_uint8(Packet->protocol.nxdata) == PROTOCOL_LINKSTATE) 
         {
           PacketHandlerP$PacketHandler$processSequence(Packet);
           PacketHandlerP$PacketHandler$send(Packet, AM_BROADCAST_ADDR, TRUE);
+          return SUCCESS;
         }
       }
     }
-#line 71
+#line 59
   return FAIL;
 }
 
@@ -6345,19 +7053,27 @@ inline static error_t Node$PacketHandler$receive(pack *Packet){
 #line 6
 }
 #line 6
-# 206 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
+# 280 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
 static inline error_t LinkStateRoutingP$LinkStateRouting$receive(pack *Packet)
 {
   uint16_t *destinations;
   uint16_t destID;
   uint8_t payloadIndex;
+  uint16_t ind;
 
 
   if (__nesc_ntoh_uint8(Packet->protocol.nxdata) != PROTOCOL_LINKSTATE) {
     return FAIL;
     }
 
+  memcpy(LinkStateRoutingP$compareBuffer[sim_node()], LinkStateRoutingP$linkStates[sim_node()][__nesc_ntoh_uint16(Packet->src.nxdata)], sizeof(uint16_t ) * ROUTING_TABLE_SIZE);
 
+
+
+  memset(LinkStateRoutingP$linkStates[sim_node()][__nesc_ntoh_uint16(Packet->src.nxdata)], 0, sizeof(uint16_t ) * ROUTING_TABLE_SIZE);
+
+
+  LinkStateRoutingP$existing[sim_node()][__nesc_ntoh_uint16(Packet->src.nxdata)] = TRUE;
 
 
   destinations = (uint16_t *)&Packet->payload[0];
@@ -6373,8 +7089,25 @@ static inline error_t LinkStateRoutingP$LinkStateRouting$receive(pack *Packet)
         continue;
         }
       LinkStateRoutingP$linkStates[sim_node()][__nesc_ntoh_uint16(Packet->src.nxdata)][destID] = 1;
-      LinkStateRoutingP$existing[sim_node()][destID] = TRUE;
     }
+
+
+  for (ind = 0; ind < ROUTING_TABLE_SIZE; ind++) 
+    {
+      if (LinkStateRoutingP$compareBuffer[sim_node()][ind] != LinkStateRoutingP$linkStates[sim_node()][__nesc_ntoh_uint16(Packet->src.nxdata)][ind]) 
+        {
+          if (TOS_NODE_ID == 2) {
+            sim_log_debug(228U, "Project2", "\tLS changed! %d to %d at %d, %d\n", LinkStateRoutingP$compareBuffer[sim_node()][ind], LinkStateRoutingP$linkStates[sim_node()][__nesc_ntoh_uint16(Packet->src.nxdata)][ind], __nesc_ntoh_uint16(Packet->src.nxdata), ind);
+            }
+#line 324
+          LinkStateRoutingP$LSChanged[sim_node()] = TRUE;
+          return SUCCESS;
+        }
+    }
+
+
+  {
+  }
 
   return SUCCESS;
 }
@@ -6394,59 +7127,163 @@ inline static error_t Node$LinkStateRouting$receive(pack *Packet){
 #line 7
 }
 #line 7
-# 24 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
+# 3 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static void Node$neighborTable$insert(uint32_t key, Node$neighborTable$t input){
+#line 3
+  /*NodeC.neighborTable*/HashmapC$0$Hashmap$insert(key, input);
+#line 3
+}
+#line 3
+# 464 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$NeighborDiscovery$insertNeighbor(uint32_t src, uint16_t connection)
+{
+  Node$neighborTable$insert(src, connection);
+}
+
+# 13 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+inline static void NeighborDiscoveryP$NeighborDiscovery$insertNeighbor(uint32_t src, uint16_t connection){
+#line 13
+  Node$NeighborDiscovery$insertNeighbor(src, connection);
+#line 13
+}
+#line 13
+# 301 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$NeighborDiscovery$neighborChanged(void )
+{
+
+  Node$NeighborsChanged[sim_node()] = TRUE;
+}
+
+# 15 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+inline static void NeighborDiscoveryP$NeighborDiscovery$neighborChanged(void ){
+#line 15
+  Node$NeighborDiscovery$neighborChanged();
+#line 15
+}
+#line 15
+# 6 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static Node$neighborTable$t Node$neighborTable$get(uint32_t key){
+#line 6
+  unsigned short __nesc_result;
+#line 6
+
+#line 6
+  __nesc_result = /*NodeC.neighborTable*/HashmapC$0$Hashmap$get(key);
+#line 6
+
+#line 6
+  return __nesc_result;
+#line 6
+}
+#line 6
+# 459 "/root/workspace/Project1/src/Node.nc"
+static inline uint16_t Node$NeighborDiscovery$getNeighborConnection(uint32_t src)
+{
+  return Node$neighborTable$get(src);
+}
+
+# 12 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+inline static uint16_t NeighborDiscoveryP$NeighborDiscovery$getNeighborConnection(uint32_t src){
+#line 12
+  unsigned short __nesc_result;
+#line 12
+
+#line 12
+  __nesc_result = Node$NeighborDiscovery$getNeighborConnection(src);
+#line 12
+
+#line 12
+  return __nesc_result;
+#line 12
+}
+#line 12
+# 8 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static bool Node$neighborTable$contains(uint32_t key){
+#line 8
+  unsigned char __nesc_result;
+#line 8
+
+#line 8
+  __nesc_result = /*NodeC.neighborTable*/HashmapC$0$Hashmap$contains(key);
+#line 8
+
+#line 8
+  return __nesc_result;
+#line 8
+}
+#line 8
+# 469 "/root/workspace/Project1/src/Node.nc"
+static inline bool Node$NeighborDiscovery$containsNeighbor(uint32_t src)
+{
+  return Node$neighborTable$contains(src);
+}
+
+# 14 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+inline static bool NeighborDiscoveryP$NeighborDiscovery$containsNeighbor(uint32_t src){
+#line 14
+  unsigned char __nesc_result;
+#line 14
+
+#line 14
+  __nesc_result = Node$NeighborDiscovery$containsNeighbor(src);
+#line 14
+
+#line 14
+  return __nesc_result;
+#line 14
+}
+#line 14
+# 21 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
 static inline error_t NeighborDiscoveryP$NeighborDiscovery$receive(pack *Packet)
 {
-  uint32_t ind = -1;
-  uint32_t emptyIndex = -1;
+  uint16_t connectionStateOriginal;
+  uint16_t connectionState;
 
 
   if (__nesc_ntoh_uint8(Packet->TTL.nxdata) != MAX_TTL) {
     return FAIL;
     }
 
-  for (ind = 0; ind < NEIGHBOR_TABLE_SIZE; ind++) 
-    {
-
-      if (emptyIndex == -1 && NeighborDiscoveryP$neighborIDs[sim_node()][ind] == EMPTY) {
-        emptyIndex = ind;
-        }
-      if (NeighborDiscoveryP$neighborIDs[sim_node()][ind] == __nesc_ntoh_uint16(Packet->src.nxdata)) {
-        goto found;
-        }
+  if (__nesc_ntoh_uint8(Packet->protocol.nxdata) != PROTOCOL_PING && __nesc_ntoh_uint8(Packet->protocol.nxdata) != PROTOCOL_PINGREPLY) {
+    return FAIL;
     }
 
-  ind = emptyIndex;
-  NeighborDiscoveryP$neighborIDs[sim_node()][ind] = __nesc_ntoh_uint16(Packet->src.nxdata);
+  if (!NeighborDiscoveryP$NeighborDiscovery$containsNeighbor(__nesc_ntoh_uint16(Packet->src.nxdata))) {
+    NeighborDiscoveryP$NeighborDiscovery$insertNeighbor(__nesc_ntoh_uint16(Packet->src.nxdata), CONNECTION_NONE);
+    }
 
-  found: 
-
-
-    if (__nesc_ntoh_uint8(Packet->protocol.nxdata) == PROTOCOL_PING || __nesc_ntoh_uint8(Packet->protocol.nxdata) == PROTOCOL_PINGREPLY) 
-      {
-        NeighborDiscoveryP$neighborTable[sim_node()][ind] &= ~CONNECTION_WAITING_RESPONSE;
-        NeighborDiscoveryP$neighborTable[sim_node()][ind] &= ~CONNECTION_TIMED_OUT;
-      }
+  connectionStateOriginal = connectionState = NeighborDiscoveryP$NeighborDiscovery$getNeighborConnection(__nesc_ntoh_uint16(Packet->src.nxdata));
+  connectionState &= ~CONNECTION_WAITING_RESPONSE;
+  connectionState &= ~CONNECTION_TIMED_OUT;
+  NeighborDiscoveryP$NeighborDiscovery$insertNeighbor(__nesc_ntoh_uint16(Packet->src.nxdata), connectionState);
 
   if (__nesc_ntoh_uint8(Packet->protocol.nxdata) == PROTOCOL_PING) 
     {
 
-      if (NeighborDiscoveryP$neighborTable[sim_node()][ind] == CONNECTION_NONE) {
-        sim_log_debug(211U, "Project1N", "Connection discovered:\t %d -> %d\n", __nesc_ntoh_uint16(Packet->src.nxdata), TOS_NODE_ID);
+      if (connectionState == CONNECTION_NONE || connectionStateOriginal & CONNECTION_TIMED_OUT) 
+        {
+          NeighborDiscoveryP$NeighborDiscovery$neighborChanged();
+          sim_log_debug(220U, "Project1N", "Connection discovered:\t %d -> %d\n", __nesc_ntoh_uint16(Packet->src.nxdata), TOS_NODE_ID);
         }
-      NeighborDiscoveryP$neighborTable[sim_node()][ind] |= CONNECTION_RECEIVE;
+
+      connectionState |= CONNECTION_RECEIVE;
+      NeighborDiscoveryP$NeighborDiscovery$insertNeighbor(__nesc_ntoh_uint16(Packet->src.nxdata), connectionState);
     }
   else {
-#line 65
+#line 56
     if (__nesc_ntoh_uint8(Packet->protocol.nxdata) == PROTOCOL_PINGREPLY) 
       {
 
-        if ((NeighborDiscoveryP$neighborTable[sim_node()][ind] & CONNECTION_SEND) == 0) {
-          sim_log_debug(212U, "Project1N", "Conection discovered:\t %d <-> %d\n", __nesc_ntoh_uint16(Packet->src.nxdata), TOS_NODE_ID);
+        if ((connectionState & CONNECTION_SEND) == 0 || connectionStateOriginal & CONNECTION_TIMED_OUT) 
+          {
+            NeighborDiscoveryP$NeighborDiscovery$neighborChanged();
+            sim_log_debug(221U, "Project1N", "Conection discovered:\t %d <-> %d\n", __nesc_ntoh_uint16(Packet->src.nxdata), TOS_NODE_ID);
           }
-        NeighborDiscoveryP$neighborTable[sim_node()][ind] |= CONNECTION_SEND;
+        connectionState |= CONNECTION_SEND;
+        NeighborDiscoveryP$NeighborDiscovery$insertNeighbor(__nesc_ntoh_uint16(Packet->src.nxdata), connectionState);
       }
     }
+
   return SUCCESS;
 }
 
@@ -6465,33 +7302,56 @@ inline static error_t Node$NeighborDiscovery$receive(pack *Packet){
 #line 5
 }
 #line 5
-# 114 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
-static inline bool PacketHandlerP$PacketHandler$isPacketLooping(pack *Packet)
+# 26 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline uint32_t /*NodeC.sequenceTable*/HashmapC$1$hash3(uint32_t k)
 {
-  uint32_t ind;
+  return 1 + k % 11;
+}
+
+#line 21
+static inline uint32_t /*NodeC.sequenceTable*/HashmapC$1$hash2(uint32_t k)
+{
+  return k % 13;
+}
 
 
-  for (ind = 0; ind < SEQUENCE_TABLE_SIZE; ind++) 
+
+
+
+
+static inline uint32_t /*NodeC.sequenceTable*/HashmapC$1$hash(uint32_t k, uint32_t i)
+{
+  return (/*NodeC.sequenceTable*/HashmapC$1$hash2(k) + i * /*NodeC.sequenceTable*/HashmapC$1$hash3(k)) % /*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[sim_node()];
+}
+
+#line 159
+static inline bool /*NodeC.sequenceTable*/HashmapC$1$Hashmap$contains(uint32_t k)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  do 
     {
-      if (PacketHandlerP$sequenceTableSrc[sim_node()][ind] == __nesc_ntoh_uint16(Packet->src.nxdata) && PacketHandlerP$sequenceTableSeq[sim_node()][ind] == __nesc_ntoh_uint16(Packet->seq.nxdata)) 
-        {
-
-          return TRUE;
+      j = /*NodeC.sequenceTable*/HashmapC$1$hash(k, i);
+      if (/*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].key == k) {
+        return TRUE;
         }
+#line 169
+      i++;
     }
-
+  while (i < /*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[sim_node()]);
 
   return FALSE;
 }
 
-# 8 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
-inline static bool Node$PacketHandler$isPacketLooping(pack *Packet){
+# 8 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static bool Node$sequenceTable$contains(uint32_t key){
 #line 8
   unsigned char __nesc_result;
 #line 8
 
 #line 8
-  __nesc_result = PacketHandlerP$PacketHandler$isPacketLooping(Packet);
+  __nesc_result = /*NodeC.sequenceTable*/HashmapC$1$Hashmap$contains(key);
 #line 8
 
 #line 8
@@ -6499,42 +7359,321 @@ inline static bool Node$PacketHandler$isPacketLooping(pack *Packet){
 #line 8
 }
 #line 8
-# 254 "/root/workspace/Project1/src/Node.nc"
-static inline void Node$CommandHandler$setTestServer(void )
+# 592 "/root/workspace/Project1/src/Node.nc"
+static inline bool Node$PacketHandler$containsSrcSeqPair(uint32_t src, uint16_t seq)
 {
+  uint32_t key = (src << 16) | seq;
+
+#line 595
+  return Node$sequenceTable$contains(key);
+}
+
+# 22 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+inline static bool PacketHandlerP$PacketHandler$containsSrcSeqPair(uint32_t src, uint16_t seq){
+#line 22
+  unsigned char __nesc_result;
+#line 22
+
+#line 22
+  __nesc_result = Node$PacketHandler$containsSrcSeqPair(src, seq);
+#line 22
+
+#line 22
+  return __nesc_result;
+#line 22
+}
+#line 22
+# 93 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
+static inline bool PacketHandlerP$PacketHandler$isPacketDuplicate(pack *Packet)
+{
+
+  if (PacketHandlerP$PacketHandler$containsSrcSeqPair(__nesc_ntoh_uint16(Packet->src.nxdata), __nesc_ntoh_uint16(Packet->seq.nxdata))) 
+    {
+
+      return TRUE;
+    }
+
+
+  return FALSE;
+}
+
+# 8 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+inline static bool Node$PacketHandler$isPacketDuplicate(pack *Packet){
+#line 8
+  unsigned char __nesc_result;
+#line 8
+
+#line 8
+  __nesc_result = PacketHandlerP$PacketHandler$isPacketDuplicate(Packet);
+#line 8
+
+#line 8
+  return __nesc_result;
+#line 8
+}
+#line 8
+# 8 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static bool Node$TCPTablePTR$contains(uint32_t key){
+#line 8
+  unsigned char __nesc_result;
+#line 8
+
+#line 8
+  __nesc_result = /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$contains(key);
+#line 8
+
+#line 8
+  return __nesc_result;
+#line 8
+}
+#line 8
+# 337 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$CommandHandler$setTestServer(uint8_t listenPort)
+{
+  if (!Node$TCPTablePTR$contains(listenPort)) 
+    {
+
+      Node$TCP$setConnectionPTR(listenPort, SOCK_LISTEN);
+      sim_log_debug(54U, "Project3", "\tOpened socket %d\n", listenPort);
+    }
+  else 
+    {
+      sim_log_debug(55U, "Project3", "\tSocket %d already open\n", listenPort);
+    }
 }
 
 # 18 "/root/workspace/Project1/src/lib/interfaces/CommandHandler.nc"
-inline static void CommandHandlerP$CommandHandler$setTestServer(void ){
+inline static void CommandHandlerP$CommandHandler$setTestServer(uint8_t listenPort){
 #line 18
-  Node$CommandHandler$setTestServer();
+  Node$CommandHandler$setTestServer(listenPort);
 #line 18
 }
 #line 18
-# 259 "/root/workspace/Project1/src/Node.nc"
-static inline void Node$CommandHandler$setTestClient(void )
+# 273 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$TCP$createAndSend(socket_storage_t *TCPHeader, uint16_t destination)
 {
+  sim_log_debug(52U, "Project3", "\tSending with header %d, %d to %d, %d\n", __nesc_ntoh_uint16(TCPHeader->sockAddr.srcAddr.nxdata), __nesc_ntoh_uint8(TCPHeader->sockAddr.srcPort.nxdata), __nesc_ntoh_uint16(TCPHeader->sockAddr.destAddr.nxdata), __nesc_ntoh_uint8(TCPHeader->sockAddr.destPort.nxdata));
+
+  Node$makePack(&Node$sendPackage[sim_node()], TOS_NODE_ID, destination, MAX_TTL, PROTOCOL_TCP, SEQUENCE_START, (uint8_t *)TCPHeader, PACKET_MAX_PAYLOAD_SIZE8);
+  Node$PacketHandler$send(&Node$sendPackage[sim_node()], AM_BROADCAST_ADDR, FALSE);
+}
+
+# 286 "/usr/lib/ncc/nesc_nx.h"
+static __inline  uint8_t __nesc_hton_uint8(void * target, uint8_t value)
+#line 286
+{
+  uint8_t *base = target;
+
+#line 288
+  base[0] = value;
+  return value;
+}
+
+#line 315
+static __inline  uint16_t __nesc_hton_uint16(void * target, uint16_t value)
+#line 315
+{
+  uint8_t *base = target;
+
+#line 317
+  base[1] = value;
+  base[0] = value >> 8;
+  return value;
+}
+
+# 7 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static uint32_t Node$TCPTablePTR$getIndex(uint32_t key){
+#line 7
+  unsigned int __nesc_result;
+#line 7
+
+#line 7
+  __nesc_result = /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$getIndex(key);
+#line 7
+
+#line 7
+  return __nesc_result;
+#line 7
+}
+#line 7
+# 425 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$TCP$updateHeader(uint32_t connectionKey, uint16_t src, uint8_t srcPort, uint16_t dest, uint8_t destPort)
+{
+  uint32_t tableIndex;
+
+#line 428
+  tableIndex = Node$TCPTablePTR$getIndex(connectionKey);
+
+  __nesc_hton_uint16(Node$TCPTable[sim_node()][tableIndex].sockAddr.srcAddr.nxdata, src);
+  __nesc_hton_uint8(Node$TCPTable[sim_node()][tableIndex].sockAddr.srcPort.nxdata, srcPort);
+  __nesc_hton_uint16(Node$TCPTable[sim_node()][tableIndex].sockAddr.destAddr.nxdata, dest);
+  __nesc_hton_uint8(Node$TCPTable[sim_node()][tableIndex].sockAddr.destPort.nxdata, destPort);
+
+  sim_log_debug(60U, "Project3", "\tHeader saved for entry %d with key %d: %d, %d and %d, %d\n", TOS_NODE_ID, connectionKey, src, srcPort, dest, destPort);
+}
+
+#line 401
+static inline socket_storage_t *Node$TCP$getConnectionState(uint32_t connectionKey)
+{
+  uint32_t tableIndex = Node$TCPTablePTR$getIndex(connectionKey);
+
+#line 404
+  sim_log_debug(58U, "Project3", "\tFetching ptr for %d, %d with index %d\n", TOS_NODE_ID, connectionKey, tableIndex);
+  return &Node$TCPTable[sim_node()][tableIndex];
+}
+
+#line 351
+static inline void Node$CommandHandler$setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t targetPort, uint16_t transfer)
+{
+
+  socket_storage_t *connectionData;
+
+  if (!Node$TCPTablePTR$contains(sendPort)) 
+    {
+
+      sim_log_debug(56U, "Project3", "\tTrying to connect from %d, %d to %d, %d\n", TOS_NODE_ID, sendPort, targetAddress, targetPort);
+      Node$TCP$setConnectionPTR(sendPort, SOCK_SYN_SENT);
+      connectionData = Node$TCP$getConnectionState(sendPort);
+      Node$TCP$updateHeader(sendPort, TOS_NODE_ID, sendPort, targetAddress, targetPort);
+      Node$TCP$createAndSend(connectionData, targetAddress);
+    }
+  else 
+    {
+      sim_log_debug(57U, "Project3", "\tConnection exists from %d, %d to %d, %d\n", TOS_NODE_ID, sendPort, targetAddress, targetPort);
+    }
 }
 
 # 19 "/root/workspace/Project1/src/lib/interfaces/CommandHandler.nc"
-inline static void CommandHandlerP$CommandHandler$setTestClient(void ){
+inline static void CommandHandlerP$CommandHandler$setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint16_t transfer){
 #line 19
-  Node$CommandHandler$setTestClient();
+  Node$CommandHandler$setTestClient(targetAddress, sendPort, destPort, transfer);
 #line 19
 }
 #line 19
-# 256 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
+# 6 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static Node$routingTable$t Node$routingTable$get(uint32_t key){
+#line 6
+  unsigned int __nesc_result;
+#line 6
+
+#line 6
+  __nesc_result = /*NodeC.routingTable*/HashmapC$2$Hashmap$get(key);
+#line 6
+
+#line 6
+  return __nesc_result;
+#line 6
+}
+#line 6
+# 503 "/root/workspace/Project1/src/Node.nc"
+static inline uint16_t Node$LinkStateRouting$getRoutingCost(uint32_t src)
+{
+  return Node$routingTable$get(src) >> 16;
+}
+
+# 25 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static uint16_t LinkStateRoutingP$LinkStateRouting$getRoutingCost(uint32_t src){
+#line 25
+  unsigned short __nesc_result;
+#line 25
+
+#line 25
+  __nesc_result = Node$LinkStateRouting$getRoutingCost(src);
+#line 25
+
+#line 25
+  return __nesc_result;
+#line 25
+}
+#line 25
+# 508 "/root/workspace/Project1/src/Node.nc"
+static inline uint16_t Node$LinkStateRouting$getRoutingHop(uint32_t src)
+{
+  return (uint16_t )Node$routingTable$get(src);
+}
+
+# 26 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static uint16_t LinkStateRoutingP$LinkStateRouting$getRoutingHop(uint32_t src){
+#line 26
+  unsigned short __nesc_result;
+#line 26
+
+#line 26
+  __nesc_result = Node$LinkStateRouting$getRoutingHop(src);
+#line 26
+
+#line 26
+  return __nesc_result;
+#line 26
+}
+#line 26
+# 184 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline uint32_t */*NodeC.routingTable*/HashmapC$2$Hashmap$getKeys(void )
+{
+  return /*NodeC.routingTable*/HashmapC$2$keys[sim_node()];
+}
+
+# 11 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static uint32_t *Node$routingTable$getKeys(void ){
+#line 11
+  unsigned int *__nesc_result;
+#line 11
+
+#line 11
+  __nesc_result = /*NodeC.routingTable*/HashmapC$2$Hashmap$getKeys();
+#line 11
+
+#line 11
+  return __nesc_result;
+#line 11
+}
+#line 11
+# 498 "/root/workspace/Project1/src/Node.nc"
+static inline uint32_t *Node$LinkStateRouting$getRoutingKeys(void )
+{
+  return Node$routingTable$getKeys();
+}
+
+# 24 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static uint32_t *LinkStateRoutingP$LinkStateRouting$getRoutingKeys(void ){
+#line 24
+  unsigned int *__nesc_result;
+#line 24
+
+#line 24
+  __nesc_result = Node$LinkStateRouting$getRoutingKeys();
+#line 24
+
+#line 24
+  return __nesc_result;
+#line 24
+}
+#line 24
+# 353 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP$LinkStateRouting$printRoutingTable(void )
 {
-  uint32_t ind;
+  uint32_t *routingKeys;
+  uint32_t keyInd;
 
-  sim_log_debug(220U, "Project2", "Route Table (%d):\n", TOS_NODE_ID);
-  for (ind = 0; ind < FORWARD_TABLE_SIZE; ind++) 
+  uint16_t routingCost;
+  uint16_t routingHop;
+
+  routingKeys = LinkStateRoutingP$LinkStateRouting$getRoutingKeys();
+
+  sim_log_debug(231U, "Project2", "Route Table (%d):\n", TOS_NODE_ID);
+  for (keyInd = 0; keyInd < ROUTING_TABLE_SIZE; keyInd++) 
     {
-      if (LinkStateRoutingP$forwardTableCost[sim_node()][ind] == INF) {
+      if (routingKeys[keyInd] == EMPTY) {
         continue;
         }
-      sim_log_debug(221U, "Project2", "Cost to %d\t is %d\t through %d\n", ind, LinkStateRoutingP$forwardTableCost[sim_node()][ind], LinkStateRoutingP$forwardTableHop[sim_node()][ind]);
+      routingHop = LinkStateRoutingP$LinkStateRouting$getRoutingHop(routingKeys[keyInd]);
+      routingCost = LinkStateRoutingP$LinkStateRouting$getRoutingCost(routingKeys[keyInd]);
+
+
+
+
+
+      sim_log_debug(232U, "Project2", "\tCost to %d\t is %d\t through %d\n", routingKeys[keyInd], routingCost, routingHop);
     }
 }
 
@@ -6552,13 +7691,13 @@ inline static void Node$LinkStateRouting$printLinkState(void ){
 #line 11
 }
 #line 11
-# 244 "/root/workspace/Project1/src/Node.nc"
+# 327 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$CommandHandler$printLinkState(void )
 {
   Node$LinkStateRouting$printLinkState();
 }
 
-#line 238
+#line 321
 static inline void Node$CommandHandler$printRouteTable(void )
 {
   Node$CommandHandler$printLinkState();
@@ -6579,32 +7718,79 @@ inline static void CommandHandlerP$CommandHandler$printLinkState(void ){
 #line 15
 }
 #line 15
-# 115 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
+# 184 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline uint32_t */*NodeC.neighborTable*/HashmapC$0$Hashmap$getKeys(void )
+{
+  return /*NodeC.neighborTable*/HashmapC$0$keys[sim_node()];
+}
+
+# 11 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static uint32_t *Node$neighborTable$getKeys(void ){
+#line 11
+  unsigned int *__nesc_result;
+#line 11
+
+#line 11
+  __nesc_result = /*NodeC.neighborTable*/HashmapC$0$Hashmap$getKeys();
+#line 11
+
+#line 11
+  return __nesc_result;
+#line 11
+}
+#line 11
+# 454 "/root/workspace/Project1/src/Node.nc"
+static inline uint32_t *Node$NeighborDiscovery$getNeighborKeys(void )
+{
+  return Node$neighborTable$getKeys();
+}
+
+# 11 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+inline static uint32_t *NeighborDiscoveryP$NeighborDiscovery$getNeighborKeys(void ){
+#line 11
+  unsigned int *__nesc_result;
+#line 11
+
+#line 11
+  __nesc_result = Node$NeighborDiscovery$getNeighborKeys();
+#line 11
+
+#line 11
+  return __nesc_result;
+#line 11
+}
+#line 11
+# 126 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP$NeighborDiscovery$printNeighbors(void )
 {
-  uint32_t ind;
+  uint32_t *keys;
+  uint32_t keyInd;
+  uint16_t connectionState;
 
-  sim_log_debug(214U, "Project1N", "Neighbors (%d):\n", TOS_NODE_ID);
-  for (ind = 0; ind < NEIGHBOR_TABLE_SIZE; ind++) 
+  keys = NeighborDiscoveryP$NeighborDiscovery$getNeighborKeys();
+
+  sim_log_debug(223U, "Project1N", "Neighbors (%d):\n", TOS_NODE_ID);
+  for (keyInd = 0; keyInd < NEIGHBOR_TABLE_SIZE; keyInd++) 
     {
-      if (NeighborDiscoveryP$neighborIDs[sim_node()][ind] == EMPTY) {
+
+      if (keys[keyInd] == EMPTY) {
         continue;
         }
-      if (NeighborDiscoveryP$neighborTable[sim_node()][ind] == CONNECTION_NONE) {
-        continue;
-        }
-      if (NeighborDiscoveryP$neighborTable[sim_node()][ind] & CONNECTION_TIMED_OUT) {
-        sim_log_debug(215U, "Project1N", "\tNeighbor %d -/- %d\n", NeighborDiscoveryP$neighborIDs[sim_node()][ind], TOS_NODE_ID);
+
+      connectionState = NeighborDiscoveryP$NeighborDiscovery$getNeighborConnection(keys[keyInd]);
+
+      if (connectionState & CONNECTION_TIMED_OUT) {
+        sim_log_debug(224U, "Project1N", "\tNeighbor %d -/- %d\n", keys[keyInd], TOS_NODE_ID);
         }
       else {
-#line 130
-        if (NeighborDiscoveryP$neighborTable[sim_node()][ind] & CONNECTION_SEND) {
-          sim_log_debug(216U, "Project1N", "\tNeighbor %d <-> %d\n", NeighborDiscoveryP$neighborIDs[sim_node()][ind], TOS_NODE_ID);
+#line 146
+        if (connectionState & CONNECTION_SEND) {
+          sim_log_debug(225U, "Project1N", "\tNeighbor %d <-> %d\n", keys[keyInd], TOS_NODE_ID);
           }
         else {
-#line 132
-          if (NeighborDiscoveryP$neighborTable[sim_node()][ind] & CONNECTION_RECEIVE) {
-            sim_log_debug(217U, "Project1N", "\tNeighbor %d ->  %d\n", NeighborDiscoveryP$neighborIDs[sim_node()][ind], TOS_NODE_ID);
+#line 148
+          if (connectionState & CONNECTION_RECEIVE) {
+            sim_log_debug(226U, "Project1N", "\tNeighbor %d ->  %d\n", keys[keyInd], TOS_NODE_ID);
             }
           }
         }
@@ -6618,7 +7804,7 @@ inline static void Node$NeighborDiscovery$printNeighbors(void ){
 #line 8
 }
 #line 8
-# 233 "/root/workspace/Project1/src/Node.nc"
+# 316 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$CommandHandler$printNeighbors(void )
 {
   Node$NeighborDiscovery$printNeighbors();
@@ -6631,14 +7817,14 @@ inline static void CommandHandlerP$CommandHandler$printNeighbors(void ){
 #line 13
 }
 #line 13
-# 191 "/root/workspace/Project1/src/Node.nc"
+# 256 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$PacketHandler$createAndSend(uint8_t *payload, uint16_t destination)
 {
   Node$makePack(&Node$sendPackage[sim_node()], TOS_NODE_ID, destination, MAX_TTL, PROTOCOL_PING, SEQUENCE_START, payload, PACKET_MAX_PAYLOAD_SIZE8);
   Node$PacketHandler$send(&Node$sendPackage[sim_node()], AM_BROADCAST_ADDR, FALSE);
 }
 
-#line 228
+#line 311
 static inline void Node$CommandHandler$broadCast(uint8_t *payload, uint16_t destination)
 {
   Node$PacketHandler$createAndSend(payload, destination);
@@ -6660,13 +7846,13 @@ static inline error_t CommandHandlerP$CommandHandler$processCommand(pack *Packet
   buff = (uint8_t *)Packet->payload;
   commandID = buff[0];
 
-  sim_log_debug(200U, "cmdDebug", "A Command has been Issued.\n");
+  sim_log_debug(209U, "cmdDebug", "A Command has been Issued.\n");
 
 
   if (commandID == CMD_PING) 
     {
-      sim_log_debug(201U, "cmdDebug", "Command Type: Ping\n");
-      sim_log_debug(202U, "Project1F", "Sending packet %d->%d\n", TOS_NODE_ID, buff[1]);
+      sim_log_debug(210U, "cmdDebug", "Command Type: Ping\n");
+      sim_log_debug(211U, "Project1F", "Sending packet %d->%d\n", TOS_NODE_ID, buff[1]);
       CommandHandlerP$CommandHandler$broadCast(&buff[2], buff[1]);
       return SUCCESS;
     }
@@ -6674,7 +7860,7 @@ static inline error_t CommandHandlerP$CommandHandler$processCommand(pack *Packet
 #line 46
     if (commandID == CMD_NEIGHBOR_DUMP) 
       {
-        sim_log_debug(203U, "cmdDebug", "Command Type: Neighbor Dump\n");
+        sim_log_debug(212U, "cmdDebug", "Command Type: Neighbor Dump\n");
         CommandHandlerP$CommandHandler$printNeighbors();
         return SUCCESS;
       }
@@ -6682,7 +7868,7 @@ static inline error_t CommandHandlerP$CommandHandler$processCommand(pack *Packet
 #line 52
       if (commandID == CMD_LINKSTATE_DUMP) 
         {
-          sim_log_debug(204U, "cmdDebug", "Command Type: Link State Dump\n");
+          sim_log_debug(213U, "cmdDebug", "Command Type: Link State Dump\n");
           CommandHandlerP$CommandHandler$printLinkState();
           return SUCCESS;
         }
@@ -6690,7 +7876,7 @@ static inline error_t CommandHandlerP$CommandHandler$processCommand(pack *Packet
 #line 58
         if (commandID == CMD_ROUTETABLE_DUMP) 
           {
-            sim_log_debug(205U, "cmdDebug", "Command Type: Route Table Dump\n");
+            sim_log_debug(214U, "cmdDebug", "Command Type: Route Table Dump\n");
             CommandHandlerP$CommandHandler$printRouteTable();
             return SUCCESS;
           }
@@ -6698,16 +7884,16 @@ static inline error_t CommandHandlerP$CommandHandler$processCommand(pack *Packet
 #line 64
           if (commandID == CMD_TEST_CLIENT) 
             {
-              sim_log_debug(206U, "cmdDebug", "Command Type: Client\n");
-              CommandHandlerP$CommandHandler$setTestClient();
+              sim_log_debug(215U, "cmdDebug", "Command Type: Client (Preparing for %d, %d connecting with %d, %d)\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
+              CommandHandlerP$CommandHandler$setTestClient(buff[2], buff[3], buff[1], buff[4]);
               return SUCCESS;
             }
           else {
 #line 70
             if (commandID == CMD_TEST_SERVER) 
               {
-                sim_log_debug(207U, "cmdDebug", "Command Type: Client\n");
-                CommandHandlerP$CommandHandler$setTestServer();
+                sim_log_debug(216U, "cmdDebug", "Command Type: Server (Opening socket %d for Listening)\n", buff[1]);
+                CommandHandlerP$CommandHandler$setTestServer(buff[1]);
                 return SUCCESS;
               }
             }
@@ -6716,8 +7902,8 @@ static inline error_t CommandHandlerP$CommandHandler$processCommand(pack *Packet
       }
     }
 #line 76
-  sim_log_debug(208U, "cmdDebug", "Ooops.\n");
-  sim_log_debug(209U, "cmdDebug", "CMD_ERROR: \"%s\" does not match any known commands.\n", commandID);
+  sim_log_debug(217U, "cmdDebug", "Ooops.\n");
+  sim_log_debug(218U, "cmdDebug", "CMD_ERROR: \"%s\" does not match any known commands.\n", commandID);
   return FAIL;
 }
 
@@ -6751,7 +7937,7 @@ inline static error_t Node$CommandHandler$receive(pack *Packet){
 #line 5
 }
 #line 5
-# 120 "/root/workspace/Project1/src/Node.nc"
+# 176 "/root/workspace/Project1/src/Node.nc"
 static inline message_t *Node$Receive$receive(message_t *msg, void *payload, uint8_t len)
 {
   pack *Packet;
@@ -6764,18 +7950,19 @@ static inline message_t *Node$Receive$receive(message_t *msg, void *payload, uin
       Node$CommandHandler$receive(Packet);
 
 
-      if (Node$PacketHandler$isPacketLooping(Packet)) {
+      if (Node$PacketHandler$isPacketDuplicate(Packet)) {
         return msg;
         }
 
       Node$NeighborDiscovery$receive(Packet);
       Node$LinkStateRouting$receive(Packet);
       Node$PacketHandler$receive(Packet);
+      Node$TCP$receive(Packet);
 
       return msg;
     }
 
-  sim_log_debug(50U, "genDebug", "Unknown Packet Type %d\n", len);
+  sim_log_debug(49U, "genDebug", "Unknown Packet Type %d\n", len);
 
   return msg;
 }
@@ -6788,13 +7975,13 @@ static inline message_t *TossimActiveMessageC$Receive$default$receive(am_id_t id
 }
 
 # 78 "/root/local/tinyos-2.1.1/tos/interfaces/Receive.nc"
-inline static message_t * TossimActiveMessageC$Receive$receive(am_id_t arg_0x408ae298, message_t * msg, void * payload, uint8_t len){
+inline static message_t * TossimActiveMessageC$Receive$receive(am_id_t arg_0x40915468, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-  switch (arg_0x408ae298) {
+  switch (arg_0x40915468) {
 #line 78
     case 6:
 #line 78
@@ -6804,7 +7991,7 @@ inline static message_t * TossimActiveMessageC$Receive$receive(am_id_t arg_0x408
 #line 78
     default:
 #line 78
-      __nesc_result = TossimActiveMessageC$Receive$default$receive(arg_0x408ae298, msg, payload, len);
+      __nesc_result = TossimActiveMessageC$Receive$default$receive(arg_0x40915468, msg, payload, len);
 #line 78
       break;
 #line 78
@@ -6816,6 +8003,28 @@ inline static message_t * TossimActiveMessageC$Receive$receive(am_id_t arg_0x408
 #line 78
 }
 #line 78
+# 26 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline uint32_t /*NodeC.routingTable*/HashmapC$2$hash3(uint32_t k)
+{
+  return 1 + k % 11;
+}
+
+#line 21
+static inline uint32_t /*NodeC.routingTable*/HashmapC$2$hash2(uint32_t k)
+{
+  return k % 13;
+}
+
+
+
+
+
+
+static inline uint32_t /*NodeC.routingTable*/HashmapC$2$hash(uint32_t k, uint32_t i)
+{
+  return (/*NodeC.routingTable*/HashmapC$2$hash2(k) + i * /*NodeC.routingTable*/HashmapC$2$hash3(k)) % /*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE[sim_node()];
+}
+
 # 61 "/root/local/tinyos-2.1.1/tos/system/QueueC.nc"
 static inline uint8_t /*SimpleSendC.QueueC*/QueueC$0$Queue$maxSize(void )
 #line 61
@@ -6835,7 +8044,7 @@ static inline error_t /*SimpleSendC.QueueC*/QueueC$0$Queue$enqueue(/*SimpleSendC
 #line 97
 {
   if (/*SimpleSendC.QueueC*/QueueC$0$Queue$size() < /*SimpleSendC.QueueC*/QueueC$0$Queue$maxSize()) {
-      sim_log_debug(199U, "QueueC", "%s: size is %hhu\n", __FUNCTION__, /*SimpleSendC.QueueC*/QueueC$0$size[sim_node()]);
+      sim_log_debug(208U, "QueueC", "%s: size is %hhu\n", __FUNCTION__, /*SimpleSendC.QueueC*/QueueC$0$size[sim_node()]);
       /*SimpleSendC.QueueC*/QueueC$0$queue[sim_node()][/*SimpleSendC.QueueC*/QueueC$0$tail[sim_node()]] = newVal;
       /*SimpleSendC.QueueC*/QueueC$0$tail[sim_node()]++;
       if (/*SimpleSendC.QueueC*/QueueC$0$tail[sim_node()] == 20) {
@@ -6881,7 +8090,7 @@ static inline /*SimpleSendC.PoolC.PoolP*/PoolP$0$pool_t */*SimpleSendC.PoolC.Poo
       if (/*SimpleSendC.PoolC.PoolP*/PoolP$0$index[sim_node()] == 20) {
           /*SimpleSendC.PoolC.PoolP*/PoolP$0$index[sim_node()] = 0;
         }
-      sim_log_debug(191U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*SimpleSendC.PoolC.PoolP*/PoolP$0$free[sim_node()]);
+      sim_log_debug(200U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*SimpleSendC.PoolC.PoolP*/PoolP$0$free[sim_node()]);
       return rval;
     }
   return (void *)0;
@@ -6906,7 +8115,7 @@ inline static SimpleSendP$Pool$t * SimpleSendP$Pool$get(void ){
 static inline bool /*SimpleSendC.PoolC.PoolP*/PoolP$0$Pool$empty(void )
 #line 75
 {
-  sim_log_debug(189U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*SimpleSendC.PoolC.PoolP*/PoolP$0$free[sim_node()]);
+  sim_log_debug(198U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*SimpleSendC.PoolC.PoolP*/PoolP$0$free[sim_node()]);
   return /*SimpleSendC.PoolC.PoolP*/PoolP$0$free[sim_node()] == 0;
 }
 
@@ -7115,7 +8324,7 @@ static inline sim_time_t HplAtm128Timer0AsyncP$sim_to_clock(sim_time_t t)
 # 53 "/root/local/tinyos-2.1.1/tos/chips/atm128/timer/HplAtm128TimerCtrl8.nc"
 inline static Atm128_TIFR_t /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$TimerCtrl$getInterruptFlag(void ){
 #line 53
-  union __nesc_unnamed4317 __nesc_result;
+  union __nesc_unnamed4318 __nesc_result;
 #line 53
 
 #line 53
@@ -7149,6 +8358,244 @@ inline static uint16_t SimpleSendP$Random$rand16(void ){
 #line 52
 }
 #line 52
+# 26 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline uint32_t /*NodeC.neighborTable*/HashmapC$0$hash3(uint32_t k)
+{
+  return 1 + k % 11;
+}
+
+#line 21
+static inline uint32_t /*NodeC.neighborTable*/HashmapC$0$hash2(uint32_t k)
+{
+  return k % 13;
+}
+
+
+
+
+
+
+static inline uint32_t /*NodeC.neighborTable*/HashmapC$0$hash(uint32_t k, uint32_t i)
+{
+  return (/*NodeC.neighborTable*/HashmapC$0$hash2(k) + i * /*NodeC.neighborTable*/HashmapC$0$hash3(k)) % /*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE[sim_node()];
+}
+
+#line 26
+static inline uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$hash3(uint32_t k)
+{
+  return 1 + k % 11;
+}
+
+#line 21
+static inline uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$hash2(uint32_t k)
+{
+  return k % 13;
+}
+
+
+
+
+
+
+static inline uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$hash(uint32_t k, uint32_t i)
+{
+  return (/*NodeC.TCPTablePTR*/HashmapC$3$hash2(k) + i * /*NodeC.TCPTablePTR*/HashmapC$3$hash3(k)) % /*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE[sim_node()];
+}
+
+# 3 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static void Node$TCPTablePTR$insert(uint32_t key, Node$TCPTablePTR$t input){
+#line 3
+  /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$insert(key, input);
+#line 3
+}
+#line 3
+# 438 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$TCP$setConnectionState(uint32_t connectionKey, uint8_t state)
+{
+  uint32_t tableIndex;
+
+#line 441
+  tableIndex = Node$TCPTablePTR$getIndex(connectionKey);
+
+  Node$TCPTable[sim_node()][tableIndex].state = state;
+}
+
+# 184 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline uint32_t */*NodeC.sequenceTable*/HashmapC$1$Hashmap$getKeys(void )
+{
+  return /*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()];
+}
+
+# 11 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static uint32_t *Node$sequenceTable$getKeys(void ){
+#line 11
+  unsigned int *__nesc_result;
+#line 11
+
+#line 11
+  __nesc_result = /*NodeC.sequenceTable*/HashmapC$1$Hashmap$getKeys();
+#line 11
+
+#line 11
+  return __nesc_result;
+#line 11
+}
+#line 11
+# 561 "/root/workspace/Project1/src/Node.nc"
+static inline uint32_t *Node$PacketHandler$getSeqSrcKeys(void )
+{
+  return Node$sequenceTable$getKeys();
+}
+
+# 18 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+inline static uint32_t *PacketHandlerP$PacketHandler$getSeqSrcKeys(void ){
+#line 18
+  unsigned int *__nesc_result;
+#line 18
+
+#line 18
+  __nesc_result = Node$PacketHandler$getSeqSrcKeys();
+#line 18
+
+#line 18
+  return __nesc_result;
+#line 18
+}
+#line 18
+# 77 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline void /*NodeC.sequenceTable*/HashmapC$1$Hashmap$remove(uint32_t k)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  do 
+    {
+      j = /*NodeC.sequenceTable*/HashmapC$1$hash(k, i);
+      if (/*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].key == k) 
+        {
+          /*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].key = 0;
+          break;
+        }
+
+      i++;
+    }
+  while (i < /*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[sim_node()]);
+
+  sim_log_debug(239U, "hashmap", "Removing entry %d\n", k);
+
+  for (i = 0; i < /*NodeC.sequenceTable*/HashmapC$1$numofVals[sim_node()]; i++) 
+    {
+      if (/*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()][i] == k) 
+        {
+          sim_log_debug(240U, "hashmap", "Key found at %d\n", i);
+
+          for (j = i; j < /*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[sim_node()]; j++) 
+            {
+              if (/*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()][j] == 0) {
+                break;
+                }
+#line 107
+              sim_log_debug(241U, "hashamp", "Moving %d to %d\n", j, j + 1);
+              sim_log_debug(242U, "hashamp", "Replacing %d with %d\n", /*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()][j], /*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()][j + 1]);
+              /*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()][j] = /*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()][j + 1];
+            }
+
+          /*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()][/*NodeC.sequenceTable*/HashmapC$1$numofVals[sim_node()]] = 0;
+          /*NodeC.sequenceTable*/HashmapC$1$numofVals[sim_node()]--;
+
+          sim_log_debug(243U, "hashmap", "Done removing entry\n");
+          return;
+        }
+    }
+}
+
+# 4 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static void Node$sequenceTable$remove(uint32_t key){
+#line 4
+  /*NodeC.sequenceTable*/HashmapC$1$Hashmap$remove(key);
+#line 4
+}
+#line 4
+#line 3
+inline static void Node$sequenceTable$insert(uint32_t key, Node$sequenceTable$t input){
+#line 3
+  /*NodeC.sequenceTable*/HashmapC$1$Hashmap$insert(key, input);
+#line 3
+}
+#line 3
+# 121 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline /*NodeC.sequenceTable*/HashmapC$1$t /*NodeC.sequenceTable*/HashmapC$1$Hashmap$get(uint32_t k)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  do 
+    {
+      j = /*NodeC.sequenceTable*/HashmapC$1$hash(k, i);
+
+      if (/*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].key == k) {
+        return /*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].value;
+        }
+      i++;
+    }
+  while (i < /*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[sim_node()]);
+
+  return /*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][0].value;
+}
+
+# 6 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static Node$sequenceTable$t Node$sequenceTable$get(uint32_t key){
+#line 6
+  unsigned short __nesc_result;
+#line 6
+
+#line 6
+  __nesc_result = /*NodeC.sequenceTable*/HashmapC$1$Hashmap$get(key);
+#line 6
+
+#line 6
+  return __nesc_result;
+#line 6
+}
+#line 6
+# 578 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$PacketHandler$decreaseAge(uint32_t key)
+{
+  uint16_t age = Node$sequenceTable$get(key) - 1;
+
+  if (age > 0) 
+    {
+      Node$sequenceTable$insert(key, age);
+    }
+  else 
+    {
+      Node$sequenceTable$remove(key);
+    }
+}
+
+# 21 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+inline static void PacketHandlerP$PacketHandler$decreaseAge(uint32_t key){
+#line 21
+  Node$PacketHandler$decreaseAge(key);
+#line 21
+}
+#line 21
+# 572 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$PacketHandler$insertAge(uint32_t src, uint16_t seq, uint16_t age)
+{
+  uint32_t key = (src << 16) | seq;
+
+#line 575
+  Node$sequenceTable$insert(key, age);
+}
+
+# 20 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+inline static void PacketHandlerP$PacketHandler$insertAge(uint32_t src, uint16_t seq, uint16_t age){
+#line 20
+  Node$PacketHandler$insertAge(src, seq, age);
+#line 20
+}
+#line 20
 # 216 "/root/local/tinyos-2.1.1/tos/lib/tossim/TossimActiveMessageC.nc"
 static inline message_t *TossimActiveMessageC$Snoop$default$receive(am_id_t id, message_t *msg, void *payload, uint8_t len)
 #line 216
@@ -7157,13 +8604,13 @@ static inline message_t *TossimActiveMessageC$Snoop$default$receive(am_id_t id, 
 }
 
 # 78 "/root/local/tinyos-2.1.1/tos/interfaces/Receive.nc"
-inline static message_t * TossimActiveMessageC$Snoop$receive(am_id_t arg_0x408ae930, message_t * msg, void * payload, uint8_t len){
+inline static message_t * TossimActiveMessageC$Snoop$receive(am_id_t arg_0x40915b00, message_t * msg, void * payload, uint8_t len){
 #line 78
   nx_struct message_t *__nesc_result;
 #line 78
 
 #line 78
-    __nesc_result = TossimActiveMessageC$Snoop$default$receive(arg_0x408ae930, msg, payload, len);
+    __nesc_result = TossimActiveMessageC$Snoop$default$receive(arg_0x40915b00, msg, payload, len);
 #line 78
 
 #line 78
@@ -7237,7 +8684,7 @@ static inline void SimSchedulerBasicP$sim_scheduler_event_init(sim_event_t *e)
 #line 166
 static inline void SimSchedulerBasicP$Scheduler$init(void )
 {
-  sim_log_debug(101U, "Scheduler", "Initializing scheduler.\n");
+  sim_log_debug(110U, "Scheduler", "Initializing scheduler.\n");
   /* atomic removed: atomic calls only */
   {
     memset(SimSchedulerBasicP$m_next[sim_node()], SimSchedulerBasicP$NO_TASK, sizeof SimSchedulerBasicP$m_next[sim_node()]);
@@ -7278,6 +8725,484 @@ static inline uint8_t SimSchedulerBasicP$popTask(void )
     }
 }
 
+# 295 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$NeighborDiscovery$discoverNeighbors(void )
+{
+  Node$makePack(&Node$sendPackage[sim_node()], TOS_NODE_ID, UNSPECIFIED, MAX_TTL, PROTOCOL_PING, SEQUENCE_START, Node$pingPacket[sim_node()], PACKET_MAX_PAYLOAD_SIZE8);
+  Node$PacketHandler$send(&Node$sendPackage[sim_node()], AM_BROADCAST_ADDR, FALSE);
+}
+
+#line 103
+static inline void Node$doFrequentEvents$runTask(void )
+{
+  Node$NeighborDiscovery$discoverNeighbors();
+
+
+  Node$FrequentUpdate$startOneShot(Node$PeriodFrequent[sim_node()]);
+}
+
+# 8 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static void Node$LinkStateRouting$shareLinkState(void ){
+#line 8
+  LinkStateRoutingP$LinkStateRouting$shareLinkState();
+#line 8
+}
+#line 8
+# 73 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
+static inline void NeighborDiscoveryP$NeighborDiscovery$timeOutCheck(void )
+{
+  uint32_t *keys;
+  uint32_t keyInd;
+  uint16_t connectionState;
+
+  keys = NeighborDiscoveryP$NeighborDiscovery$getNeighborKeys();
+
+
+  for (keyInd = 0; keyInd < NEIGHBOR_TABLE_SIZE; keyInd++) 
+    {
+
+      if (keys[keyInd] == EMPTY) {
+        continue;
+        }
+
+      connectionState = NeighborDiscoveryP$NeighborDiscovery$getNeighborConnection(keys[keyInd]);
+
+
+      if (connectionState == CONNECTION_NONE) {
+        continue;
+        }
+
+
+      if (NeighborDiscoveryP$TimeOutState[sim_node()]) 
+        {
+
+          connectionState |= CONNECTION_WAITING_RESPONSE;
+        }
+      else 
+
+        {
+          if ((connectionState & CONNECTION_WAITING_RESPONSE) != 0) 
+            {
+
+              if ((connectionState & CONNECTION_TIMED_OUT) == 0) 
+                {
+                  NeighborDiscoveryP$NeighborDiscovery$neighborChanged();
+                  sim_log_debug(222U, "Project1N", "Connection timed out:\t %d -> %d\n", TOS_NODE_ID, keys[keyInd]);
+                }
+
+              connectionState |= CONNECTION_TIMED_OUT;
+            }
+        }
+
+
+      NeighborDiscoveryP$NeighborDiscovery$insertNeighbor(keys[keyInd], connectionState);
+    }
+
+
+  NeighborDiscoveryP$TimeOutState[sim_node()] = !NeighborDiscoveryP$TimeOutState[sim_node()];
+}
+
+# 7 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
+inline static void Node$NeighborDiscovery$timeOutCheck(void ){
+#line 7
+  NeighborDiscoveryP$NeighborDiscovery$timeOutCheck();
+#line 7
+}
+#line 7
+# 111 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$doModerateEvents$runTask(void )
+{
+
+  Node$NeighborDiscovery$timeOutCheck();
+
+
+  if (Node$NeighborsChanged[sim_node()]) 
+    {
+      Node$NeighborsChanged[sim_node()] = !Node$NeighborsChanged[sim_node()];
+      Node$LinkStateRouting$shareLinkState();
+    }
+
+
+  Node$ModerateUpdate$startOneShot(Node$PeriodModerate[sim_node()]);
+}
+
+# 3 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static void Node$routingTable$insert(uint32_t key, Node$routingTable$t input){
+#line 3
+  /*NodeC.routingTable*/HashmapC$2$Hashmap$insert(key, input);
+#line 3
+}
+#line 3
+# 518 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$LinkStateRouting$insertCostHop(uint32_t src, uint16_t cost, uint16_t hop)
+{
+  uint32_t val = ((uint32_t )cost << 16) | hop;
+
+
+
+
+  Node$routingTable$insert(src, val);
+}
+
+# 28 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static void LinkStateRoutingP$LinkStateRouting$insertCostHop(uint32_t src, uint16_t cost, uint16_t hop){
+#line 28
+  Node$LinkStateRouting$insertCostHop(src, cost, hop);
+#line 28
+}
+#line 28
+# 8 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static bool Node$routingTable$contains(uint32_t key){
+#line 8
+  unsigned char __nesc_result;
+#line 8
+
+#line 8
+  __nesc_result = /*NodeC.routingTable*/HashmapC$2$Hashmap$contains(key);
+#line 8
+
+#line 8
+  return __nesc_result;
+#line 8
+}
+#line 8
+# 552 "/root/workspace/Project1/src/Node.nc"
+static inline bool Node$LinkStateRouting$containsNode(uint32_t src)
+{
+  return Node$routingTable$contains(src);
+}
+
+# 31 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static bool LinkStateRoutingP$LinkStateRouting$containsNode(uint32_t src){
+#line 31
+  unsigned char __nesc_result;
+#line 31
+
+#line 31
+  __nesc_result = Node$LinkStateRouting$containsNode(src);
+#line 31
+
+#line 31
+  return __nesc_result;
+#line 31
+}
+#line 31
+# 483 "/root/workspace/Project1/src/Node.nc"
+static inline uint16_t Node$LinkStateRouting$getNeighborConnection(uint32_t src)
+{
+  return Node$neighborTable$get(src);
+}
+
+# 19 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static uint16_t LinkStateRoutingP$LinkStateRouting$getNeighborConnection(uint32_t src){
+#line 19
+  unsigned short __nesc_result;
+#line 19
+
+#line 19
+  __nesc_result = Node$LinkStateRouting$getNeighborConnection(src);
+#line 19
+
+#line 19
+  return __nesc_result;
+#line 19
+}
+#line 19
+# 493 "/root/workspace/Project1/src/Node.nc"
+static inline bool Node$LinkStateRouting$containsNeighbor(uint32_t src)
+{
+  return Node$neighborTable$contains(src);
+}
+
+# 21 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static bool LinkStateRoutingP$LinkStateRouting$containsNeighbor(uint32_t src){
+#line 21
+  unsigned char __nesc_result;
+#line 21
+
+#line 21
+  __nesc_result = Node$LinkStateRouting$containsNeighbor(src);
+#line 21
+
+#line 21
+  return __nesc_result;
+#line 21
+}
+#line 21
+# 478 "/root/workspace/Project1/src/Node.nc"
+static inline uint32_t *Node$LinkStateRouting$getNeighborKeys(void )
+{
+  return Node$neighborTable$getKeys();
+}
+
+# 18 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static uint32_t *LinkStateRoutingP$LinkStateRouting$getNeighborKeys(void ){
+#line 18
+  unsigned int *__nesc_result;
+#line 18
+
+#line 18
+  __nesc_result = Node$LinkStateRouting$getNeighborKeys();
+#line 18
+
+#line 18
+  return __nesc_result;
+#line 18
+}
+#line 18
+# 70 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static inline void /*NodeC.routingTable*/HashmapC$2$Hashmap$clear(void )
+{
+  memset(/*NodeC.routingTable*/HashmapC$2$keys[sim_node()], 0, sizeof(uint32_t ) * 32);
+  memset(/*NodeC.routingTable*/HashmapC$2$map[sim_node()], 0, sizeof(/*NodeC.routingTable*/HashmapC$2$hashmapEntry ) * 32);
+  /*NodeC.routingTable*/HashmapC$2$numofVals[sim_node()] = 0;
+}
+
+# 5 "/root/workspace/Project1/src/dataStructures/interfaces/Hashmap.nc"
+inline static void Node$routingTable$clear(void ){
+#line 5
+  /*NodeC.routingTable*/HashmapC$2$Hashmap$clear();
+#line 5
+}
+#line 5
+# 513 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$LinkStateRouting$clearRoutingTable(void )
+{
+  Node$routingTable$clear();
+}
+
+# 27 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static void LinkStateRoutingP$LinkStateRouting$clearRoutingTable(void ){
+#line 27
+  Node$LinkStateRouting$clearRoutingTable();
+#line 27
+}
+#line 27
+# 35 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
+static inline void LinkStateRoutingP$LinkStateRouting$calculateRoute(void )
+{
+
+
+  uint32_t *NeighborKeys;
+  uint16_t keyInd;
+  uint16_t connectionState;
+
+
+  uint32_t *RoutingKeys;
+  uint16_t routingCost;
+  uint16_t consideringCost;
+
+  uint16_t considering;
+  uint16_t lowestValue;
+  uint16_t ind;
+
+
+  if (!LinkStateRoutingP$LSChanged[sim_node()]) {
+    return;
+    }
+
+  LinkStateRoutingP$LinkStateRouting$clearRoutingTable();
+  memset(LinkStateRoutingP$hopThrough[sim_node()], 0, sizeof(uint16_t ) * ROUTING_TABLE_SIZE);
+
+
+  memcpy(LinkStateRoutingP$unconsidered[sim_node()], LinkStateRoutingP$existing[sim_node()], sizeof LinkStateRoutingP$unconsidered[sim_node()]);
+
+  NeighborKeys = LinkStateRoutingP$LinkStateRouting$getNeighborKeys();
+  RoutingKeys = LinkStateRoutingP$LinkStateRouting$getRoutingKeys();
+  LinkStateRoutingP$unconsidered[sim_node()][TOS_NODE_ID] = FALSE;
+
+
+
+  if (TOS_NODE_ID == 2) {
+    sim_log_debug(227U, "Project2", "Dikstraz\n");
+    }
+
+
+
+
+
+  for (keyInd = 0; keyInd < NEIGHBOR_TABLE_SIZE; keyInd++) 
+    {
+
+      if (NeighborKeys[keyInd] == EMPTY) {
+        continue;
+        }
+
+      connectionState = LinkStateRoutingP$LinkStateRouting$getNeighborConnection(NeighborKeys[keyInd]);
+
+
+
+      if (((
+#line 87
+      connectionState == CONNECTION_NONE || !(connectionState & CONNECTION_SEND)) || 
+      !(connectionState & CONNECTION_RECEIVE)) || connectionState & CONNECTION_TIMED_OUT) {
+        continue;
+        }
+
+      LinkStateRoutingP$LinkStateRouting$insertCostHop(NeighborKeys[keyInd], NEIGHBOR_COST, NeighborKeys[keyInd]);
+    }
+
+
+
+
+  while (TRUE) 
+    {
+      lowestValue = 0;
+      considering = NONE;
+
+
+      for (ind = 0; ind < ROUTING_TABLE_SIZE; ind++) 
+        {
+          if (LinkStateRoutingP$unconsidered[sim_node()][ind] == TRUE) 
+            {
+
+              goto notEmpty;
+            }
+        }
+      break;
+      notEmpty: 
+
+
+        for (keyInd = 0; keyInd < ROUTING_TABLE_SIZE; keyInd++) 
+          {
+            if (RoutingKeys[keyInd] == EMPTY) {
+              continue;
+              }
+
+            if (LinkStateRoutingP$LinkStateRouting$containsNode(RoutingKeys[keyInd])) {
+              routingCost = LinkStateRoutingP$LinkStateRouting$getRoutingCost(RoutingKeys[keyInd]);
+              }
+            else {
+#line 125
+              routingCost = INF;
+              }
+
+            if (!LinkStateRoutingP$unconsidered[sim_node()][RoutingKeys[keyInd]] || routingCost == INF) {
+              continue;
+              }
+            if (routingCost < lowestValue || lowestValue == 0) 
+              {
+                considering = RoutingKeys[keyInd];
+                lowestValue = routingCost;
+              }
+          }
+
+
+      if (considering == NONE) {
+        break;
+        }
+
+
+
+      if (LinkStateRoutingP$LinkStateRouting$containsNeighbor(considering)) 
+        {
+
+          connectionState = LinkStateRoutingP$LinkStateRouting$getNeighborConnection(considering);
+
+
+
+          if (((
+#line 151
+          connectionState == CONNECTION_NONE || !(connectionState & CONNECTION_SEND)) || 
+          !(connectionState & CONNECTION_RECEIVE)) || connectionState & CONNECTION_TIMED_OUT) 
+            {
+            }
+          else 
+
+            {
+              LinkStateRoutingP$hopThrough[sim_node()][considering] = considering;
+            }
+        }
+
+
+
+      for (ind = 0; ind < ROUTING_TABLE_SIZE; ind++) 
+        {
+
+          if (LinkStateRoutingP$linkStates[sim_node()][considering][ind] == EMPTY) {
+            continue;
+            }
+
+
+
+
+
+
+          if (LinkStateRoutingP$LinkStateRouting$containsNode(ind)) {
+            routingCost = LinkStateRoutingP$LinkStateRouting$getRoutingCost(ind);
+            }
+          else {
+#line 179
+            routingCost = INF;
+            }
+
+          if (LinkStateRoutingP$LinkStateRouting$containsNode(considering)) {
+            consideringCost = LinkStateRoutingP$LinkStateRouting$getRoutingCost(considering) + NEIGHBOR_COST;
+            }
+          else {
+#line 185
+            consideringCost = NEIGHBOR_COST;
+            }
+
+          if (routingCost == INF || consideringCost < routingCost) 
+            {
+
+              LinkStateRoutingP$hopThrough[sim_node()][ind] = LinkStateRoutingP$hopThrough[sim_node()][considering];
+
+
+              LinkStateRoutingP$LinkStateRouting$insertCostHop(ind, consideringCost, LinkStateRoutingP$hopThrough[sim_node()][ind]);
+            }
+        }
+
+
+
+      LinkStateRoutingP$LinkStateRouting$insertCostHop(TOS_NODE_ID, NONE, TOS_NODE_ID);
+
+
+      LinkStateRoutingP$unconsidered[sim_node()][considering] = FALSE;
+    }
+
+
+  LinkStateRoutingP$LSChanged[sim_node()] = FALSE;
+}
+
+# 9 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static void Node$LinkStateRouting$calculateRoute(void ){
+#line 9
+  LinkStateRoutingP$LinkStateRouting$calculateRoute();
+#line 9
+}
+#line 9
+# 127 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$doSparseEvents$runTask(void )
+{
+
+  Node$LinkStateRouting$calculateRoute();
+
+
+  Node$SparseUpdate$startOneShot(Node$PeriodSparse[sim_node()]);
+}
+
+# 10 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
+inline static void Node$PacketHandler$ageSequenceTable(void ){
+#line 10
+  PacketHandlerP$PacketHandler$ageSequenceTable();
+#line 10
+}
+#line 10
+# 136 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$doRareEvents$runTask(void )
+{
+
+  Node$LinkStateRouting$shareLinkState();
+
+
+  Node$PacketHandler$ageSequenceTable();
+
+
+  Node$RareUpdate$startOneShot(Node$PeriodRare[sim_node()]);
+}
+
 # 104 "/root/local/tinyos-2.1.1/tos/interfaces/SplitControl.nc"
 inline static error_t Node$AMControl$start(void ){
 #line 104
@@ -7293,12 +9218,12 @@ inline static error_t Node$AMControl$start(void ){
 #line 104
 }
 #line 104
-# 102 "/root/workspace/Project1/src/Node.nc"
+# 84 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$AMControl$startDone(error_t err)
 {
   if (err == SUCCESS) 
     {
-      sim_log_debug(49U, "genDebug", "Radio On\n");
+      sim_log_debug(48U, "genDebug", "Radio On\n");
     }
   else 
     {
@@ -7322,8 +9247,9 @@ static inline void TossimPacketModelC$startDoneTask$runTask(void )
   TossimPacketModelC$Control$startDone(SUCCESS);
 }
 
-# 115 "/root/workspace/Project1/src/Node.nc"
+# 97 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$AMControl$stopDone(error_t err)
+#line 97
 {
 }
 
@@ -7342,30 +9268,7 @@ static inline void TossimPacketModelC$stopDoneTask$runTask(void )
   TossimPacketModelC$Control$stopDone(SUCCESS);
 }
 
-# 315 "/usr/lib/ncc/nesc_nx.h"
-static __inline  uint16_t __nesc_hton_uint16(void * target, uint16_t value)
-#line 315
-{
-  uint8_t *base = target;
-
-#line 317
-  base[1] = value;
-  base[0] = value >> 8;
-  return value;
-}
-
-#line 286
-static __inline  uint8_t __nesc_hton_uint8(void * target, uint8_t value)
-#line 286
-{
-  uint8_t *base = target;
-
-#line 288
-  base[0] = value;
-  return value;
-}
-
-#line 303
+# 303 "/usr/lib/ncc/nesc_nx.h"
 static __inline  int8_t __nesc_hton_int8(void * target, int8_t value)
 #line 303
 {
@@ -7376,9 +9279,9 @@ static __inline  int8_t __nesc_hton_int8(void * target, int8_t value)
 }
 
 # 110 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
-inline static void TossimActiveMessageC$AMSend$sendDone(am_id_t arg_0x408a18b0, message_t * msg, error_t error){
+inline static void TossimActiveMessageC$AMSend$sendDone(am_id_t arg_0x40907a60, message_t * msg, error_t error){
 #line 110
-  /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMSend$sendDone(arg_0x408a18b0, msg, error);
+  /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMSend$sendDone(arg_0x40907a60, msg, error);
 #line 110
 }
 #line 110
@@ -7456,7 +9359,7 @@ static inline error_t /*SimpleSendC.PoolC.PoolP*/PoolP$0$Pool$put(/*SimpleSendC.
         }
       /*SimpleSendC.PoolC.PoolP*/PoolP$0$queue[sim_node()][emptyIndex] = newVal;
       /*SimpleSendC.PoolC.PoolP*/PoolP$0$free[sim_node()]++;
-      sim_log_debug(192U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*SimpleSendC.PoolC.PoolP*/PoolP$0$free[sim_node()]);
+      sim_log_debug(201U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*SimpleSendC.PoolC.PoolP*/PoolP$0$free[sim_node()]);
       return SUCCESS;
     }
 }
@@ -7490,7 +9393,7 @@ static inline /*SimpleSendC.QueueC*/QueueC$0$queue_t /*SimpleSendC.QueueC*/Queue
   /*SimpleSendC.QueueC*/QueueC$0$queue_t t = /*SimpleSendC.QueueC*/QueueC$0$Queue$head();
 
 #line 87
-  sim_log_debug(198U, "QueueC", "%s: size is %hhu\n", __FUNCTION__, /*SimpleSendC.QueueC*/QueueC$0$size[sim_node()]);
+  sim_log_debug(207U, "QueueC", "%s: size is %hhu\n", __FUNCTION__, /*SimpleSendC.QueueC*/QueueC$0$size[sim_node()]);
   if (!/*SimpleSendC.QueueC*/QueueC$0$Queue$empty()) {
       /*SimpleSendC.QueueC*/QueueC$0$head[sim_node()]++;
       if (/*SimpleSendC.QueueC*/QueueC$0$head[sim_node()] == 20) {
@@ -7520,13 +9423,13 @@ inline static SimpleSendP$Queue$t  SimpleSendP$Queue$dequeue(void ){
 }
 #line 81
 # 80 "/root/local/tinyos-2.1.1/tos/interfaces/AMSend.nc"
-inline static error_t /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMSend$send(am_id_t arg_0x40ba40a0, am_addr_t addr, message_t * msg, uint8_t len){
+inline static error_t /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMSend$send(am_id_t arg_0x40c0c0a0, am_addr_t addr, message_t * msg, uint8_t len){
 #line 80
   unsigned char __nesc_result;
 #line 80
 
 #line 80
-  __nesc_result = TossimActiveMessageC$AMSend$send(arg_0x40ba40a0, addr, msg, len);
+  __nesc_result = TossimActiveMessageC$AMSend$send(arg_0x40c0c0a0, addr, msg, len);
 #line 80
 
 #line 80
@@ -7596,7 +9499,7 @@ uint8_t len)
   if (/*AMQueueP.AMQueueImplP*/AMQueueImplP$0$queue[sim_node()][clientId].msg != (void *)0) {
       return EBUSY;
     }
-  sim_log_debug(184U, "AMQueue", "AMQueue: request to send from %hhu (%p): passed checks\n", clientId, msg);
+  sim_log_debug(193U, "AMQueue", "AMQueue: request to send from %hhu (%p): passed checks\n", clientId, msg);
 
   /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$queue[sim_node()][clientId].msg = msg;
   /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Packet$setPayloadLength(msg, len);
@@ -7606,12 +9509,12 @@ uint8_t len)
       am_id_t amId = /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMPacket$type(msg);
       am_addr_t dest = /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMPacket$destination(msg);
 
-      sim_log_debug(185U, "AMQueue", "%s: request to send from %hhu (%p): queue empty\n", __FUNCTION__, clientId, msg);
+      sim_log_debug(194U, "AMQueue", "%s: request to send from %hhu (%p): queue empty\n", __FUNCTION__, clientId, msg);
       /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$current[sim_node()] = clientId;
 
       err = /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMSend$send(amId, dest, msg, len);
       if (err != SUCCESS) {
-          sim_log_debug(186U, "AMQueue", "%s: underlying send failed.\n", __FUNCTION__);
+          sim_log_debug(195U, "AMQueue", "%s: underlying send failed.\n", __FUNCTION__);
           /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$current[sim_node()] = 1;
           /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$queue[sim_node()][clientId].msg = (void *)0;
         }
@@ -7619,7 +9522,7 @@ uint8_t len)
       return err;
     }
   else {
-      sim_log_debug(187U, "AMQueue", "AMQueue: request to send from %hhu (%p): queue not empty\n", clientId, msg);
+      sim_log_debug(196U, "AMQueue", "AMQueue: request to send from %hhu (%p): queue not empty\n", clientId, msg);
     }
   return SUCCESS;
 }
@@ -7743,17 +9646,17 @@ static inline error_t SimpleSendP$send(uint16_t src, uint16_t dest, pack *messag
         }
       else 
         {
-          sim_log_debug(154U, "genDebug", "The radio is busy, or something\n");
+          sim_log_debug(163U, "genDebug", "The radio is busy, or something\n");
           return FAIL;
         }
     }
   else 
     {
-      sim_log_debug(155U, "genDebug", "The radio is busy");
+      sim_log_debug(164U, "genDebug", "The radio is busy");
       return EBUSY;
     }
 
-  sim_log_debug(156U, "genDebug", "FAILED!?");
+  sim_log_debug(165U, "genDebug", "FAILED!?");
 
   return FAIL;
 }
@@ -8007,9 +9910,9 @@ static inline void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$default$sendDone
 }
 
 # 100 "/root/local/tinyos-2.1.1/tos/interfaces/Send.nc"
-inline static void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$sendDone(uint8_t arg_0x40ba56a8, message_t * msg, error_t error){
+inline static void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$sendDone(uint8_t arg_0x40c0e6a8, message_t * msg, error_t error){
 #line 100
-  switch (arg_0x40ba56a8) {
+  switch (arg_0x40c0e6a8) {
 #line 100
     case 0U:
 #line 100
@@ -8019,7 +9922,7 @@ inline static void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$sendDone(uint8_t
 #line 100
     default:
 #line 100
-      /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$default$sendDone(arg_0x40ba56a8, msg, error);
+      /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$Send$default$sendDone(arg_0x40c0e6a8, msg, error);
 #line 100
       break;
 #line 100
@@ -8057,21 +9960,21 @@ static inline void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$CancelTask$runTask(vo
     }
 }
 
-# 208 "/root/workspace/Project1/src/Node.nc"
+# 285 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$LinkStateRouting$sendLinkState(uint8_t *payload)
 {
   Node$makePack(&Node$sendPackage[sim_node()], TOS_NODE_ID, UNSPECIFIED, MAX_TTL, PROTOCOL_LINKSTATE, SEQUENCE_START, payload, PACKET_MAX_PAYLOAD_SIZE8);
   Node$PacketHandler$send(&Node$sendPackage[sim_node()], AM_BROADCAST_ADDR, FALSE);
 }
 
-# 14 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+# 15 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
 inline static void LinkStateRoutingP$LinkStateRouting$sendLinkState(uint8_t *payload){
-#line 14
+#line 15
   Node$LinkStateRouting$sendLinkState(payload);
-#line 14
+#line 15
 }
-#line 14
-# 149 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
+#line 15
+# 212 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP$SendNeighbors$runTask(void )
 {
 
@@ -8090,6 +9993,30 @@ static inline void SimSchedulerBasicP$TaskBasic$default$runTask(uint8_t id)
 inline static void SimSchedulerBasicP$TaskBasic$runTask(uint8_t arg_0x4068f1b8){
 #line 75
   switch (arg_0x4068f1b8) {
+#line 75
+    case Node$doFrequentEvents:
+#line 75
+      Node$doFrequentEvents$runTask();
+#line 75
+      break;
+#line 75
+    case Node$doModerateEvents:
+#line 75
+      Node$doModerateEvents$runTask();
+#line 75
+      break;
+#line 75
+    case Node$doSparseEvents:
+#line 75
+      Node$doSparseEvents$runTask();
+#line 75
+      break;
+#line 75
+    case Node$doRareEvents:
+#line 75
+      Node$doRareEvents$runTask();
+#line 75
+      break;
 #line 75
     case TossimPacketModelC$startDoneTask:
 #line 75
@@ -8308,7 +10235,7 @@ static inline void CpmModelC$sim_gain_receive_handle(sim_event_t *evt)
   CpmModelC$receive_message_t *predecessor = (void *)0;
   CpmModelC$receive_message_t *list = CpmModelC$outstandingReceptionHead[sim_node()];
 
-  sim_log_debug(134U, "CpmModelC", "Handling reception event @ %s.\n", sim_time_string());
+  sim_log_debug(143U, "CpmModelC", "Handling reception event @ %s.\n", sim_time_string());
   while (list != (void *)0) {
       if (list->next == mine) {
           predecessor = list;
@@ -8324,13 +10251,13 @@ static inline void CpmModelC$sim_gain_receive_handle(sim_event_t *evt)
         CpmModelC$outstandingReceptionHead[sim_node()] = mine->next;
       }
     else {
-        sim_log_error(135U, "CpmModelC", "Incoming packet list structure is corrupted: entry is not the head and no entry points to it.\n");
+        sim_log_error(144U, "CpmModelC", "Incoming packet list structure is corrupted: entry is not the head and no entry points to it.\n");
       }
     }
 #line 317
-  sim_log_debug(136U, "CpmModelC,SNRLoss", "Packet from %i to %i\n", (int )mine->source, (int )sim_node());
+  sim_log_debug(145U, "CpmModelC,SNRLoss", "Packet from %i to %i\n", (int )mine->source, (int )sim_node());
   if (!CpmModelC$checkReceive(mine)) {
-      sim_log_debug(137U, "CpmModelC,SNRLoss", " - lost packet from %i as SNR was too low.\n", (int )mine->source);
+      sim_log_debug(146U, "CpmModelC,SNRLoss", " - lost packet from %i as SNR was too low.\n", (int )mine->source);
       mine->lost = 1;
     }
   if (! mine->lost) {
@@ -8342,17 +10269,17 @@ static inline void CpmModelC$sim_gain_receive_handle(sim_event_t *evt)
 #line 327
       __nesc_hton_int8(meta->strength.nxdata, mine->strength);
 
-      sim_log_debug_clear(138U, "CpmModelC,SNRLoss", "  -signaling reception\n");
+      sim_log_debug_clear(147U, "CpmModelC,SNRLoss", "  -signaling reception\n");
       CpmModelC$Model$receive(mine->msg);
       if (mine->ack) {
-          sim_log_debug_clear(139U, "CpmModelC", " acknowledgment requested, ");
+          sim_log_debug_clear(148U, "CpmModelC", " acknowledgment requested, ");
         }
       else {
-          sim_log_debug_clear(140U, "CpmModelC", " no acknowledgment requested.\n");
+          sim_log_debug_clear(149U, "CpmModelC", " no acknowledgment requested.\n");
         }
 
       if (mine->ack && CpmModelC$Model$shouldAck(mine->msg)) {
-          sim_log_debug_clear(141U, "CpmModelC", " scheduling ack.\n");
+          sim_log_debug_clear(150U, "CpmModelC", " scheduling ack.\n");
           CpmModelC$sim_gain_schedule_ack(mine->source, sim_time() + 1, mine);
         }
       else {
@@ -8363,9 +10290,9 @@ static inline void CpmModelC$sim_gain_receive_handle(sim_event_t *evt)
     }
   else {
       if (RandomUniform() < 0.001) {
-          sim_log_debug(142U, "CpmModelC,SNRLoss", "Packet was technically lost, but TOSSIM introduces an ack false positive rate.\n");
+          sim_log_debug(151U, "CpmModelC,SNRLoss", "Packet was technically lost, but TOSSIM introduces an ack false positive rate.\n");
           if (mine->ack && CpmModelC$Model$shouldAck(mine->msg)) {
-              sim_log_debug_clear(143U, "CpmModelC", " scheduling ack.\n");
+              sim_log_debug_clear(152U, "CpmModelC", " scheduling ack.\n");
               CpmModelC$sim_gain_schedule_ack(mine->source, sim_time() + 1, mine);
             }
           else {
@@ -8376,7 +10303,7 @@ static inline void CpmModelC$sim_gain_receive_handle(sim_event_t *evt)
           CpmModelC$free_receive_message(mine);
         }
       CpmModelC$receiving[sim_node()] = 0;
-      sim_log_debug_clear(144U, "CpmModelC,SNRLoss", "  -packet was lost.\n");
+      sim_log_debug_clear(153U, "CpmModelC,SNRLoss", "  -packet was lost.\n");
     }
 }
 
@@ -8432,25 +10359,25 @@ static inline void CpmModelC$enqueue_receive_event(int source, sim_time_t endTim
 
 
   if (!sim_mote_is_on(sim_node())) {
-      sim_log_debug(145U, "CpmModelC", "Lost packet from %i due to %i being off\n", source, sim_node());
+      sim_log_debug(154U, "CpmModelC", "Lost packet from %i due to %i being off\n", source, sim_node());
       rcv->lost = 1;
     }
   else {
 #line 396
     if (!CpmModelC$shouldReceive(power - noiseStr)) {
-        sim_log_debug(146U, "CpmModelC,SNRLoss", "Lost packet from %i to %i due to SNR being too low (%i)\n", source, sim_node(), (int )(power - noiseStr));
+        sim_log_debug(155U, "CpmModelC,SNRLoss", "Lost packet from %i to %i due to SNR being too low (%i)\n", source, sim_node(), (int )(power - noiseStr));
         rcv->lost = 1;
       }
     else {
 #line 400
       if (CpmModelC$receiving[sim_node()]) {
-          sim_log_debug(147U, "CpmModelC,SNRLoss", "Lost packet from %i due to %i being mid-reception\n", source, sim_node());
+          sim_log_debug(156U, "CpmModelC,SNRLoss", "Lost packet from %i due to %i being mid-reception\n", source, sim_node());
           rcv->lost = 1;
         }
       else {
 #line 404
         if (CpmModelC$transmitting[sim_node()] && rcv->start < CpmModelC$transmissionEndTime[sim_node()] && CpmModelC$transmissionEndTime[sim_node()] <= rcv->end) {
-            sim_log_debug(148U, "CpmModelC,SNRLoss", "Lost packet from %i due to %i being mid-transmission, transmissionEndTime %llu\n", source, sim_node(), CpmModelC$transmissionEndTime[sim_node()]);
+            sim_log_debug(157U, "CpmModelC,SNRLoss", "Lost packet from %i due to %i being mid-transmission, transmissionEndTime %llu\n", source, sim_node(), CpmModelC$transmissionEndTime[sim_node()]);
             rcv->lost = 1;
           }
         else {
@@ -8463,7 +10390,7 @@ static inline void CpmModelC$enqueue_receive_event(int source, sim_time_t endTim
   list = CpmModelC$outstandingReceptionHead[sim_node()];
   while (list != (void *)0) {
       if (!CpmModelC$shouldReceive(list->power - rcv->power)) {
-          sim_log_debug(149U, "Gain,SNRLoss", "Going to lose packet from %i with signal %lf as am receiving a packet from %i with signal %lf\n", list->source, list->power, source, rcv->power);
+          sim_log_debug(158U, "Gain,SNRLoss", "Going to lose packet from %i with signal %lf as am receiving a packet from %i with signal %lf\n", list->source, list->power, source, rcv->power);
           list->lost = 1;
         }
       list = list->next;
@@ -8482,7 +10409,7 @@ static inline void CpmModelC$sim_gain_put(int dest, message_t *msg, sim_time_t e
   int prevNode = sim_node();
 
 #line 430
-  sim_log_debug(150U, "CpmModelC", "Enqueing reception event for %i at %llu with power %lf.\n", dest, endTime, power);
+  sim_log_debug(159U, "CpmModelC", "Enqueing reception event for %i at %llu with power %lf.\n", dest, endTime, power);
   sim_set_node(dest);
   CpmModelC$enqueue_receive_event(prevNode, endTime, msg, receive, power, reversePower);
   sim_set_node(prevNode);
@@ -8498,7 +10425,7 @@ static inline void CpmModelC$Model$putOnAirTo(int dest, message_t *msg, bool ack
   CpmModelC$requestAck[sim_node()] = ack;
   CpmModelC$outgoing[sim_node()] = msg;
   CpmModelC$transmissionEndTime[sim_node()] = endTime;
-  sim_log_debug(151U, "CpmModelC", "Node %i transmitting to %i, finishes at %llu.\n", sim_node(), dest, endTime);
+  sim_log_debug(160U, "CpmModelC", "Node %i transmitting to %i, finishes at %llu.\n", sim_node(), dest, endTime);
 
   while (neighborEntry != (void *)0) {
       int other = neighborEntry->mote;
@@ -8511,7 +10438,7 @@ static inline void CpmModelC$Model$putOnAirTo(int dest, message_t *msg, bool ack
   list = CpmModelC$outstandingReceptionHead[sim_node()];
   while (list != (void *)0) {
       list->lost = 1;
-      sim_log_debug(152U, "CpmModelC,SNRLoss", "Lost packet from %i because %i has outstanding reception, startTime %llu endTime %llu\n", list->source, sim_node(), list->start, list->end);
+      sim_log_debug(161U, "CpmModelC,SNRLoss", "Lost packet from %i because %i has outstanding reception, startTime %llu endTime %llu\n", list->source, sim_node(), list->start, list->end);
       list = list->next;
     }
 }
@@ -8532,7 +10459,7 @@ static inline void TossimPacketModelC$send_transmit_done(sim_event_t *evt)
 #line 282
   TossimPacketModelC$sending[sim_node()] = (void *)0;
   TossimPacketModelC$transmitting[sim_node()] = FALSE;
-  sim_log_debug(126U, "TossimPacketModelC", "PACKET: Signaling send done at %llu.\n", sim_time());
+  sim_log_debug(135U, "TossimPacketModelC", "PACKET: Signaling send done at %llu.\n", sim_time());
   TossimPacketModelC$Packet$sendDone(rval, TossimPacketModelC$running[sim_node()] ? SUCCESS : EOFF);
 }
 
@@ -8555,13 +10482,13 @@ static inline void TossimPacketModelC$send_transmit(sim_event_t *evt)
   evt->time += duration;
   evt->handle = TossimPacketModelC$send_transmit_done;
 
-  sim_log_debug(124U, "TossimPacketModelC", "PACKET: Broadcasting packet to everyone.\n");
+  sim_log_debug(133U, "TossimPacketModelC", "PACKET: Broadcasting packet to everyone.\n");
   TossimPacketModelC$GainRadioModel$putOnAirTo(TossimPacketModelC$destNode[sim_node()], TossimPacketModelC$sending[sim_node()], __nesc_ntoh_uint8(metadata->ack.nxdata), evt->time, 0.0, 0.0);
   __nesc_hton_uint8(metadata->ack.nxdata, 0);
 
   evt->time += sim_csma_rxtx_delay() * (sim_ticks_per_sec() / sim_csma_symbols_per_sec());
 
-  sim_log_debug(125U, "TossimPacketModelC", "PACKET: Send done at %llu.\n", evt->time);
+  sim_log_debug(134U, "TossimPacketModelC", "PACKET: Send done at %llu.\n", evt->time);
 
   sim_queue_insert(evt);
 }
@@ -8571,7 +10498,7 @@ static inline void CpmModelC$Model$setPendingTransmission(void )
 #line 459
 {
   CpmModelC$transmitting[sim_node()] = TRUE;
-  sim_log_debug(153U, "CpmModelC", "setPendingTransmission: transmitting %i @ %s\n", CpmModelC$transmitting[sim_node()], sim_time_string());
+  sim_log_debug(162U, "CpmModelC", "setPendingTransmission: transmitting %i @ %s\n", CpmModelC$transmitting[sim_node()], sim_time_string());
 }
 
 # 57 "/root/local/tinyos-2.1.1/tos/lib/tossim/GainRadioModel.nc"
@@ -8585,7 +10512,7 @@ inline static void TossimPacketModelC$GainRadioModel$setPendingTransmission(void
 static inline bool CpmModelC$Model$clearChannel(void )
 #line 211
 {
-  sim_log_debug(132U, "CpmModelC", "Checking clear channel @ %s: %f <= %f \n", sim_time_string(), (double )CpmModelC$packetNoise((void *)0), CpmModelC$clearThreshold[sim_node()]);
+  sim_log_debug(141U, "CpmModelC", "Checking clear channel @ %s: %f <= %f \n", sim_time_string(), (double )CpmModelC$packetNoise((void *)0), CpmModelC$clearThreshold[sim_node()]);
   return CpmModelC$packetNoise((void *)0) < CpmModelC$clearThreshold[sim_node()];
 }
 
@@ -8648,7 +10575,7 @@ static inline void TossimPacketModelC$send_backoff(sim_event_t *evt)
 
 #line 243
         TossimPacketModelC$sending[sim_node()] = (void *)0;
-        sim_log_debug(123U, "TossimPacketModelC", "PACKET: Failed to send packet due to busy channel.\n");
+        sim_log_debug(132U, "TossimPacketModelC", "PACKET: Failed to send packet due to busy channel.\n");
         TossimPacketModelC$Packet$sendDone(rval, EBUSY);
       }
     }
@@ -8669,7 +10596,7 @@ static inline void TossimPacketModelC$start_csma(void )
   backoff %= sim_csma_init_high() - sim_csma_init_low();
   backoff += sim_csma_init_low();
   backoff *= sim_ticks_per_sec() / sim_csma_symbols_per_sec();
-  sim_log_debug(122U, "TossimPacketModelC", "Starting CMSA with %lli.\n", backoff);
+  sim_log_debug(131U, "TossimPacketModelC", "Starting CMSA with %lli.\n", backoff);
   first_sample = sim_time() + backoff;
 
   TossimPacketModelC$sendEvent[sim_node()].mote = sim_node();
@@ -8687,11 +10614,11 @@ static inline error_t TossimPacketModelC$Packet$send(int dest, message_t *msg, u
 #line 161
 {
   if (!TossimPacketModelC$initialized[sim_node()]) {
-      sim_log_error(120U, "TossimPacketModelC", "TossimPacketModelC: Send.send() called, but not initialized!\n");
+      sim_log_error(129U, "TossimPacketModelC", "TossimPacketModelC: Send.send() called, but not initialized!\n");
       return EOFF;
     }
   if (!TossimPacketModelC$running[sim_node()]) {
-      sim_log_error(121U, "TossimPacketModelC", "TossimPacketModelC: Send.send() called, but not running!\n");
+      sim_log_error(130U, "TossimPacketModelC", "TossimPacketModelC: Send.send() called, but not running!\n");
       return EOFF;
     }
 
@@ -8778,7 +10705,7 @@ static inline double CpmModelC$prr_estimate_from_snr(double SNR)
   double prr_hat = pow(1 - PSE, 23 * 2);
 
 #line 239
-  sim_log_debug(133U, "CpmModelC,SNR", "SNR is %lf, PRR is %lf\n", SNR, prr_hat);
+  sim_log_debug(142U, "CpmModelC,SNR", "SNR is %lf, PRR is %lf\n", SNR, prr_hat);
   if (prr_hat > 1) {
     prr_hat = 1.1;
     }
@@ -8800,7 +10727,7 @@ static inline bool TossimActiveMessageC$Model$shouldAck(message_t *msg)
 
 #line 129
   if (__nesc_ntoh_uint16(header->dest.nxdata) == TossimActiveMessageC$amAddress()) {
-      sim_log_debug(113U, "Acks", "Received packet addressed to me so ack it\n");
+      sim_log_debug(122U, "Acks", "Received packet addressed to me so ack it\n");
       return TRUE;
     }
   return FALSE;
@@ -8832,7 +10759,7 @@ static inline void TossimPacketModelC$GainRadioModel$acked(message_t *msg)
       __nesc_hton_uint8(metadata->ack.nxdata, 1);
       if (msg != TossimPacketModelC$sending[sim_node()]) {
           TossimPacketModelC$error[sim_node()] = 1;
-          sim_log_debug(127U, "TossimPacketModelC", "Requested ack for 0x%x, but outgoing packet is 0x%x.\n", msg, TossimPacketModelC$sending[sim_node()]);
+          sim_log_debug(136U, "TossimPacketModelC", "Requested ack for 0x%x, but outgoing packet is 0x%x.\n", msg, TossimPacketModelC$sending[sim_node()]);
         }
     }
 }
@@ -8855,7 +10782,7 @@ static inline double CpmModelC$arr_estimate_from_snr(double SNR)
   double prr_hat = pow(1 - PSE, 23 * 2);
 
 #line 157
-  sim_log_debug(130U, "CpmModelC,SNRLoss", "SNR is %lf, ARR is %lf\n", SNR, prr_hat);
+  sim_log_debug(139U, "CpmModelC,SNRLoss", "SNR is %lf, ARR is %lf\n", SNR, prr_hat);
   if (prr_hat > 1) {
     prr_hat = 1.1;
     }
@@ -8937,27 +10864,14 @@ static inline void SimpleSendP$sendTimer$fired(void )
   SimpleSendP$sendBufferTask$postTask();
 }
 
-# 218 "/root/workspace/Project1/src/Node.nc"
-static inline void Node$NeighborDiscovery$discoverNeighbors(void )
-{
-  Node$makePack(&Node$sendPackage[sim_node()], TOS_NODE_ID, UNSPECIFIED, MAX_TTL, PROTOCOL_PING, SEQUENCE_START, Node$pingPacket[sim_node()], PACKET_MAX_PAYLOAD_SIZE8);
-  Node$PacketHandler$send(&Node$sendPackage[sim_node()], AM_BROADCAST_ADDR, FALSE);
-}
-
-#line 82
-static inline void Node$FrequentUpdate$fired(void )
-{
-  Node$NeighborDiscovery$discoverNeighbors();
-}
-
 # 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
-inline static error_t LinkStateRoutingP$SendNeighbors$postTask(void ){
+inline static error_t Node$doFrequentEvents$postTask(void ){
 #line 67
   unsigned char __nesc_result;
 #line 67
 
 #line 67
-  __nesc_result = SimSchedulerBasicP$TaskBasic$postTask(LinkStateRoutingP$SendNeighbors);
+  __nesc_result = SimSchedulerBasicP$TaskBasic$postTask(Node$doFrequentEvents);
 #line 67
 
 #line 67
@@ -8965,256 +10879,73 @@ inline static error_t LinkStateRoutingP$SendNeighbors$postTask(void ){
 #line 67
 }
 #line 67
-# 159 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
-static inline void LinkStateRoutingP$LinkStateRouting$shareLinkState(void )
+# 149 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$FrequentUpdate$fired(void )
 {
-  uint16_t *destinations;
-  uint32_t ind;
-  uint32_t copyInd;
-  bool sent = FALSE;
-
-
-  memset(LinkStateRoutingP$linkStatePacket[sim_node()], 0, sizeof LinkStateRoutingP$linkStatePacket[sim_node()]);
-
-
-  destinations = (uint16_t *)&LinkStateRoutingP$linkStatePacket[sim_node()][0];
-
-
-  for (ind = 0, copyInd = 0; ind < NEIGHBOR_TABLE_SIZE; ind++) 
-    {
-
-      if (LinkStateRoutingP$neighborIDs[sim_node()][ind] == EMPTY || LinkStateRoutingP$neighborTable[sim_node()][ind] == CONNECTION_NONE) {
-        continue;
-        }
-
-      if (!(LinkStateRoutingP$neighborTable[sim_node()][ind] & CONNECTION_SEND) || !(LinkStateRoutingP$neighborTable[sim_node()][ind] & CONNECTION_RECEIVE)) {
-        continue;
-        }
-
-      destinations[copyInd++ % PACKET_MAX_PAYLOAD_SIZE16] = LinkStateRoutingP$neighborIDs[sim_node()][ind];
-
-
-      sent = FALSE;
-
-
-      if (copyInd % PACKET_MAX_PAYLOAD_SIZE16 == 0) 
-        {
-
-          LinkStateRoutingP$SendNeighbors$postTask();
-          sent = TRUE;
-        }
-    }
-
-
-  if (!sent) 
-    {
-
-      LinkStateRoutingP$SendNeighbors$postTask();
-    }
+  Node$doFrequentEvents$postTask();
 }
 
-# 8 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
-inline static void Node$LinkStateRouting$shareLinkState(void ){
-#line 8
-  LinkStateRoutingP$LinkStateRouting$shareLinkState();
-#line 8
+# 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+inline static error_t Node$doModerateEvents$postTask(void ){
+#line 67
+  unsigned char __nesc_result;
+#line 67
+
+#line 67
+  __nesc_result = SimSchedulerBasicP$TaskBasic$postTask(Node$doModerateEvents);
+#line 67
+
+#line 67
+  return __nesc_result;
+#line 67
 }
-#line 8
-# 78 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
-static inline void NeighborDiscoveryP$NeighborDiscovery$timeOutCheck(void )
-{
-  uint32_t ind;
-
-  for (ind = 0; ind < NEIGHBOR_TABLE_SIZE; ind++) 
-    {
-
-      if (NeighborDiscoveryP$neighborIDs[sim_node()][ind] == EMPTY) {
-        continue;
-        }
-
-      if (NeighborDiscoveryP$neighborTable[sim_node()][ind] == CONNECTION_NONE) {
-        continue;
-        }
-
-      if (NeighborDiscoveryP$TimeOutState[sim_node()]) 
-        {
-
-          NeighborDiscoveryP$neighborTable[sim_node()][ind] |= CONNECTION_WAITING_RESPONSE;
-        }
-      else 
-
-        {
-          if ((NeighborDiscoveryP$neighborTable[sim_node()][ind] & CONNECTION_WAITING_RESPONSE) != 0) 
-            {
-
-              if ((NeighborDiscoveryP$neighborTable[sim_node()][ind] & CONNECTION_TIMED_OUT) == 0) {
-                sim_log_debug(213U, "Project1N", "Connection timed out:\t %d -> %d\n", TOS_NODE_ID, NeighborDiscoveryP$neighborIDs[sim_node()][ind]);
-                }
-              NeighborDiscoveryP$neighborTable[sim_node()][ind] |= CONNECTION_TIMED_OUT;
-            }
-        }
-    }
-
-  NeighborDiscoveryP$TimeOutState[sim_node()] = !NeighborDiscoveryP$TimeOutState[sim_node()];
-}
-
-# 7 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
-inline static void Node$NeighborDiscovery$timeOutCheck(void ){
-#line 7
-  NeighborDiscoveryP$NeighborDiscovery$timeOutCheck();
-#line 7
-}
-#line 7
-# 88 "/root/workspace/Project1/src/Node.nc"
+#line 67
+# 155 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$ModerateUpdate$fired(void )
 {
-  Node$NeighborDiscovery$timeOutCheck();
-  Node$LinkStateRouting$shareLinkState();
+  Node$doModerateEvents$postTask();
 }
 
-# 48 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
-static inline void LinkStateRoutingP$LinkStateRouting$calculateRoute(void )
-{
-  uint32_t considering;
-  uint32_t lowestValue;
-  uint32_t hop;
-  uint32_t ind;
+# 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+inline static error_t Node$doSparseEvents$postTask(void ){
+#line 67
+  unsigned char __nesc_result;
+#line 67
 
+#line 67
+  __nesc_result = SimSchedulerBasicP$TaskBasic$postTask(Node$doSparseEvents);
+#line 67
 
-  memset(LinkStateRoutingP$forwardTableDest[sim_node()], 0, sizeof(uint16_t ) * FORWARD_TABLE_SIZE);
-  memset(LinkStateRoutingP$forwardTableCost[sim_node()], 0, sizeof(uint16_t ) * FORWARD_TABLE_SIZE);
-  memset(LinkStateRoutingP$forwardTableHop[sim_node()], 0, sizeof(uint16_t ) * FORWARD_TABLE_SIZE);
-
-
-  memcpy(LinkStateRoutingP$unconsidered[sim_node()], LinkStateRoutingP$existing[sim_node()], sizeof LinkStateRoutingP$existing[sim_node()]);
-  LinkStateRoutingP$unconsidered[sim_node()][TOS_NODE_ID] = FALSE;
-  hop = 0;
-
-
-  for (ind = 0; ind < NEIGHBOR_TABLE_SIZE; ind++) 
-    {
-
-      if (LinkStateRoutingP$neighborIDs[sim_node()][ind] == EMPTY || LinkStateRoutingP$neighborTable[sim_node()][ind] == CONNECTION_NONE) {
-        continue;
-        }
-
-      LinkStateRoutingP$forwardTableDest[sim_node()][LinkStateRoutingP$neighborIDs[sim_node()][ind]] = LinkStateRoutingP$neighborIDs[sim_node()][ind];
-      LinkStateRoutingP$forwardTableCost[sim_node()][LinkStateRoutingP$neighborIDs[sim_node()][ind]] = NEIGHBOR_COST;
-      LinkStateRoutingP$forwardTableHop[sim_node()][LinkStateRoutingP$neighborIDs[sim_node()][ind]] = LinkStateRoutingP$neighborIDs[sim_node()][ind];
-    }
-
-
-
-
-  while (TRUE) 
-    {
-      lowestValue = 0;
-      considering = NONE;
-
-
-      for (ind = 0; ind < FORWARD_TABLE_SIZE; ind++) 
-        {
-          if (LinkStateRoutingP$unconsidered[sim_node()][ind] == TRUE) 
-            {
-
-              goto notEmpty;
-            }
-        }
-      break;
-      notEmpty: 
-
-
-        for (ind = 0; ind < FORWARD_TABLE_SIZE; ind++) 
-          {
-
-            if (!LinkStateRoutingP$unconsidered[sim_node()][ind] || LinkStateRoutingP$forwardTableCost[sim_node()][ind] == INF) {
-              continue;
-              }
-            if (LinkStateRoutingP$forwardTableCost[sim_node()][ind] < lowestValue || lowestValue == 0) {
-              considering = ind;
-              }
-          }
-
-      for (ind = 0; ind < NEIGHBOR_TABLE_SIZE; ind++) 
-        {
-
-          if (LinkStateRoutingP$neighborIDs[sim_node()][ind] == EMPTY || LinkStateRoutingP$neighborTable[sim_node()][ind] == CONNECTION_NONE) {
-            continue;
-            }
-          if (LinkStateRoutingP$neighborIDs[sim_node()][ind] == considering) 
-            {
-              hop = LinkStateRoutingP$neighborIDs[sim_node()][ind];
-            }
-        }
-
-
-      for (ind = 0; ind < FORWARD_TABLE_SIZE; ind++) 
-        {
-          if (LinkStateRoutingP$linkStates[sim_node()][considering][ind] == EMPTY) {
-            continue;
-            }
-
-          if (LinkStateRoutingP$forwardTableCost[sim_node()][ind] == INF || 
-          LinkStateRoutingP$forwardTableCost[sim_node()][ind] > LinkStateRoutingP$forwardTableCost[sim_node()][considering] + NEIGHBOR_COST) 
-            {
-
-              LinkStateRoutingP$forwardTableDest[sim_node()][ind] = ind;
-              LinkStateRoutingP$forwardTableCost[sim_node()][ind] = LinkStateRoutingP$forwardTableCost[sim_node()][considering] + NEIGHBOR_COST;
-              LinkStateRoutingP$forwardTableHop[sim_node()][ind] = hop;
-            }
-        }
-
-
-      LinkStateRoutingP$unconsidered[sim_node()][considering] = FALSE;
-    }
-
-
-
-
-  memset(LinkStateRoutingP$existing[sim_node()], 0, sizeof LinkStateRoutingP$existing[sim_node()]);
+#line 67
+  return __nesc_result;
+#line 67
 }
-
-# 9 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
-inline static void Node$LinkStateRouting$calculateRoute(void ){
-#line 9
-  LinkStateRoutingP$LinkStateRouting$calculateRoute();
-#line 9
-}
-#line 9
-# 96 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
-static inline void PacketHandlerP$PacketHandler$ageSequenceTable(void )
-{
-  uint32_t ind;
-
-#line 99
-  for (ind = 0; ind < SEQUENCE_TABLE_SIZE; ind++) 
-    {
-
-      if (PacketHandlerP$sequenceTableAge[sim_node()][ind] > 0) {
-        PacketHandlerP$sequenceTableAge[sim_node()][ind]--;
-        }
-
-      if (PacketHandlerP$sequenceTableAge[sim_node()][ind] == 0) 
-        {
-          PacketHandlerP$sequenceTableSrc[sim_node()][ind] = 0;
-          PacketHandlerP$sequenceTableSeq[sim_node()][ind] = 0;
-        }
-    }
-}
-
-# 10 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
-inline static void Node$PacketHandler$ageSequenceTable(void ){
-#line 10
-  PacketHandlerP$PacketHandler$ageSequenceTable();
-#line 10
-}
-#line 10
-# 95 "/root/workspace/Project1/src/Node.nc"
+#line 67
+# 161 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$SparseUpdate$fired(void )
 {
-  Node$PacketHandler$ageSequenceTable();
-  Node$LinkStateRouting$calculateRoute();
-  sim_log_debug(48U, "Project2", "\tSwag\n");
+  Node$doSparseEvents$postTask();
+}
+
+# 67 "/root/local/tinyos-2.1.1/tos/interfaces/TaskBasic.nc"
+inline static error_t Node$doRareEvents$postTask(void ){
+#line 67
+  unsigned char __nesc_result;
+#line 67
+
+#line 67
+  __nesc_result = SimSchedulerBasicP$TaskBasic$postTask(Node$doRareEvents);
+#line 67
+
+#line 67
+  return __nesc_result;
+#line 67
+}
+#line 67
+# 167 "/root/workspace/Project1/src/Node.nc"
+static inline void Node$RareUpdate$fired(void )
+{
+  Node$doRareEvents$postTask();
 }
 
 # 204 "/root/local/tinyos-2.1.1/tos/lib/timer/VirtualizeTimerC.nc"
@@ -9223,9 +10954,9 @@ static inline void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$d
 }
 
 # 83 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
-inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$fired(uint8_t arg_0x40b41c70){
+inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$fired(uint8_t arg_0x40ba0c70){
 #line 83
-  switch (arg_0x40b41c70) {
+  switch (arg_0x40ba0c70) {
 #line 83
     case 0U:
 #line 83
@@ -9251,9 +10982,15 @@ inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$f
 #line 83
       break;
 #line 83
+    case 4U:
+#line 83
+      Node$RareUpdate$fired();
+#line 83
+      break;
+#line 83
     default:
 #line 83
-      /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$default$fired(arg_0x40b41c70);
+      /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$default$fired(arg_0x40ba0c70);
 #line 83
       break;
 #line 83
@@ -9327,7 +11064,7 @@ static inline void /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm
 static inline void HplAtm128Timer0AsyncP$cancel_compare(void )
 #line 577
 {
-  sim_log_debug(183U, "HplAtm128CompareC", "Cancelling compare at 0x%p\n", HplAtm128Timer0AsyncP$compare[sim_node()]);
+  sim_log_debug(192U, "HplAtm128CompareC", "Cancelling compare at 0x%p\n", HplAtm128Timer0AsyncP$compare[sim_node()]);
   if (HplAtm128Timer0AsyncP$compare[sim_node()] != (void *)0) {
       HplAtm128Timer0AsyncP$compare[sim_node()]->cancelled = 1;
       HplAtm128Timer0AsyncP$compare[sim_node()]->cleanup = sim_queue_cleanup_total;
@@ -9356,7 +11093,7 @@ static inline void HplAtm128Timer0AsyncP$cancel_overflow(void )
 {
   if (HplAtm128Timer0AsyncP$overflow[sim_node()] != (void *)0) {
       HplAtm128Timer0AsyncP$overflow[sim_node()]->cancelled = 1;
-      sim_log_debug(182U, "HplAtm128Timer0AsyncP", "Cancelling overflow %p.\n", HplAtm128Timer0AsyncP$overflow[sim_node()]);
+      sim_log_debug(191U, "HplAtm128Timer0AsyncP", "Cancelling overflow %p.\n", HplAtm128Timer0AsyncP$overflow[sim_node()]);
       HplAtm128Timer0AsyncP$overflow[sim_node()]->cleanup = sim_queue_cleanup_total;
     }
 }
@@ -9371,11 +11108,11 @@ static inline void HplAtm128Timer0AsyncP$timer0_overflow_handle(sim_event_t *evt
   else {
       if ((atm128RegFile[sim_node()][ATM128_TIMSK] & (1 << TOIE0)) != 0) {
           atm128RegFile[sim_node()][ATM128_TIFR] &= ~(1 << TOV0);
-          sim_log_debug(179U, "HplAtm128Timer0AsyncP", "Overflow interrupt at %s\n", sim_time_string());
+          sim_log_debug(188U, "HplAtm128Timer0AsyncP", "Overflow interrupt at %s\n", sim_time_string());
           INTERRUPT_16();
         }
       else {
-          sim_log_debug(180U, "HplAtm128Timer0AsyncP", "Setting overflow bit at %s\n", sim_time_string());
+          sim_log_debug(189U, "HplAtm128Timer0AsyncP", "Setting overflow bit at %s\n", sim_time_string());
           atm128RegFile[sim_node()][ATM128_TIFR] |= 1 << TOV0;
         }
       HplAtm128Timer0AsyncP$configure_overflow(evt);
@@ -9425,7 +11162,7 @@ static inline void HplAtm128Timer0AsyncP$Timer0$set(uint8_t newVal)
   uint8_t curVal = HplAtm128Timer0AsyncP$Timer0$get();
 
 #line 299
-  sim_log_debug(172U, "HplAtm128Timer0AsyncP", "HplAtm128Timer0AsyncP: Setting timer: %hhu\n", newVal);
+  sim_log_debug(181U, "HplAtm128Timer0AsyncP", "HplAtm128Timer0AsyncP: Setting timer: %hhu\n", newVal);
   if (newVal == curVal) {
       return;
     }
@@ -9452,7 +11189,7 @@ static inline void HplAtm128Timer0AsyncP$Timer0$set(uint8_t newVal)
 static inline void HplAtm128Timer0AsyncP$timer0_compare_handle(sim_event_t *evt)
 #line 187
 {
-  sim_log_debug(162U, "HplAtm128Timer0AsyncP", "Beginning compare 0x%p at %s\n", evt, sim_time_string());
+  sim_log_debug(171U, "HplAtm128Timer0AsyncP", "Beginning compare 0x%p at %s\n", evt, sim_time_string());
   if (evt->cancelled) {
       return;
     }
@@ -9461,21 +11198,21 @@ static inline void HplAtm128Timer0AsyncP$timer0_compare_handle(sim_event_t *evt)
 
 #line 194
       sim_print_now(timeStr, 128);
-      sim_log_debug(163U, "HplAtm128Timer0AsyncP", "Handling compare at 0x%p @ %s\n", evt, sim_time_string());
+      sim_log_debug(172U, "HplAtm128Timer0AsyncP", "Handling compare at 0x%p @ %s\n", evt, sim_time_string());
 
       if ((atm128RegFile[sim_node()][ATM128_TCCR0] & (1 << WGM01)) != 0 && !((atm128RegFile[sim_node()][ATM128_TCCR0] & (1 << WGM00)) != 0)) {
-          sim_log_debug(164U, "HplAtm128Timer0AsyncP", "%s: CTC is set, clear timer.\n", __FUNCTION__);
+          sim_log_debug(173U, "HplAtm128Timer0AsyncP", "%s: CTC is set, clear timer.\n", __FUNCTION__);
           HplAtm128Timer0AsyncP$Timer0$set(0);
         }
       else {
-          sim_log_debug(165U, "HplAtm128Timer0AsyncP", "%s: TCCR is 0x%hhx, %i, %i\n", __FUNCTION__, * (volatile uint8_t *)&atm128RegFile[sim_node()][0x33], (int )((atm128RegFile[sim_node()][ATM128_TCCR0] & (1 << WGM01)) != 0), (int )((atm128RegFile[sim_node()][ATM128_TCCR0] & (1 << WGM00)) != 0));
+          sim_log_debug(174U, "HplAtm128Timer0AsyncP", "%s: TCCR is 0x%hhx, %i, %i\n", __FUNCTION__, * (volatile uint8_t *)&atm128RegFile[sim_node()][0x33], (int )((atm128RegFile[sim_node()][ATM128_TCCR0] & (1 << WGM01)) != 0), (int )((atm128RegFile[sim_node()][ATM128_TCCR0] & (1 << WGM00)) != 0));
         }
 
       if ((atm128RegFile[sim_node()][ATM128_TIMSK] & (1 << OCIE0)) != 0) {
-          sim_log_debug(166U, "HplAtm128Timer0AsyncP", "TIFR is %hhx\n", * (volatile uint8_t *)&atm128RegFile[sim_node()][0x36]);
+          sim_log_debug(175U, "HplAtm128Timer0AsyncP", "TIFR is %hhx\n", * (volatile uint8_t *)&atm128RegFile[sim_node()][0x36]);
           atm128RegFile[sim_node()][ATM128_TIFR] &= ~(1 << OCF0);
-          sim_log_debug(167U, "HplAtm128Timer0AsyncP", "TIFR is %hhx\n", * (volatile uint8_t *)&atm128RegFile[sim_node()][0x36]);
-          sim_log_debug(168U, "HplAtm128Timer0AsyncP", "Compare interrupt @ %s\n", timeStr);
+          sim_log_debug(176U, "HplAtm128Timer0AsyncP", "TIFR is %hhx\n", * (volatile uint8_t *)&atm128RegFile[sim_node()][0x36]);
+          sim_log_debug(177U, "HplAtm128Timer0AsyncP", "Compare interrupt @ %s\n", timeStr);
           INTERRUPT_15();
         }
       else {
@@ -9495,7 +11232,7 @@ static inline sim_event_t *HplAtm128Timer0AsyncP$allocate_compare(void )
   sim_event_t *newEvent = sim_queue_allocate_event();
 
 #line 225
-  sim_log_debug(169U, "HplAtm128Timer0AsyncP", "Allocated compare at 0x%p\n", newEvent);
+  sim_log_debug(178U, "HplAtm128Timer0AsyncP", "Allocated compare at 0x%p\n", newEvent);
   newEvent->handle = HplAtm128Timer0AsyncP$timer0_compare_handle;
   newEvent->cleanup = sim_queue_cleanup_none;
   return newEvent;
@@ -9608,6 +11345,20 @@ inline static error_t TossimPacketModelC$startDoneTask$postTask(void ){
 
 #line 67
   __nesc_result = SimSchedulerBasicP$TaskBasic$postTask(TossimPacketModelC$startDoneTask);
+#line 67
+
+#line 67
+  return __nesc_result;
+#line 67
+}
+#line 67
+inline static error_t LinkStateRoutingP$SendNeighbors$postTask(void ){
+#line 67
+  unsigned char __nesc_result;
+#line 67
+
+#line 67
+  __nesc_result = SimSchedulerBasicP$TaskBasic$postTask(LinkStateRoutingP$SendNeighbors);
 #line 67
 
 #line 67
@@ -9775,7 +11526,7 @@ inline static bool SimMainP$Scheduler$runNextTask(void ){
 static inline error_t TossimPacketModelC$Init$init(void )
 #line 86
 {
-  sim_log_debug(115U, "TossimPacketModelC", "TossimPacketModelC: Init.init() called\n");
+  sim_log_debug(124U, "TossimPacketModelC", "TossimPacketModelC: Init.init() called\n");
   TossimPacketModelC$initialized[sim_node()] = TRUE;
 
 
@@ -9803,7 +11554,7 @@ inline static void /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm
 static inline void HplAtm128Timer0AsyncP$Timer0Ctrl$setControl(Atm128TimerControl_t x)
 #line 364
 {
-  sim_log_debug(174U, "HplAtm128Timer0AsyncP", "Setting control to be 0x%hhx\n", x.flat);
+  sim_log_debug(183U, "HplAtm128Timer0AsyncP", "Setting control to be 0x%hhx\n", x.flat);
   * (volatile uint8_t *)&atm128RegFile[sim_node()][0x33] = x.flat;
 }
 
@@ -9910,66 +11661,45 @@ inline static uint32_t Node$Random$rand32(void ){
 #line 46
 }
 #line 46
-# 64 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
-inline static void Node$SparseUpdate$startPeriodic(uint32_t dt){
-#line 64
-  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startPeriodic(3U, dt);
-#line 64
-}
-#line 64
-inline static void Node$ModerateUpdate$startPeriodic(uint32_t dt){
-#line 64
-  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startPeriodic(2U, dt);
-#line 64
-}
-#line 64
-inline static void Node$FrequentUpdate$startPeriodic(uint32_t dt){
-#line 64
-  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startPeriodic(1U, dt);
-#line 64
-}
-#line 64
-# 18 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
-static inline void NeighborDiscoveryP$NeighborDiscovery$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer)
+# 17 "/root/workspace/Project1/src/lib/modules/TCPP.nc"
+static inline void TCPP$TCP$initialize(void )
 {
-  NeighborDiscoveryP$neighborIDs[sim_node()] = neighborIDsPointer;
-  NeighborDiscoveryP$neighborTable[sim_node()] = neighborTablePointer;
+}
+
+# 7 "/root/workspace/Project1/src/lib/interfaces/TCP.nc"
+inline static void Node$TCP$initialize(void ){
+#line 7
+  TCPP$TCP$initialize();
+#line 7
+}
+#line 7
+# 16 "/root/workspace/Project1/src/lib/modules/NeighborDiscoveryP.nc"
+static inline void NeighborDiscoveryP$NeighborDiscovery$initialize(void )
+{
 }
 
 # 6 "/root/workspace/Project1/src/lib/interfaces/NeighborDiscovery.nc"
-inline static void Node$NeighborDiscovery$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer){
+inline static void Node$NeighborDiscovery$initialize(void ){
 #line 6
-  NeighborDiscoveryP$NeighborDiscovery$initialize(neighborIDsPointer, neighborTablePointer);
+  NeighborDiscoveryP$NeighborDiscovery$initialize();
 #line 6
 }
 #line 6
-# 17 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
-static inline void PacketHandlerP$PacketHandler$initialize(uint16_t *sequenceTableSrcPtr, uint16_t *sequenceTableSeqPtr, uint16_t *sequenceTableAgePtr)
+# 12 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
+static inline void PacketHandlerP$PacketHandler$initialize(void )
 {
-
-  PacketHandlerP$sequenceTableSrc[sim_node()] = sequenceTableSrcPtr;
-  PacketHandlerP$sequenceTableSeq[sim_node()] = sequenceTableSeqPtr;
-  PacketHandlerP$sequenceTableAge[sim_node()] = sequenceTableAgePtr;
 }
 
 # 5 "/root/workspace/Project1/src/lib/interfaces/PacketHandler.nc"
-inline static void Node$PacketHandler$initialize(uint16_t *sequenceTableSrcPtr, uint16_t *sequenceTableSeqPtr, uint16_t *sequenceTableAgePtr){
+inline static void Node$PacketHandler$initialize(void ){
 #line 5
-  PacketHandlerP$PacketHandler$initialize(sequenceTableSrcPtr, sequenceTableSeqPtr, sequenceTableAgePtr);
+  PacketHandlerP$PacketHandler$initialize();
 #line 5
 }
 #line 5
-# 30 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
-static inline void LinkStateRoutingP$LinkStateRouting$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer, 
-uint16_t *forwardTableDestPointer, uint16_t *forwardTableCostPointer, uint16_t *forwardTableHopPointer)
+# 25 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
+static inline void LinkStateRoutingP$LinkStateRouting$initialize(void )
 {
-
-  LinkStateRoutingP$neighborIDs[sim_node()] = neighborIDsPointer;
-  LinkStateRoutingP$neighborTable[sim_node()] = neighborTablePointer;
-  LinkStateRoutingP$forwardTableDest[sim_node()] = forwardTableDestPointer;
-  LinkStateRoutingP$forwardTableCost[sim_node()] = forwardTableCostPointer;
-  LinkStateRoutingP$forwardTableHop[sim_node()] = forwardTableHopPointer;
-
 
   memset(LinkStateRoutingP$linkStatePacket[sim_node()], 0, sizeof LinkStateRoutingP$linkStatePacket[sim_node()]);
   memset(LinkStateRoutingP$existing[sim_node()], 0, sizeof LinkStateRoutingP$existing[sim_node()]);
@@ -9977,41 +11707,37 @@ uint16_t *forwardTableDestPointer, uint16_t *forwardTableCostPointer, uint16_t *
   memset(LinkStateRoutingP$linkStates[sim_node()], 0, sizeof LinkStateRoutingP$linkStates[sim_node()]);
 }
 
-# 5 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
-inline static void Node$LinkStateRouting$initialize(uint16_t *neighborIDsPointer, uint16_t *neighborTablePointer, uint16_t *forwardTableDestPointer, uint16_t *forwardTableCostPointer, uint16_t *forwardTableHopPointer){
-#line 5
-  LinkStateRoutingP$LinkStateRouting$initialize(neighborIDsPointer, neighborTablePointer, forwardTableDestPointer, forwardTableCostPointer, forwardTableHopPointer);
-#line 5
+# 6 "/root/workspace/Project1/src/lib/interfaces/LinkStateRouting.nc"
+inline static void Node$LinkStateRouting$initialize(void ){
+#line 6
+  LinkStateRoutingP$LinkStateRouting$initialize();
+#line 6
 }
-#line 5
-# 50 "/root/workspace/Project1/src/Node.nc"
+#line 6
+# 57 "/root/workspace/Project1/src/Node.nc"
 static inline void Node$Boot$booted(void )
 {
-
-
   Node$AMControl$start();
 
 
   memset(Node$pingPacket[sim_node()], 0, sizeof Node$pingPacket[sim_node()]);
-  memset(Node$neighborIDs[sim_node()], 0, sizeof Node$neighborIDs[sim_node()]);
-  memset(Node$neighborTable[sim_node()], 0, sizeof Node$neighborTable[sim_node()]);
-  memset(Node$forwardTableDest[sim_node()], 0, sizeof Node$forwardTableDest[sim_node()]);
-  memset(Node$forwardTableCost[sim_node()], 0, sizeof Node$forwardTableCost[sim_node()]);
-  memset(Node$forwardTableHop[sim_node()], 0, sizeof Node$forwardTableHop[sim_node()]);
-  memset(Node$sequenceTableSrc[sim_node()], 0, sizeof Node$sequenceTableSrc[sim_node()]);
-  memset(Node$sequenceTableSeq[sim_node()], 0, sizeof Node$sequenceTableSeq[sim_node()]);
-  memset(Node$sequenceTableAge[sim_node()], 0, sizeof Node$sequenceTableAge[sim_node()]);
 
 
-  Node$LinkStateRouting$initialize(Node$neighborIDs[sim_node()], Node$neighborTable[sim_node()], Node$forwardTableDest[sim_node()], Node$forwardTableCost[sim_node()], Node$forwardTableHop[sim_node()]);
-  Node$PacketHandler$initialize(Node$sequenceTableSrc[sim_node()], Node$sequenceTableSeq[sim_node()], Node$sequenceTableAge[sim_node()]);
-  Node$NeighborDiscovery$initialize(Node$neighborIDs[sim_node()], Node$neighborTable[sim_node()]);
+  Node$LinkStateRouting$initialize();
+  Node$PacketHandler$initialize();
+  Node$NeighborDiscovery$initialize();
+  Node$TCP$initialize();
 
 
+  Node$PeriodFrequent[sim_node()] = Node$Random$rand32() % 200 + 3999;
+  Node$PeriodModerate[sim_node()] = Node$Random$rand32() % 2000 + 19991;
+  Node$PeriodSparse[sim_node()] = Node$Random$rand32() % 20000 + 189999;
+  Node$PeriodRare[sim_node()] = Node$Random$rand32() % 40000 + 889999;
 
-  Node$FrequentUpdate$startPeriodic(Node$Random$rand32() % 196 + 1999);
-  Node$ModerateUpdate$startPeriodic(Node$Random$rand32() % 512 + 19991);
-  Node$SparseUpdate$startPeriodic(Node$Random$rand32() % 4096 + 189999);
+  Node$FrequentUpdate$startOneShot(Node$PeriodFrequent[sim_node()]);
+  Node$ModerateUpdate$startOneShot(Node$PeriodModerate[sim_node()]);
+  Node$SparseUpdate$startOneShot(Node$PeriodSparse[sim_node()]);
+  Node$RareUpdate$startOneShot(Node$PeriodRare[sim_node()]);
 
   sim_log_debug(47U, "genDebug", "Booted\n");
 }
@@ -10066,7 +11792,7 @@ static inline void SimMoteP$sim_mote_boot_handle(sim_event_t *e)
   sim_print_now(buf, 128);
 
   SimMoteP$bootEvent[sim_node()] = (sim_event_t *)(void *)0;
-  sim_log_debug(109U, "SimMoteP", "Turning on mote %i at time %s.\n", (int )sim_node(), buf);
+  sim_log_debug(118U, "SimMoteP", "Turning on mote %i at time %s.\n", (int )sim_node(), buf);
   SimMoteP$SimMote$turnOn();
 }
 
@@ -11525,11 +13251,11 @@ static void TossimActiveMessageC$Model$receive(message_t *msg)
   payload = TossimActiveMessageC$Packet$getPayload(TossimActiveMessageC$bufferPointer[sim_node()], TossimActiveMessageC$Packet$maxPayloadLength());
 
   if (TossimActiveMessageC$AMPacket$isForMe(msg)) {
-      sim_log_debug(111U, "AM", "Received active message (%p) of type %hhu and length %hhu for me @ %s.\n", TossimActiveMessageC$bufferPointer[sim_node()], TossimActiveMessageC$AMPacket$type(TossimActiveMessageC$bufferPointer[sim_node()]), len, sim_time_string());
+      sim_log_debug(120U, "AM", "Received active message (%p) of type %hhu and length %hhu for me @ %s.\n", TossimActiveMessageC$bufferPointer[sim_node()], TossimActiveMessageC$AMPacket$type(TossimActiveMessageC$bufferPointer[sim_node()]), len, sim_time_string());
       TossimActiveMessageC$bufferPointer[sim_node()] = TossimActiveMessageC$Receive$receive(TossimActiveMessageC$AMPacket$type(TossimActiveMessageC$bufferPointer[sim_node()]), TossimActiveMessageC$bufferPointer[sim_node()], payload, len);
     }
   else {
-      sim_log_debug(112U, "AM", "Snooped on active message of type %hhu and length %hhu for %hu @ %s.\n", TossimActiveMessageC$AMPacket$type(TossimActiveMessageC$bufferPointer[sim_node()]), len, TossimActiveMessageC$AMPacket$destination(TossimActiveMessageC$bufferPointer[sim_node()]), sim_time_string());
+      sim_log_debug(121U, "AM", "Snooped on active message of type %hhu and length %hhu for %hu @ %s.\n", TossimActiveMessageC$AMPacket$type(TossimActiveMessageC$bufferPointer[sim_node()]), len, TossimActiveMessageC$AMPacket$destination(TossimActiveMessageC$bufferPointer[sim_node()]), sim_time_string());
       TossimActiveMessageC$bufferPointer[sim_node()] = TossimActiveMessageC$Snoop$receive(TossimActiveMessageC$AMPacket$type(TossimActiveMessageC$bufferPointer[sim_node()]), TossimActiveMessageC$bufferPointer[sim_node()], payload, len);
     }
 }
@@ -11565,7 +13291,7 @@ static am_id_t TossimActiveMessageC$AMPacket$type(message_t *amsg)
   return __nesc_ntoh_uint8(header->type.nxdata);
 }
 
-# 148 "/root/workspace/Project1/src/Node.nc"
+# 205 "/root/workspace/Project1/src/Node.nc"
 static void Node$makePack(pack *Package, uint16_t src, uint16_t dest, uint8_t TTL, uint8_t protocol, uint16_t seq, uint8_t *payload, uint8_t length)
 {
 
@@ -11590,7 +13316,7 @@ static void Node$PacketHandler$send(pack *Package, uint16_t address, bool update
   unsigned char __nesc_temp43;
   unsigned char *__nesc_temp42;
 
-#line 170
+#line 227
   if (updateTTL) {
     (__nesc_temp42 = Package->TTL.nxdata, __nesc_hton_uint8(__nesc_temp42, (__nesc_temp43 = __nesc_ntoh_uint8(__nesc_temp42)) - 1), __nesc_temp43);
     }
@@ -11599,16 +13325,64 @@ static void Node$PacketHandler$send(pack *Package, uint16_t address, bool update
     return;
     }
 
-  if (__nesc_ntoh_uint16(Package->dest.nxdata) != UNSPECIFIED) 
+  if (__nesc_ntoh_uint16(Package->dest.nxdata) != UNSPECIFIED && address == AM_BROADCAST_ADDR && __nesc_ntoh_uint8(Package->protocol.nxdata) == PROTOCOL_PING) 
     {
-      if (Node$forwardTableHop[sim_node()][__nesc_ntoh_uint16(Package->dest.nxdata)] != EMPTY) {
-        address = Node$forwardTableHop[sim_node()][__nesc_ntoh_uint16(Package->dest.nxdata)];
+      if (Node$routingTable$contains(__nesc_ntoh_uint16(Package->dest.nxdata))) 
+        {
+          address = (uint16_t )Node$routingTable$get(__nesc_ntoh_uint16(Package->dest.nxdata));
+        }
+      else 
+
+        {
+          sim_log_debug(50U, "Project2", "\tEntry for %d not found in routing table. Aborting.\n", __nesc_ntoh_uint16(Package->dest.nxdata));
+          return;
         }
     }
+
   if (address != AM_BROADCAST_ADDR && __nesc_ntoh_uint8(Package->protocol.nxdata) == PROTOCOL_PING) {
-    sim_log_debug(51U, "Project2", "Delivering to %d through %d\n", __nesc_ntoh_uint16(Package->dest.nxdata), address);
+    sim_log_debug(51U, "Project2", "\tDelivering to hopping through %d to reach %d\n", address, __nesc_ntoh_uint16(Package->dest.nxdata));
     }
   Node$Sender$send(*Package, address);
+}
+
+# 159 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static bool /*NodeC.routingTable*/HashmapC$2$Hashmap$contains(uint32_t k)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  do 
+    {
+      j = /*NodeC.routingTable*/HashmapC$2$hash(k, i);
+      if (/*NodeC.routingTable*/HashmapC$2$map[sim_node()][j].key == k) {
+        return TRUE;
+        }
+#line 169
+      i++;
+    }
+  while (i < /*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE[sim_node()]);
+
+  return FALSE;
+}
+
+#line 121
+static /*NodeC.routingTable*/HashmapC$2$t /*NodeC.routingTable*/HashmapC$2$Hashmap$get(uint32_t k)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  do 
+    {
+      j = /*NodeC.routingTable*/HashmapC$2$hash(k, i);
+
+      if (/*NodeC.routingTable*/HashmapC$2$map[sim_node()][j].key == k) {
+        return /*NodeC.routingTable*/HashmapC$2$map[sim_node()][j].value;
+        }
+      i++;
+    }
+  while (i < /*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE[sim_node()]);
+
+  return /*NodeC.routingTable*/HashmapC$2$map[sim_node()][0].value;
 }
 
 # 69 "/root/local/tinyos-2.1.1/tos/system/QueueC.nc"
@@ -11621,18 +13395,18 @@ static void /*SimpleSendC.QueueC*/QueueC$0$printQueue(void )
   int j;
 
 #line 72
-  sim_log_debug(193U, "QueueC", "head <-");
+  sim_log_debug(202U, "QueueC", "head <-");
   for (i = /*SimpleSendC.QueueC*/QueueC$0$head[sim_node()]; i < /*SimpleSendC.QueueC*/QueueC$0$head[sim_node()] + /*SimpleSendC.QueueC*/QueueC$0$size[sim_node()]; i++) {
-      sim_log_debug_clear(194U, "QueueC", "[");
+      sim_log_debug_clear(203U, "QueueC", "[");
       for (j = 0; j < sizeof(/*SimpleSendC.QueueC*/QueueC$0$queue_t ); j++) {
           uint8_t v = ((uint8_t *)&/*SimpleSendC.QueueC*/QueueC$0$queue[sim_node()][i % 20])[j];
 
 #line 77
-          sim_log_debug_clear(195U, "QueueC", "%0.2hhx", v);
+          sim_log_debug_clear(204U, "QueueC", "%0.2hhx", v);
         }
-      sim_log_debug_clear(196U, "QueueC", "] ");
+      sim_log_debug_clear(205U, "QueueC", "] ");
     }
-  sim_log_debug_clear(197U, "QueueC", "<- tail\n");
+  sim_log_debug_clear(206U, "QueueC", "<- tail\n");
 }
 
 # 29 "/root/workspace/Project1/src/lib/modules/SimpleSendP.nc"
@@ -11671,11 +13445,11 @@ static error_t SimSchedulerBasicP$TaskBasic$postTask(uint8_t id)
 #line 210
     __nesc_atomic_end(__nesc_atomic); }
   if (result == SUCCESS) {
-      sim_log_debug(104U, "Scheduler", "Posting task %hhu.\n", id);
+      sim_log_debug(113U, "Scheduler", "Posting task %hhu.\n", id);
       SimSchedulerBasicP$sim_scheduler_submit_event();
     }
   else {
-      sim_log_debug(105U, "Scheduler", "Posting task %hhu, but already posted.\n", id);
+      sim_log_debug(114U, "Scheduler", "Posting task %hhu, but already posted.\n", id);
     }
   return result;
 }
@@ -11730,7 +13504,7 @@ static uint8_t HplAtm128Timer0AsyncP$Timer0$get(void )
   elapsed = HplAtm128Timer0AsyncP$sim_to_clock(elapsed);
   elapsed = elapsed >> HplAtm128Timer0AsyncP$shiftFromScale();
   rval = (uint8_t )(elapsed & 0xff);
-  sim_log_debug(171U, "HplAtm128Timer0AsyncP", "HplAtm128Timer0AsyncP: Getting timer: %hhu\n", rval);
+  sim_log_debug(180U, "HplAtm128Timer0AsyncP", "HplAtm128Timer0AsyncP: Getting timer: %hhu\n", rval);
   return rval;
 }
 
@@ -11809,7 +13583,7 @@ static Atm128_TIFR_t HplAtm128Timer0AsyncP$Timer0Ctrl$getInterruptFlag(void )
 static uint8_t HplAtm128Timer0AsyncP$Compare$get(void )
 #line 457
 {
-  sim_log_debug(177U, "HplAtm128Timer0AsyncP", "HplAtm128Timer0AsyncP: Getting compare: %hhu\n", * (volatile uint8_t *)&atm128RegFile[sim_node()][0x31]);
+  sim_log_debug(186U, "HplAtm128Timer0AsyncP", "HplAtm128Timer0AsyncP: Getting compare: %hhu\n", * (volatile uint8_t *)&atm128RegFile[sim_node()][0x31]);
   return * (volatile uint8_t *)&atm128RegFile[sim_node()][0x31];
 }
 
@@ -11843,45 +13617,254 @@ static uint32_t RandomMlcgC$Random$rand32(void )
   return mlcg;
 }
 
-# 239 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
+# 121 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static /*NodeC.neighborTable*/HashmapC$0$t /*NodeC.neighborTable*/HashmapC$0$Hashmap$get(uint32_t k)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  do 
+    {
+      j = /*NodeC.neighborTable*/HashmapC$0$hash(k, i);
+
+      if (/*NodeC.neighborTable*/HashmapC$0$map[sim_node()][j].key == k) {
+        return /*NodeC.neighborTable*/HashmapC$0$map[sim_node()][j].value;
+        }
+      i++;
+    }
+  while (i < /*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE[sim_node()]);
+
+  return /*NodeC.neighborTable*/HashmapC$0$map[sim_node()][0].value;
+}
+
+# 336 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
 static void LinkStateRoutingP$LinkStateRouting$printLinkState(void )
 {
   uint32_t nodeIndex;
   uint32_t neighborIndex;
 
-  sim_log_debug(218U, "Project2", "Link State:\n");
-  for (nodeIndex = 0; nodeIndex < FORWARD_TABLE_SIZE; nodeIndex++) 
+  sim_log_debug(229U, "Project2", "Link State:\n");
+  for (nodeIndex = 0; nodeIndex < ROUTING_TABLE_SIZE; nodeIndex++) 
     {
-      for (neighborIndex = 0; neighborIndex < FORWARD_TABLE_SIZE; neighborIndex++) 
+      for (neighborIndex = 0; neighborIndex < ROUTING_TABLE_SIZE; neighborIndex++) 
         {
           if (LinkStateRoutingP$linkStates[sim_node()][nodeIndex][neighborIndex] == EMPTY) {
             continue;
             }
-#line 251
-          sim_log_debug(219U, "Project2", "\t%d Connected to: %d\n", nodeIndex, neighborIndex);
+#line 348
+          sim_log_debug(230U, "Project2", "\tLink State: %d <-> %d\n", nodeIndex, neighborIndex);
         }
     }
 }
 
-# 75 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
-static error_t PacketHandlerP$PacketHandler$processSequence(pack *Packet)
+# 159 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static bool /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$contains(uint32_t k)
 {
-  uint32_t ind;
+  uint32_t i = 0;
+  uint32_t j = 0;
 
-
-  for (ind = 0; ind < SEQUENCE_TABLE_SIZE; ind++) 
+  do 
     {
-      if (PacketHandlerP$sequenceTableAge[sim_node()][ind] == 0) 
-        {
-
-          PacketHandlerP$sequenceTableSrc[sim_node()][ind] = __nesc_ntoh_uint16(Packet->src.nxdata);
-          PacketHandlerP$sequenceTableSeq[sim_node()][ind] = __nesc_ntoh_uint16(Packet->seq.nxdata);
-          PacketHandlerP$sequenceTableAge[sim_node()][ind] = SEQUENCE_TABLE_SIZE - 1;
-          break;
+      j = /*NodeC.TCPTablePTR*/HashmapC$3$hash(k, i);
+      if (/*NodeC.TCPTablePTR*/HashmapC$3$map[sim_node()][j].key == k) {
+        return TRUE;
         }
+#line 169
+      i++;
+    }
+  while (i < /*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE[sim_node()]);
+
+  return FALSE;
+}
+
+# 408 "/root/workspace/Project1/src/Node.nc"
+static void Node$TCP$setConnectionPTR(uint32_t connectionKey, uint8_t initialState)
+{
+  uint32_t insertionIndex;
+
+
+  Node$TCPTablePTR$insert(connectionKey, (void *)POINTER_NULL);
+  insertionIndex = Node$TCPTablePTR$getIndex(connectionKey);
+
+
+  Node$TCPTablePTR$insert(connectionKey, &Node$TCPTable[sim_node()][insertionIndex]);
+
+
+  Node$TCP$setConnectionState(connectionKey, initialState);
+
+  sim_log_debug(59U, "Project3", "\tTable entry made for %d with key %d\n", TOS_NODE_ID, connectionKey);
+}
+
+# 36 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static void /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$insert(uint32_t k, /*NodeC.TCPTablePTR*/HashmapC$3$t input)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  if (k == 0) {
+    return;
     }
 
+
+  do 
+    {
+      j = /*NodeC.TCPTablePTR*/HashmapC$3$hash(k, i);
+
+      if (/*NodeC.TCPTablePTR*/HashmapC$3$map[sim_node()][j].key == 0 || /*NodeC.TCPTablePTR*/HashmapC$3$map[sim_node()][j].key == k) 
+        {
+          if (/*NodeC.TCPTablePTR*/HashmapC$3$map[sim_node()][j].key == 0) 
+            {
+              /*NodeC.TCPTablePTR*/HashmapC$3$keys[sim_node()][/*NodeC.TCPTablePTR*/HashmapC$3$numofVals[sim_node()]] = k;
+              /*NodeC.TCPTablePTR*/HashmapC$3$numofVals[sim_node()]++;
+            }
+
+          /*NodeC.TCPTablePTR*/HashmapC$3$map[sim_node()][j].value = input;
+          /*NodeC.TCPTablePTR*/HashmapC$3$map[sim_node()][j].key = k;
+
+          return;
+        }
+
+      i++;
+    }
+  while (i < /*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE[sim_node()]);
+}
+
+#line 140
+static uint32_t /*NodeC.TCPTablePTR*/HashmapC$3$Hashmap$getIndex(uint32_t k)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  do 
+    {
+      j = /*NodeC.TCPTablePTR*/HashmapC$3$hash(k, i);
+
+      if (/*NodeC.TCPTablePTR*/HashmapC$3$map[sim_node()][j].key == k) {
+        return j;
+        }
+      i++;
+    }
+  while (i < /*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE[sim_node()]);
+
+  return -1;
+}
+
+static bool /*NodeC.neighborTable*/HashmapC$0$Hashmap$contains(uint32_t k)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  do 
+    {
+      j = /*NodeC.neighborTable*/HashmapC$0$hash(k, i);
+      if (/*NodeC.neighborTable*/HashmapC$0$map[sim_node()][j].key == k) {
+        return TRUE;
+        }
+#line 169
+      i++;
+    }
+  while (i < /*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE[sim_node()]);
+
+  return FALSE;
+}
+
+#line 36
+static void /*NodeC.neighborTable*/HashmapC$0$Hashmap$insert(uint32_t k, /*NodeC.neighborTable*/HashmapC$0$t input)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  if (k == 0) {
+    return;
+    }
+
+
+  do 
+    {
+      j = /*NodeC.neighborTable*/HashmapC$0$hash(k, i);
+
+      if (/*NodeC.neighborTable*/HashmapC$0$map[sim_node()][j].key == 0 || /*NodeC.neighborTable*/HashmapC$0$map[sim_node()][j].key == k) 
+        {
+          if (/*NodeC.neighborTable*/HashmapC$0$map[sim_node()][j].key == 0) 
+            {
+              /*NodeC.neighborTable*/HashmapC$0$keys[sim_node()][/*NodeC.neighborTable*/HashmapC$0$numofVals[sim_node()]] = k;
+              /*NodeC.neighborTable*/HashmapC$0$numofVals[sim_node()]++;
+            }
+
+          /*NodeC.neighborTable*/HashmapC$0$map[sim_node()][j].value = input;
+          /*NodeC.neighborTable*/HashmapC$0$map[sim_node()][j].key = k;
+
+          return;
+        }
+
+      i++;
+    }
+  while (i < /*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE[sim_node()]);
+}
+
+# 63 "/root/workspace/Project1/src/lib/modules/PacketHandlerP.nc"
+static error_t PacketHandlerP$PacketHandler$processSequence(pack *Packet)
+{
+
+  PacketHandlerP$PacketHandler$ageSequenceTable();
+
+
+  PacketHandlerP$PacketHandler$insertAge(__nesc_ntoh_uint16(Packet->src.nxdata), __nesc_ntoh_uint16(Packet->seq.nxdata), SEQUENCE_TABLE_MAX_AGE);
+
   return SUCCESS;
+}
+
+
+static void PacketHandlerP$PacketHandler$ageSequenceTable(void )
+{
+  uint32_t *keys;
+  uint32_t keyInd;
+
+
+  keys = PacketHandlerP$PacketHandler$getSeqSrcKeys();
+
+
+  for (keyInd = 0; keyInd < SEQUENCE_TABLE_SIZE; keyInd++) 
+    {
+      if (keys[keyInd] == EMPTY) {
+        continue;
+        }
+      PacketHandlerP$PacketHandler$decreaseAge(keys[keyInd]);
+    }
+}
+
+# 36 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static void /*NodeC.sequenceTable*/HashmapC$1$Hashmap$insert(uint32_t k, /*NodeC.sequenceTable*/HashmapC$1$t input)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  if (k == 0) {
+    return;
+    }
+
+
+  do 
+    {
+      j = /*NodeC.sequenceTable*/HashmapC$1$hash(k, i);
+
+      if (/*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].key == 0 || /*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].key == k) 
+        {
+          if (/*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].key == 0) 
+            {
+              /*NodeC.sequenceTable*/HashmapC$1$keys[sim_node()][/*NodeC.sequenceTable*/HashmapC$1$numofVals[sim_node()]] = k;
+              /*NodeC.sequenceTable*/HashmapC$1$numofVals[sim_node()]++;
+            }
+
+          /*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].value = input;
+          /*NodeC.sequenceTable*/HashmapC$1$map[sim_node()][j].key = k;
+
+          return;
+        }
+
+      i++;
+    }
+  while (i < /*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[sim_node()]);
 }
 
 # 110 "/root/local/tinyos-2.1.1/tos/lib/tossim/sim_packet.c"
@@ -11943,7 +13926,7 @@ static error_t PacketHandlerP$PacketHandler$processSequence(pack *Packet)
   __nesc_enable_interrupt();
 
   sim_print_now(timeBuf, 128);
-  sim_log_debug(100U, "SimMainP", "Mote %li signaling boot at time %s.\n", sim_node(), timeBuf);
+  sim_log_debug(109U, "SimMainP", "Mote %li signaling boot at time %s.\n", sim_node(), timeBuf);
   SimMainP$Boot$booted();
 
 
@@ -11964,7 +13947,7 @@ static bool SimSchedulerBasicP$Scheduler$runNextTask(void )
       nextTask = SimSchedulerBasicP$popTask();
       if (nextTask == SimSchedulerBasicP$NO_TASK) 
         {
-          sim_log_debug(102U, "Scheduler", "Told to run next task, but no task to run.\n");
+          sim_log_debug(111U, "Scheduler", "Told to run next task, but no task to run.\n");
           {
             unsigned char __nesc_temp = 
 #line 189
@@ -11982,7 +13965,7 @@ static bool SimSchedulerBasicP$Scheduler$runNextTask(void )
 #line 193
     __nesc_atomic_end(__nesc_atomic); }
 #line 192
-  sim_log_debug(103U, "Scheduler", "Running task %hhu.\n", nextTask);
+  sim_log_debug(112U, "Scheduler", "Running task %hhu.\n", nextTask);
   SimSchedulerBasicP$TaskBasic$runTask(nextTask);
   return TRUE;
 }
@@ -12006,7 +13989,7 @@ uint8_t len)
   tossim_header_t *header = TossimActiveMessageC$getHeader(amsg);
 
 #line 78
-  sim_log_debug(110U, "AM", "AM: Sending packet (id=%hhu, len=%hhu) to %hu\n", id, len, addr);
+  sim_log_debug(119U, "AM", "AM: Sending packet (id=%hhu, len=%hhu) to %hu\n", id, len, addr);
   __nesc_hton_uint8(header->type.nxdata, id);
   __nesc_hton_uint16(header->dest.nxdata, addr);
   __nesc_hton_uint16(header->src.nxdata, TossimActiveMessageC$AMPacket$address());
@@ -12044,14 +14027,14 @@ static double CpmModelC$noise_hash_generation(void )
   double noise_val;
   uint16_t node_id = sim_node();
 
-  sim_log_debug(128U, "CpmModelC", "IN: noise_hash_generation()\n");
+  sim_log_debug(137U, "CpmModelC", "IN: noise_hash_generation()\n");
   if (5 <= remain && remain < 10) {
       noise_val = (double )sim_noise_generate(node_id, quotient + 1);
     }
   else {
       noise_val = (double )sim_noise_generate(node_id, quotient);
     }
-  sim_log_debug(129U, "CpmModelC,Tal", "%s: OUT: noise_hash_generation(): %lf\n", sim_time_string(), noise_val);
+  sim_log_debug(138U, "CpmModelC,Tal", "%s: OUT: noise_hash_generation(): %lf\n", sim_time_string(), noise_val);
 
   return noise_val;
 }
@@ -12072,7 +14055,7 @@ static void /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$AMSend$sendDone(am_id_t id, 
       /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$sendDone(/*AMQueueP.AMQueueImplP*/AMQueueImplP$0$current[sim_node()], msg, err);
     }
   else {
-      sim_log_debug(188U, "PointerBug", "%s received send done for %p, signaling for %p.\n", __FUNCTION__, msg, /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$queue[sim_node()][/*AMQueueP.AMQueueImplP*/AMQueueImplP$0$current[sim_node()]].msg);
+      sim_log_debug(197U, "PointerBug", "%s received send done for %p, signaling for %p.\n", __FUNCTION__, msg, /*AMQueueP.AMQueueImplP*/AMQueueImplP$0$queue[sim_node()][/*AMQueueP.AMQueueImplP*/AMQueueImplP$0$current[sim_node()]].msg);
     }
 }
 
@@ -12187,13 +14170,13 @@ static void /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128Alar
       uint8_t tifr = (uint8_t )/*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$TimerCtrl$getInterruptFlag().flat;
 
 #line 101
-      sim_log_debug(157U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: TIFR is %hhx\n", tifr);
+      sim_log_debug(166U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: TIFR is %hhx\n", tifr);
       if ((interrupt_in != 0 && interrupt_in < /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$MINDT) || tifr & (1 << OCF0)) {
           if (interrupt_in < /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$MINDT) {
-              sim_log_debug(158U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: under min: %hhu.\n", interrupt_in);
+              sim_log_debug(167U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: under min: %hhu.\n", interrupt_in);
             }
           else {
-              sim_log_debug(159U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: OCF set.\n");
+              sim_log_debug(168U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: OCF set.\n");
             }
           {
 #line 109
@@ -12205,14 +14188,14 @@ static void /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128Alar
 
       if (!/*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$set[sim_node()]) {
           newOcr0 = /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$MAXT;
-          sim_log_debug(160U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: no alarm set, set at max.\n");
+          sim_log_debug(169U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: no alarm set, set at max.\n");
         }
       else 
         {
           uint32_t now = /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$Counter$get();
 
 #line 120
-          sim_log_debug(161U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: now-t0 = %llu, dt = %llu\n", now - /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$t0[sim_node()], /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$dt[sim_node()]);
+          sim_log_debug(170U, "Atm128AlarmAsyncP", "Atm128AlarmAsyncP: now-t0 = %llu, dt = %llu\n", now - /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$t0[sim_node()], /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$dt[sim_node()]);
 
           if ((uint32_t )(now - /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$t0[sim_node()]) >= /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128AlarmAsyncP$0$dt[sim_node()]) 
             {
@@ -12256,7 +14239,7 @@ static void /*AlarmCounterMilliP.Atm128AlarmAsyncC.Atm128AlarmAsyncP*/Atm128Alar
 static void HplAtm128Timer0AsyncP$Compare$set(uint8_t t)
 #line 463
 {
-  sim_log_debug(178U, "HplAtm128Timer0AsyncP", "HplAtm128Timer0AsyncP: Setting compare: %hhu\n", t);
+  sim_log_debug(187U, "HplAtm128Timer0AsyncP", "HplAtm128Timer0AsyncP: Setting compare: %hhu\n", t);
   /* atomic removed: atomic calls only */
 #line 465
   {
@@ -12337,7 +14320,7 @@ static void HplAtm128Timer0AsyncP$configure_overflow(sim_event_t *evt)
   overflowTime += sim_time();
   overflowTime -= (sim_time() - HplAtm128Timer0AsyncP$last_zero()) % (1 << HplAtm128Timer0AsyncP$shiftFromScale());
 
-  sim_log_debug(181U, "HplAtm128Timer0AsyncP", "Scheduling new overflow for %i at time %llu\n", sim_node(), overflowTime);
+  sim_log_debug(190U, "HplAtm128Timer0AsyncP", "Scheduling new overflow for %i at time %llu\n", sim_node(), overflowTime);
 
   evt->time = overflowTime;
 }
@@ -12384,7 +14367,7 @@ static void HplAtm128Timer0AsyncP$configure_compare(sim_event_t *evt)
   phaseOffset %= HplAtm128Timer0AsyncP$clock_to_sim(1 << HplAtm128Timer0AsyncP$shiftFromScale());
   compareTime -= phaseOffset;
 
-  sim_log_debug(170U, "HplAtm128Timer0AsyncP", "Configuring new compare of %i for %i at time %llu  (@ %llu)\n", (int )compareVal, sim_node(), compareTime, sim_time());
+  sim_log_debug(179U, "HplAtm128Timer0AsyncP", "Configuring new compare of %i for %i at time %llu  (@ %llu)\n", (int )compareVal, sim_node(), compareTime, sim_time());
 
   evt->time = compareTime;
 }
@@ -12394,20 +14377,133 @@ static error_t TossimPacketModelC$Control$start(void )
 #line 106
 {
   if (!TossimPacketModelC$initialized[sim_node()]) {
-      sim_log_error(116U, "TossimPacketModelC", "TossimPacketModelC: Control.start() called before initialization!\n");
+      sim_log_error(125U, "TossimPacketModelC", "TossimPacketModelC: Control.start() called before initialization!\n");
       return FAIL;
     }
-  sim_log_debug(117U, "TossimPacketModelC", "TossimPacketModelC: Control.start() called.\n");
+  sim_log_debug(126U, "TossimPacketModelC", "TossimPacketModelC: Control.start() called.\n");
   TossimPacketModelC$startDoneTask$postTask();
   return SUCCESS;
 }
 
-# 154 "/root/local/tinyos-2.1.1/tos/lib/timer/VirtualizeTimerC.nc"
-static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startPeriodic(uint8_t num, uint32_t dt)
+# 222 "/root/workspace/Project1/src/lib/modules/LinkStateRoutingP.nc"
+static void LinkStateRoutingP$LinkStateRouting$shareLinkState(void )
 {
-  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$startTimer(num, /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$TimerFrom$getNow(), dt, FALSE);
+  uint16_t *destinations;
+  uint32_t *keys;
+  uint32_t keyInd;
+  uint32_t copyInd;
+  uint16_t connectionState;
+  bool unsentData = FALSE;
+
+
+  memset(LinkStateRoutingP$linkStatePacket[sim_node()], 0, sizeof LinkStateRoutingP$linkStatePacket[sim_node()]);
+
+
+  destinations = (uint16_t *)&LinkStateRoutingP$linkStatePacket[sim_node()][0];
+
+  keys = LinkStateRoutingP$LinkStateRouting$getNeighborKeys();
+
+
+  for (keyInd = 0, copyInd = 0; keyInd < NEIGHBOR_TABLE_SIZE; keyInd++) 
+    {
+
+      if (keys[keyInd] == EMPTY) {
+        continue;
+        }
+
+      connectionState = LinkStateRoutingP$LinkStateRouting$getNeighborConnection(keys[keyInd]);
+
+
+      if (connectionState == CONNECTION_NONE) {
+        continue;
+        }
+
+      if ((!(connectionState & CONNECTION_SEND) || !(connectionState & CONNECTION_RECEIVE)) || connectionState & CONNECTION_TIMED_OUT) {
+        continue;
+        }
+
+      destinations[copyInd++ % PACKET_MAX_PAYLOAD_SIZE16] = keys[keyInd];
+
+
+      unsentData = TRUE;
+
+
+      if (copyInd % PACKET_MAX_PAYLOAD_SIZE16 == 0) 
+        {
+
+          LinkStateRoutingP$SendNeighbors$postTask();
+          unsentData = FALSE;
+        }
+    }
+
+
+  if (unsentData) 
+    {
+
+      LinkStateRoutingP$SendNeighbors$postTask();
+    }
 }
 
+# 73 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
+static void Node$RareUpdate$startOneShot(uint32_t dt){
+#line 73
+  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startOneShot(4U, dt);
+#line 73
+}
+#line 73
+# 36 "/root/workspace/Project1/src/dataStructures/modules/HashmapC.nc"
+static void /*NodeC.routingTable*/HashmapC$2$Hashmap$insert(uint32_t k, /*NodeC.routingTable*/HashmapC$2$t input)
+{
+  uint32_t i = 0;
+  uint32_t j = 0;
+
+  if (k == 0) {
+    return;
+    }
+
+
+  do 
+    {
+      j = /*NodeC.routingTable*/HashmapC$2$hash(k, i);
+
+      if (/*NodeC.routingTable*/HashmapC$2$map[sim_node()][j].key == 0 || /*NodeC.routingTable*/HashmapC$2$map[sim_node()][j].key == k) 
+        {
+          if (/*NodeC.routingTable*/HashmapC$2$map[sim_node()][j].key == 0) 
+            {
+              /*NodeC.routingTable*/HashmapC$2$keys[sim_node()][/*NodeC.routingTable*/HashmapC$2$numofVals[sim_node()]] = k;
+              /*NodeC.routingTable*/HashmapC$2$numofVals[sim_node()]++;
+            }
+
+          /*NodeC.routingTable*/HashmapC$2$map[sim_node()][j].value = input;
+          /*NodeC.routingTable*/HashmapC$2$map[sim_node()][j].key = k;
+
+          return;
+        }
+
+      i++;
+    }
+  while (i < /*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE[sim_node()]);
+}
+
+# 73 "/root/local/tinyos-2.1.1/tos/lib/timer/Timer.nc"
+static void Node$SparseUpdate$startOneShot(uint32_t dt){
+#line 73
+  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startOneShot(3U, dt);
+#line 73
+}
+#line 73
+static void Node$ModerateUpdate$startOneShot(uint32_t dt){
+#line 73
+  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startOneShot(2U, dt);
+#line 73
+}
+#line 73
+static void Node$FrequentUpdate$startOneShot(uint32_t dt){
+#line 73
+  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startOneShot(1U, dt);
+#line 73
+}
+#line 73
 # 90 "/root/local/tinyos-2.1.1/tos/lib/tossim/SimMoteP.nc"
   long long int sim_mote_euid(int mote)
 #line 90
@@ -12451,7 +14547,7 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startPer
 #line 118
   sim_set_node(mote);
   result = SimMoteP$SimMote$getVariableInfo(name, ptr, len);
-  sim_log_debug(107U, "SimMoteP", "Fetched %s of %i to be %p with len %i (result %i)\n", name, mote, *ptr, *len, result);
+  sim_log_debug(116U, "SimMoteP", "Fetched %s of %i to be %p with len %i (result %i)\n", name, mote, *ptr, *len, result);
   sim_set_node(tmpID);
   return result;
 }
@@ -12464,7 +14560,7 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC$0$Timer$startPer
 #line 127
   sim_set_node(mote);
   SimMoteP$startTime[sim_node()] = t;
-  sim_log_debug(108U, "SimMoteP", "Setting start time to %llu\n", SimMoteP$startTime[sim_node()]);
+  sim_log_debug(117U, "SimMoteP", "Setting start time to %llu\n", SimMoteP$startTime[sim_node()]);
   sim_set_node(tmpID);
   return;
 }
@@ -12499,7 +14595,7 @@ static void SimMoteP$SimMote$turnOn(void )
         }
       __nesc_nido_initialise(sim_node());
       SimMoteP$startTime[sim_node()] = sim_time();
-      sim_log_debug(106U, "SimMoteP", "Setting start time to %llu\n", SimMoteP$startTime[sim_node()]);
+      sim_log_debug(115U, "SimMoteP", "Setting start time to %llu\n", SimMoteP$startTime[sim_node()]);
       SimMoteP$isOn[sim_node()] = TRUE;
       sim_main_start_mote();
     }
@@ -12564,70 +14660,58 @@ static int __nesc_nido_resolve(int __nesc_mote,
                                uintptr_t* addr, size_t* size)
 {
   /* Module Node */
-  if (!strcmp(varname, "Node$sendPackage"))
-  {
-    *addr = (uintptr_t)&Node$sendPackage[__nesc_mote];
-    *size = sizeof(Node$sendPackage[__nesc_mote]);
-    return 0;
-  }
   if (!strcmp(varname, "Node$pingPacket"))
   {
     *addr = (uintptr_t)&Node$pingPacket[__nesc_mote];
     *size = sizeof(Node$pingPacket[__nesc_mote]);
     return 0;
   }
-  if (!strcmp(varname, "Node$neighborIDs"))
+  if (!strcmp(varname, "Node$sendPackage"))
   {
-    *addr = (uintptr_t)&Node$neighborIDs[__nesc_mote];
-    *size = sizeof(Node$neighborIDs[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "Node$neighborTable"))
-  {
-    *addr = (uintptr_t)&Node$neighborTable[__nesc_mote];
-    *size = sizeof(Node$neighborTable[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "Node$forwardTableDest"))
-  {
-    *addr = (uintptr_t)&Node$forwardTableDest[__nesc_mote];
-    *size = sizeof(Node$forwardTableDest[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "Node$forwardTableCost"))
-  {
-    *addr = (uintptr_t)&Node$forwardTableCost[__nesc_mote];
-    *size = sizeof(Node$forwardTableCost[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "Node$forwardTableHop"))
-  {
-    *addr = (uintptr_t)&Node$forwardTableHop[__nesc_mote];
-    *size = sizeof(Node$forwardTableHop[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "Node$sequenceTableSrc"))
-  {
-    *addr = (uintptr_t)&Node$sequenceTableSrc[__nesc_mote];
-    *size = sizeof(Node$sequenceTableSrc[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "Node$sequenceTableSeq"))
-  {
-    *addr = (uintptr_t)&Node$sequenceTableSeq[__nesc_mote];
-    *size = sizeof(Node$sequenceTableSeq[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "Node$sequenceTableAge"))
-  {
-    *addr = (uintptr_t)&Node$sequenceTableAge[__nesc_mote];
-    *size = sizeof(Node$sequenceTableAge[__nesc_mote]);
+    *addr = (uintptr_t)&Node$sendPackage[__nesc_mote];
+    *size = sizeof(Node$sendPackage[__nesc_mote]);
     return 0;
   }
   if (!strcmp(varname, "Node$SEQUENCE_NUMBER"))
   {
     *addr = (uintptr_t)&Node$SEQUENCE_NUMBER[__nesc_mote];
     *size = sizeof(Node$SEQUENCE_NUMBER[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "Node$NeighborsChanged"))
+  {
+    *addr = (uintptr_t)&Node$NeighborsChanged[__nesc_mote];
+    *size = sizeof(Node$NeighborsChanged[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "Node$TCPTable"))
+  {
+    *addr = (uintptr_t)&Node$TCPTable[__nesc_mote];
+    *size = sizeof(Node$TCPTable[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "Node$PeriodFrequent"))
+  {
+    *addr = (uintptr_t)&Node$PeriodFrequent[__nesc_mote];
+    *size = sizeof(Node$PeriodFrequent[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "Node$PeriodModerate"))
+  {
+    *addr = (uintptr_t)&Node$PeriodModerate[__nesc_mote];
+    *size = sizeof(Node$PeriodModerate[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "Node$PeriodSparse"))
+  {
+    *addr = (uintptr_t)&Node$PeriodSparse[__nesc_mote];
+    *size = sizeof(Node$PeriodSparse[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "Node$PeriodRare"))
+  {
+    *addr = (uintptr_t)&Node$PeriodRare[__nesc_mote];
+    *size = sizeof(Node$PeriodRare[__nesc_mote]);
     return 0;
   }
 
@@ -13134,38 +15218,8 @@ static int __nesc_nido_resolve(int __nesc_mote,
   /* Module CommandHandlerP */
 
   /* Module PacketHandlerP */
-  if (!strcmp(varname, "PacketHandlerP$sequenceTableSeq"))
-  {
-    *addr = (uintptr_t)&PacketHandlerP$sequenceTableSeq[__nesc_mote];
-    *size = sizeof(PacketHandlerP$sequenceTableSeq[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "PacketHandlerP$sequenceTableSrc"))
-  {
-    *addr = (uintptr_t)&PacketHandlerP$sequenceTableSrc[__nesc_mote];
-    *size = sizeof(PacketHandlerP$sequenceTableSrc[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "PacketHandlerP$sequenceTableAge"))
-  {
-    *addr = (uintptr_t)&PacketHandlerP$sequenceTableAge[__nesc_mote];
-    *size = sizeof(PacketHandlerP$sequenceTableAge[__nesc_mote]);
-    return 0;
-  }
 
   /* Module NeighborDiscoveryP */
-  if (!strcmp(varname, "NeighborDiscoveryP$neighborIDs"))
-  {
-    *addr = (uintptr_t)&NeighborDiscoveryP$neighborIDs[__nesc_mote];
-    *size = sizeof(NeighborDiscoveryP$neighborIDs[__nesc_mote]);
-    return 0;
-  }
-  if (!strcmp(varname, "NeighborDiscoveryP$neighborTable"))
-  {
-    *addr = (uintptr_t)&NeighborDiscoveryP$neighborTable[__nesc_mote];
-    *size = sizeof(NeighborDiscoveryP$neighborTable[__nesc_mote]);
-    return 0;
-  }
   if (!strcmp(varname, "NeighborDiscoveryP$TimeOutState"))
   {
     *addr = (uintptr_t)&NeighborDiscoveryP$TimeOutState[__nesc_mote];
@@ -13186,10 +15240,16 @@ static int __nesc_nido_resolve(int __nesc_mote,
     *size = sizeof(LinkStateRoutingP$linkStates[__nesc_mote]);
     return 0;
   }
-  if (!strcmp(varname, "LinkStateRoutingP$existing"))
+  if (!strcmp(varname, "LinkStateRoutingP$compareBuffer"))
   {
-    *addr = (uintptr_t)&LinkStateRoutingP$existing[__nesc_mote];
-    *size = sizeof(LinkStateRoutingP$existing[__nesc_mote]);
+    *addr = (uintptr_t)&LinkStateRoutingP$compareBuffer[__nesc_mote];
+    *size = sizeof(LinkStateRoutingP$compareBuffer[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "LinkStateRoutingP$hopThrough"))
+  {
+    *addr = (uintptr_t)&LinkStateRoutingP$hopThrough[__nesc_mote];
+    *size = sizeof(LinkStateRoutingP$hopThrough[__nesc_mote]);
     return 0;
   }
   if (!strcmp(varname, "LinkStateRoutingP$unconsidered"))
@@ -13198,34 +15258,122 @@ static int __nesc_nido_resolve(int __nesc_mote,
     *size = sizeof(LinkStateRoutingP$unconsidered[__nesc_mote]);
     return 0;
   }
-  if (!strcmp(varname, "LinkStateRoutingP$neighborIDs"))
+  if (!strcmp(varname, "LinkStateRoutingP$existing"))
   {
-    *addr = (uintptr_t)&LinkStateRoutingP$neighborIDs[__nesc_mote];
-    *size = sizeof(LinkStateRoutingP$neighborIDs[__nesc_mote]);
+    *addr = (uintptr_t)&LinkStateRoutingP$existing[__nesc_mote];
+    *size = sizeof(LinkStateRoutingP$existing[__nesc_mote]);
     return 0;
   }
-  if (!strcmp(varname, "LinkStateRoutingP$neighborTable"))
+  if (!strcmp(varname, "LinkStateRoutingP$LSChanged"))
   {
-    *addr = (uintptr_t)&LinkStateRoutingP$neighborTable[__nesc_mote];
-    *size = sizeof(LinkStateRoutingP$neighborTable[__nesc_mote]);
+    *addr = (uintptr_t)&LinkStateRoutingP$LSChanged[__nesc_mote];
+    *size = sizeof(LinkStateRoutingP$LSChanged[__nesc_mote]);
     return 0;
   }
-  if (!strcmp(varname, "LinkStateRoutingP$forwardTableDest"))
+
+  /* Module TCPP */
+
+  /* Module HashmapC$0 */
+  if (!strcmp(varname, "/*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE"))
   {
-    *addr = (uintptr_t)&LinkStateRoutingP$forwardTableDest[__nesc_mote];
-    *size = sizeof(LinkStateRoutingP$forwardTableDest[__nesc_mote]);
+    *addr = (uintptr_t)&/*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE[__nesc_mote];
+    *size = sizeof(/*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE[__nesc_mote]);
     return 0;
   }
-  if (!strcmp(varname, "LinkStateRoutingP$forwardTableCost"))
+  if (!strcmp(varname, "/*NodeC.neighborTable*/HashmapC$0$map"))
   {
-    *addr = (uintptr_t)&LinkStateRoutingP$forwardTableCost[__nesc_mote];
-    *size = sizeof(LinkStateRoutingP$forwardTableCost[__nesc_mote]);
+    *addr = (uintptr_t)&/*NodeC.neighborTable*/HashmapC$0$map[__nesc_mote];
+    *size = sizeof(/*NodeC.neighborTable*/HashmapC$0$map[__nesc_mote]);
     return 0;
   }
-  if (!strcmp(varname, "LinkStateRoutingP$forwardTableHop"))
+  if (!strcmp(varname, "/*NodeC.neighborTable*/HashmapC$0$keys"))
   {
-    *addr = (uintptr_t)&LinkStateRoutingP$forwardTableHop[__nesc_mote];
-    *size = sizeof(LinkStateRoutingP$forwardTableHop[__nesc_mote]);
+    *addr = (uintptr_t)&/*NodeC.neighborTable*/HashmapC$0$keys[__nesc_mote];
+    *size = sizeof(/*NodeC.neighborTable*/HashmapC$0$keys[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.neighborTable*/HashmapC$0$numofVals"))
+  {
+    *addr = (uintptr_t)&/*NodeC.neighborTable*/HashmapC$0$numofVals[__nesc_mote];
+    *size = sizeof(/*NodeC.neighborTable*/HashmapC$0$numofVals[__nesc_mote]);
+    return 0;
+  }
+
+  /* Module HashmapC$1 */
+  if (!strcmp(varname, "/*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE"))
+  {
+    *addr = (uintptr_t)&/*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[__nesc_mote];
+    *size = sizeof(/*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.sequenceTable*/HashmapC$1$map"))
+  {
+    *addr = (uintptr_t)&/*NodeC.sequenceTable*/HashmapC$1$map[__nesc_mote];
+    *size = sizeof(/*NodeC.sequenceTable*/HashmapC$1$map[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.sequenceTable*/HashmapC$1$keys"))
+  {
+    *addr = (uintptr_t)&/*NodeC.sequenceTable*/HashmapC$1$keys[__nesc_mote];
+    *size = sizeof(/*NodeC.sequenceTable*/HashmapC$1$keys[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.sequenceTable*/HashmapC$1$numofVals"))
+  {
+    *addr = (uintptr_t)&/*NodeC.sequenceTable*/HashmapC$1$numofVals[__nesc_mote];
+    *size = sizeof(/*NodeC.sequenceTable*/HashmapC$1$numofVals[__nesc_mote]);
+    return 0;
+  }
+
+  /* Module HashmapC$2 */
+  if (!strcmp(varname, "/*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE"))
+  {
+    *addr = (uintptr_t)&/*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE[__nesc_mote];
+    *size = sizeof(/*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.routingTable*/HashmapC$2$map"))
+  {
+    *addr = (uintptr_t)&/*NodeC.routingTable*/HashmapC$2$map[__nesc_mote];
+    *size = sizeof(/*NodeC.routingTable*/HashmapC$2$map[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.routingTable*/HashmapC$2$keys"))
+  {
+    *addr = (uintptr_t)&/*NodeC.routingTable*/HashmapC$2$keys[__nesc_mote];
+    *size = sizeof(/*NodeC.routingTable*/HashmapC$2$keys[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.routingTable*/HashmapC$2$numofVals"))
+  {
+    *addr = (uintptr_t)&/*NodeC.routingTable*/HashmapC$2$numofVals[__nesc_mote];
+    *size = sizeof(/*NodeC.routingTable*/HashmapC$2$numofVals[__nesc_mote]);
+    return 0;
+  }
+
+  /* Module HashmapC$3 */
+  if (!strcmp(varname, "/*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE"))
+  {
+    *addr = (uintptr_t)&/*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE[__nesc_mote];
+    *size = sizeof(/*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.TCPTablePTR*/HashmapC$3$map"))
+  {
+    *addr = (uintptr_t)&/*NodeC.TCPTablePTR*/HashmapC$3$map[__nesc_mote];
+    *size = sizeof(/*NodeC.TCPTablePTR*/HashmapC$3$map[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.TCPTablePTR*/HashmapC$3$keys"))
+  {
+    *addr = (uintptr_t)&/*NodeC.TCPTablePTR*/HashmapC$3$keys[__nesc_mote];
+    *size = sizeof(/*NodeC.TCPTablePTR*/HashmapC$3$keys[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NodeC.TCPTablePTR*/HashmapC$3$numofVals"))
+  {
+    *addr = (uintptr_t)&/*NodeC.TCPTablePTR*/HashmapC$3$numofVals[__nesc_mote];
+    *size = sizeof(/*NodeC.TCPTablePTR*/HashmapC$3$numofVals[__nesc_mote]);
     return 0;
   }
 
@@ -13236,17 +15384,15 @@ static int __nesc_nido_resolve(int __nesc_mote,
 static void __nesc_nido_initialise(int __nesc_mote)
 {
   /* Module Node */
-  memset((void *)&Node$sendPackage[__nesc_mote], 0, sizeof Node$sendPackage[__nesc_mote]);
   memset((void *)&Node$pingPacket[__nesc_mote], 0, sizeof Node$pingPacket[__nesc_mote]);
-  memset((void *)&Node$neighborIDs[__nesc_mote], 0, sizeof Node$neighborIDs[__nesc_mote]);
-  memset((void *)&Node$neighborTable[__nesc_mote], 0, sizeof Node$neighborTable[__nesc_mote]);
-  memset((void *)&Node$forwardTableDest[__nesc_mote], 0, sizeof Node$forwardTableDest[__nesc_mote]);
-  memset((void *)&Node$forwardTableCost[__nesc_mote], 0, sizeof Node$forwardTableCost[__nesc_mote]);
-  memset((void *)&Node$forwardTableHop[__nesc_mote], 0, sizeof Node$forwardTableHop[__nesc_mote]);
-  memset((void *)&Node$sequenceTableSrc[__nesc_mote], 0, sizeof Node$sequenceTableSrc[__nesc_mote]);
-  memset((void *)&Node$sequenceTableSeq[__nesc_mote], 0, sizeof Node$sequenceTableSeq[__nesc_mote]);
-  memset((void *)&Node$sequenceTableAge[__nesc_mote], 0, sizeof Node$sequenceTableAge[__nesc_mote]);
+  memset((void *)&Node$sendPackage[__nesc_mote], 0, sizeof Node$sendPackage[__nesc_mote]);
   Node$SEQUENCE_NUMBER[__nesc_mote] = 0;
+  Node$NeighborsChanged[__nesc_mote] = FALSE;
+  memset((void *)&Node$TCPTable[__nesc_mote], 0, sizeof Node$TCPTable[__nesc_mote]);
+  memset((void *)&Node$PeriodFrequent[__nesc_mote], 0, sizeof Node$PeriodFrequent[__nesc_mote]);
+  memset((void *)&Node$PeriodModerate[__nesc_mote], 0, sizeof Node$PeriodModerate[__nesc_mote]);
+  memset((void *)&Node$PeriodSparse[__nesc_mote], 0, sizeof Node$PeriodSparse[__nesc_mote]);
+  memset((void *)&Node$PeriodRare[__nesc_mote], 0, sizeof Node$PeriodRare[__nesc_mote]);
 
   /* Module PlatformP */
 
@@ -13471,24 +15617,43 @@ static void __nesc_nido_initialise(int __nesc_mote)
   /* Module CommandHandlerP */
 
   /* Module PacketHandlerP */
-  memset((void *)&PacketHandlerP$sequenceTableSeq[__nesc_mote], 0, sizeof PacketHandlerP$sequenceTableSeq[__nesc_mote]);
-  memset((void *)&PacketHandlerP$sequenceTableSrc[__nesc_mote], 0, sizeof PacketHandlerP$sequenceTableSrc[__nesc_mote]);
-  memset((void *)&PacketHandlerP$sequenceTableAge[__nesc_mote], 0, sizeof PacketHandlerP$sequenceTableAge[__nesc_mote]);
 
   /* Module NeighborDiscoveryP */
-  memset((void *)&NeighborDiscoveryP$neighborIDs[__nesc_mote], 0, sizeof NeighborDiscoveryP$neighborIDs[__nesc_mote]);
-  memset((void *)&NeighborDiscoveryP$neighborTable[__nesc_mote], 0, sizeof NeighborDiscoveryP$neighborTable[__nesc_mote]);
   NeighborDiscoveryP$TimeOutState[__nesc_mote] = TRUE;
 
   /* Module LinkStateRoutingP */
   memset((void *)&LinkStateRoutingP$linkStatePacket[__nesc_mote], 0, sizeof LinkStateRoutingP$linkStatePacket[__nesc_mote]);
   memset((void *)&LinkStateRoutingP$linkStates[__nesc_mote], 0, sizeof LinkStateRoutingP$linkStates[__nesc_mote]);
-  memset((void *)&LinkStateRoutingP$existing[__nesc_mote], 0, sizeof LinkStateRoutingP$existing[__nesc_mote]);
+  memset((void *)&LinkStateRoutingP$compareBuffer[__nesc_mote], 0, sizeof LinkStateRoutingP$compareBuffer[__nesc_mote]);
+  memset((void *)&LinkStateRoutingP$hopThrough[__nesc_mote], 0, sizeof LinkStateRoutingP$hopThrough[__nesc_mote]);
   memset((void *)&LinkStateRoutingP$unconsidered[__nesc_mote], 0, sizeof LinkStateRoutingP$unconsidered[__nesc_mote]);
-  memset((void *)&LinkStateRoutingP$neighborIDs[__nesc_mote], 0, sizeof LinkStateRoutingP$neighborIDs[__nesc_mote]);
-  memset((void *)&LinkStateRoutingP$neighborTable[__nesc_mote], 0, sizeof LinkStateRoutingP$neighborTable[__nesc_mote]);
-  memset((void *)&LinkStateRoutingP$forwardTableDest[__nesc_mote], 0, sizeof LinkStateRoutingP$forwardTableDest[__nesc_mote]);
-  memset((void *)&LinkStateRoutingP$forwardTableCost[__nesc_mote], 0, sizeof LinkStateRoutingP$forwardTableCost[__nesc_mote]);
-  memset((void *)&LinkStateRoutingP$forwardTableHop[__nesc_mote], 0, sizeof LinkStateRoutingP$forwardTableHop[__nesc_mote]);
+  memset((void *)&LinkStateRoutingP$existing[__nesc_mote], 0, sizeof LinkStateRoutingP$existing[__nesc_mote]);
+  LinkStateRoutingP$LSChanged[__nesc_mote] = FALSE;
+
+  /* Module TCPP */
+
+  /* Module HashmapC$0 */
+  /*NodeC.neighborTable*/HashmapC$0$HASH_MAX_SIZE[__nesc_mote] = 20;
+  memset((void *)&/*NodeC.neighborTable*/HashmapC$0$map[__nesc_mote], 0, sizeof /*NodeC.neighborTable*/HashmapC$0$map[__nesc_mote]);
+  memset((void *)&/*NodeC.neighborTable*/HashmapC$0$keys[__nesc_mote], 0, sizeof /*NodeC.neighborTable*/HashmapC$0$keys[__nesc_mote]);
+  memset((void *)&/*NodeC.neighborTable*/HashmapC$0$numofVals[__nesc_mote], 0, sizeof /*NodeC.neighborTable*/HashmapC$0$numofVals[__nesc_mote]);
+
+  /* Module HashmapC$1 */
+  /*NodeC.sequenceTable*/HashmapC$1$HASH_MAX_SIZE[__nesc_mote] = 192;
+  memset((void *)&/*NodeC.sequenceTable*/HashmapC$1$map[__nesc_mote], 0, sizeof /*NodeC.sequenceTable*/HashmapC$1$map[__nesc_mote]);
+  memset((void *)&/*NodeC.sequenceTable*/HashmapC$1$keys[__nesc_mote], 0, sizeof /*NodeC.sequenceTable*/HashmapC$1$keys[__nesc_mote]);
+  memset((void *)&/*NodeC.sequenceTable*/HashmapC$1$numofVals[__nesc_mote], 0, sizeof /*NodeC.sequenceTable*/HashmapC$1$numofVals[__nesc_mote]);
+
+  /* Module HashmapC$2 */
+  /*NodeC.routingTable*/HashmapC$2$HASH_MAX_SIZE[__nesc_mote] = 32;
+  memset((void *)&/*NodeC.routingTable*/HashmapC$2$map[__nesc_mote], 0, sizeof /*NodeC.routingTable*/HashmapC$2$map[__nesc_mote]);
+  memset((void *)&/*NodeC.routingTable*/HashmapC$2$keys[__nesc_mote], 0, sizeof /*NodeC.routingTable*/HashmapC$2$keys[__nesc_mote]);
+  memset((void *)&/*NodeC.routingTable*/HashmapC$2$numofVals[__nesc_mote], 0, sizeof /*NodeC.routingTable*/HashmapC$2$numofVals[__nesc_mote]);
+
+  /* Module HashmapC$3 */
+  /*NodeC.TCPTablePTR*/HashmapC$3$HASH_MAX_SIZE[__nesc_mote] = 255;
+  memset((void *)&/*NodeC.TCPTablePTR*/HashmapC$3$map[__nesc_mote], 0, sizeof /*NodeC.TCPTablePTR*/HashmapC$3$map[__nesc_mote]);
+  memset((void *)&/*NodeC.TCPTablePTR*/HashmapC$3$keys[__nesc_mote], 0, sizeof /*NodeC.TCPTablePTR*/HashmapC$3$keys[__nesc_mote]);
+  memset((void *)&/*NodeC.TCPTablePTR*/HashmapC$3$numofVals[__nesc_mote], 0, sizeof /*NodeC.TCPTablePTR*/HashmapC$3$numofVals[__nesc_mote]);
 
 }
