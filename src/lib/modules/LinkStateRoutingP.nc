@@ -8,6 +8,8 @@
 module LinkStateRoutingP
 {
 	provides interface LinkStateRouting;
+	uses interface Hashmap<uint16_t> as neighborTable;
+	uses interface Hashmap<uint32_t> as routingTable;
 }
 	
 implementation

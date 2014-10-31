@@ -37,7 +37,6 @@ implementation
 	{
 		socket_storage_t *TCPHeader;
 		
-		
 		// Neighbors are determined exclusively through ping and ping replies
 		if (Packet->protocol != PROTOCOL_TCP || Packet->dest != TOS_NODE_ID)
 			return FAIL;
@@ -55,7 +54,7 @@ implementation
 				break;
 			case SOCK_SYN_SENT:
 				dbg("Project3", "Recieved sync packet from from %d, %d to %d, %d\n",
-				TCPHeader->sockAddr.srcAddr, TCPHeader->sockAddr.srcPort, TCPHeader->sockAddr.destAddr, TCPHeader->sockAddr.destPort);
+					TCPHeader->sockAddr.srcAddr, TCPHeader->sockAddr.srcPort, TCPHeader->sockAddr.destAddr, TCPHeader->sockAddr.destPort);
 				break;
 			case SOCK_CLOSE_WAIT:
 				break;

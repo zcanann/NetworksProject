@@ -162,7 +162,7 @@ addChannel("Project1N");
 addChannel("Project2");
 addChannel("Project3");
 
-runTime(100);
+runTime(50);
 cmdRouteDMP(1);
 #runTime(10);
 #cmdPing("6", "3", "Hello, World 1");

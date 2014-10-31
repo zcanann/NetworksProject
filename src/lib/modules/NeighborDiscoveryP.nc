@@ -7,6 +7,7 @@
 module NeighborDiscoveryP
 {
 	provides interface NeighborDiscovery;
+	uses interface Hashmap<uint16_t> as neighborTable;
 }
 	
 implementation
@@ -15,7 +16,7 @@ implementation
 	
 	command void NeighborDiscovery.initialize()
 	{
-		
+		call neighborTable.insert(0,0);
 	}
 	
 	command error_t NeighborDiscovery.receive(pack* Packet)
@@ -32,14 +33,15 @@ implementation
 			return FAIL;
 			
 		// Initialize to an unspecified connection type
-		if (!signal NeighborDiscovery.containsNeighbor(Packet->src))
-				signal NeighborDiscovery.insertNeighbor(Packet->src, CONNECTION_NONE);
+		
+		if (!call neighborTable.contains(Packet->src))
+			call neighborTable.insert(Packet->src, CONNECTION_NONE);
 		
 		// Clear waiting/time out flags
-		connectionStateOriginal =  connectionState = signal NeighborDiscovery.getNeighborConnection(Packet->src);
+		connectionStateOriginal =  connectionState = call neighborTable.get(Packet->src);
 		connectionState &= ~CONNECTION_WAITING_RESPONSE;
 		connectionState &= ~CONNECTION_TIMED_OUT;
-		signal NeighborDiscovery.insertNeighbor(Packet->src, connectionState);
+		call neighborTable.insert(Packet->src, connectionState);
 			
 		if(Packet->protocol == PROTOCOL_PING)
 		{
@@ -51,7 +53,7 @@ implementation
 			}
 			
 			connectionState |= CONNECTION_RECEIVE;
-			signal NeighborDiscovery.insertNeighbor(Packet->src, connectionState);
+			call neighborTable.insert(Packet->src, connectionState);
 		}
 		else if(Packet->protocol == PROTOCOL_PINGREPLY)
 		{
@@ -62,7 +64,7 @@ implementation
 				dbg("Project1N", "Conection discovered:\t %d <-> %d\n", Packet->src, TOS_NODE_ID);
 			}
 			connectionState |= CONNECTION_SEND;
-			signal NeighborDiscovery.insertNeighbor(Packet->src, connectionState);
+			call neighborTable.insert(Packet->src, connectionState);
 			
 		}
 		
@@ -76,7 +78,7 @@ implementation
 		uint32_t keyInd;
 		uint16_t connectionState;
 		
-		keys = signal NeighborDiscovery.getNeighborKeys();
+		keys = call neighborTable.getKeys();
 		
 		// Check if neighbor should be marked as waiting for response or timed out
 		for (keyInd = 0; keyInd < NEIGHBOR_TABLE_SIZE; keyInd++)
@@ -86,7 +88,7 @@ implementation
 				continue;
 			
 			// Retrieve connection state
-			connectionState = signal NeighborDiscovery.getNeighborConnection(keys[keyInd]);
+			connectionState = call neighborTable.get(keys[keyInd]);
 			
 			// Ignore connectionless neighbors
 			if (connectionState == CONNECTION_NONE)
@@ -116,7 +118,7 @@ implementation
 			}
 			
 			// Update with new value
-			signal NeighborDiscovery.insertNeighbor(keys[keyInd], connectionState);
+			call neighborTable.insert(keys[keyInd], connectionState);
 		}
 		
 		// Flip the state for the next timer call
@@ -129,7 +131,7 @@ implementation
 		uint32_t keyInd;
 		uint16_t connectionState;
 		
-		keys = signal NeighborDiscovery.getNeighborKeys();
+		keys = call neighborTable.getKeys();
 		
 		dbg("Project1N", "Neighbors (%d):\n", TOS_NODE_ID);
 		for (keyInd = 0; keyInd < NEIGHBOR_TABLE_SIZE; keyInd++)
@@ -139,7 +141,7 @@ implementation
 				continue;
 			
 			// Retrieve connection state
-			connectionState = signal NeighborDiscovery.getNeighborConnection(keys[keyInd]);
+			connectionState = call neighborTable.get(keys[keyInd]);
 			
 			if (connectionState & CONNECTION_TIMED_OUT)
 				dbg("Project1N", "\tNeighbor %d -/- %d\n", keys[keyInd], TOS_NODE_ID);

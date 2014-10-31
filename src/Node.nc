@@ -17,7 +17,8 @@ module Node
 	uses interface PacketHandler;		// Interface for general packet processing
 	uses interface NeighborDiscovery;	// Interface for discovering neighbors
 	uses interface LinkStateRouting;	// Interface for link state routing
-	uses interface TCP;					// Interface for TCP
+	uses interface TCP;					// Interface for TCP (DEPRECATED)
+	uses interface Transport;			// Interface for transport
 	
 	uses interface Random;
 	uses interface Timer<TMilli> as FrequentUpdate;	// Timer events that happen frequently
@@ -360,7 +361,7 @@ implementation
 			signal TCP.setConnectionPTR(sendPort, SOCK_SYN_SENT);
 			connectionData =  signal TCP.getConnectionState(sendPort);
 			signal TCP.updateHeader(sendPort, TOS_NODE_ID, sendPort, targetAddress, targetPort);
-			signal TCP.createAndSend( connectionData, targetAddress); //socket_addr_t
+			signal TCP.createAndSend(connectionData, targetAddress); //socket_addr_t
 		}
 		else
 		{
@@ -449,32 +450,9 @@ implementation
 	}
 	
 	//#####################
-	//Neighbor Discovery
-	//#####################
-	event uint32_t* NeighborDiscovery.getNeighborKeys()
-	{
-		return (call neighborTable.getKeys());
-	}
-	
-	event uint16_t NeighborDiscovery.getNeighborConnection(uint32_t src)
-	{
-		return call neighborTable.get(src);
-	}
-	
-	event void NeighborDiscovery.insertNeighbor(uint32_t src, uint16_t connection)
-	{
-		call neighborTable.insert(src, connection);
-	}
-	
-	event bool NeighborDiscovery.containsNeighbor(uint32_t src)
-	{
-		return call neighborTable.contains(src);
-	}
-	
-	//#####################
 	//Link State
 	//#####################
-	
+	/*
 	event uint32_t* LinkStateRouting.getNeighborKeys()
 	{
 		return (call neighborTable.getKeys());
@@ -519,9 +497,6 @@ implementation
 	{
 		uint32_t val = ((uint32_t)cost << 16) | hop;
 		
-		//if (TOS_NODE_ID == 2)
-		//	dbg ("Project2", "Inserting cost/hop: %d, %d, combined:%d\n", cost, hop, val);
-		
 		call routingTable.insert(src, val);
 	}
 	
@@ -553,7 +528,7 @@ implementation
 	{
 		return call routingTable.contains(src);
 	}
-	
+	*/
 	//#####################
 	//Packet Handler
 	//#####################

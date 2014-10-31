@@ -7,73 +7,62 @@ configuration NodeC
 
 implementation
 {
-	components Node;
+	// Core components
+	components Node;				// The node to deal with packets
+	components MainC;				// Main class
+	components new AMReceiverC(6);	// ??
+	components ActiveMessageC;		// ??
+	components SimpleSendC;			// Class for sending things
 	
-	components MainC;
+	// Wire core components
 	Node -> MainC.Boot;
-	
-	components new AMReceiverC(6);
 	Node.Receive -> AMReceiverC;
-
-	components ActiveMessageC;
 	Node.AMControl -> ActiveMessageC;
-
-	components SimpleSendC;
 	Node.Sender -> SimpleSendC;
 	
-	// Command processing component
-	components CommandHandlerC;
+	// Main modules
+	components CommandHandlerC;		// Command processing component
+	components PacketHandlerC;		// Packet processing component
+	components NeighborDiscoveryC;	// Neighbor discovery component
+	components LinkStateRoutingC;	// Link state routing component
+	components TCPC;				// TCP component
+	
+	// Wire main modules
 	Node.CommandHandler -> CommandHandlerC;
-	
-	// Packet processing component
-	components PacketHandlerC;
 	Node.PacketHandler -> PacketHandlerC;
-	
-	// Neighbor discovery component
-	components NeighborDiscoveryC;
 	Node.NeighborDiscovery -> NeighborDiscoveryC;
-	
-	// Link state routing component
-	components LinkStateRoutingC;
 	Node.LinkStateRouting -> LinkStateRoutingC;
-	
-	// TCP component
-	components TCPC;
 	Node.TCP -> TCPC;
 	
-	// Random component
-	components RandomC as Random;
-	Node.Random -> Random;
+	// Tables
+	components new HashmapC(uint16_t, NEIGHBOR_TABLE_SIZE) as neighborTable;	// Neighbor Table
+	components new HashmapC(uint16_t, SEQUENCE_TABLE_SIZE) as sequenceTable;	// Sequence Table
+	components new HashmapC(uint32_t, ROUTING_TABLE_SIZE) as routingTable;		// Routing table
+	components new HashmapC(socket_storage_t*, TOTAL_PORTS) as TCPTablePTR;		// TCP Table
 	
-	// Frequent timer component
-	components new TimerMilliC() as FrequentUpdate;
-	Node.FrequentUpdate -> FrequentUpdate;
-	
-	// Moderate timer component
-	components new TimerMilliC() as ModerateUpdate;
-	Node.ModerateUpdate -> ModerateUpdate;
-	
-	// Sparse timer component
-	components new TimerMilliC() as SparseUpdate;
-	Node.SparseUpdate -> SparseUpdate;
-	
-	// Rare timer component
-	components new TimerMilliC() as RareUpdate;
-	Node.RareUpdate -> RareUpdate;
-	
-	// Table to keep track of immediate neighbors and the connection types
-	components new HashmapC(uint16_t, NEIGHBOR_TABLE_SIZE) as neighborTable;
+	// Wire tables
 	Node.neighborTable -> neighborTable;
+	NeighborDiscoveryC.neighborTable -> neighborTable;
+	LinkStateRoutingC.neighborTable -> neighborTable;
 	
-	// Table to keep track of immediate neighbors and the connection types
-	components new HashmapC(uint16_t, SEQUENCE_TABLE_SIZE) as sequenceTable;
 	Node.sequenceTable -> sequenceTable;
 	
-	// Table to keep track of immediate neighbors and the connection types
-	components new HashmapC(uint32_t, ROUTING_TABLE_SIZE) as routingTable;
 	Node.routingTable -> routingTable;
+	LinkStateRoutingC.routingTable -> routingTable;
 	
-	// Table to keep track of immediate neighbors and the connection types
-	components new HashmapC(socket_storage_t*, TOTAL_PORTS) as TCPTablePTR;
 	Node.TCPTablePTR -> TCPTablePTR;
+	
+	// Timers
+	components RandomC as Random;					// Random component
+	components new TimerMilliC() as FrequentUpdate;	// Frequent timer component
+	components new TimerMilliC() as ModerateUpdate;	// Moderate timer component
+	components new TimerMilliC() as SparseUpdate;	// Sparse timer component
+	components new TimerMilliC() as RareUpdate;		// Rare timer component
+	
+	// Wire timers
+	Node.Random -> Random;
+	Node.FrequentUpdate -> FrequentUpdate;
+	Node.ModerateUpdate -> ModerateUpdate;
+	Node.SparseUpdate -> SparseUpdate;
+	Node.RareUpdate -> RareUpdate;
 }
