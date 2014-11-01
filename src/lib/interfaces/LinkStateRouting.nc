@@ -4,7 +4,8 @@ interface LinkStateRouting
 {
 	command void initialize();
 	command error_t receive(pack* Packet);
-	command void shareLinkState();
+	command void neighborChanged();
+	command void shareLinkState(bool forcedShare);
 	command void calculateRoute();
 	
 	command void insertCostHop(uint32_t src, uint16_t cost, uint16_t hop);

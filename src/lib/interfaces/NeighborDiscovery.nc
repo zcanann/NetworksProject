@@ -7,7 +7,5 @@ interface NeighborDiscovery
 	command void timeOutCheck();
 	command void printNeighbors();
 	command void discoverNeighbors();
-	
-	event void neighborChanged();
 
 } // End interface

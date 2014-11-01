@@ -33,8 +33,6 @@ module Node
 
 implementation
 {
-	bool NeighborsChanged = FALSE;
-	
 	uint32_t PeriodFrequent;
 	uint32_t PeriodModerate;
 	uint32_t PeriodSparse;
@@ -49,6 +47,7 @@ implementation
 		call SplitControl.start();
 		
 		// Initialize all components
+		call CommandHandler.initialize();
 		call LinkStateRouting.initialize();
 		call PacketHandler.initialize();
 		call NeighborDiscovery.initialize();
@@ -69,39 +68,33 @@ implementation
 		
 	} // End booted
 	
-	event void NeighborDiscovery.neighborChanged()
-	{
-		NeighborsChanged = TRUE; // Indicate that a neighbor has changed
-		
-	} // End neighborChanged
-	
 	//////////////////////////////////////////////////
 	// RECEIVE
 	//////////////////////////////////////////////////
 	
 	event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len)
 	{
-		pack* Packet;
+		pack* Packet = (pack*)payload;
 		
+		// Check for weird stuff
 		if(len != sizeof(pack))
 		{
-			dbg("genDebug", "Unknown Packet Type %d\n", len);
+			dbg("genDebug", "Unknown packet type %d\n", len);
 			return msg;
 		}
 		
-		Packet = (pack*)payload;
-		
-		// Always check for commands
-		call CommandHandler.receive(Packet);
-		
 		// Check for duplicate packet
 		if (call PacketHandler.isPacketDuplicate(Packet))
+		{
+			// dbg("genDebug", "Duplicate packet rejected\n");
 			return msg;
+		}
 		
-		call NeighborDiscovery.receive(Packet);		// Neighbor discovery processing
-		call LinkStateRouting.receive(Packet);		// Link state routing processing
-		call PacketHandler.receive(Packet);			// General packet processing
-		call Transport.receive(Packet);				// TCP processing
+		call CommandHandler.receive(Packet);	// Command processing
+		call NeighborDiscovery.receive(Packet);	// Neighbor discovery processing
+		call LinkStateRouting.receive(Packet);	// Link state routing processing
+		call PacketHandler.receive(Packet);		// General packet processing
+		call Transport.receive(Packet);			// TCP processing
 		
 		return msg;
 		
@@ -120,12 +113,8 @@ implementation
 	
 	task void doModerateEvents()
 	{
-		call NeighborDiscovery.timeOutCheck();	// Time out neighbors that have died
-		if (NeighborsChanged)
-		{
-			NeighborsChanged = ! NeighborsChanged;
-			call LinkStateRouting.shareLinkState();	// Send link state on changed neighbor
-		}
+		call NeighborDiscovery.timeOutCheck();				// Time out neighbors that have died
+		call LinkStateRouting.shareLinkState(FALSE);		// Send link state on changed neighbor
 		call ModerateUpdate.startOneShot(PeriodModerate);	// Restart timer
 
 	} // End doModerateEvents
@@ -139,7 +128,7 @@ implementation
 	
 	task void doRareEvents()
 	{
-		call LinkStateRouting.shareLinkState();		// Share link state regardless of neighbor changes
+		call LinkStateRouting.shareLinkState(TRUE);	// Share link state regardless of neighbor changes
 		call PacketHandler.ageSequenceTable();		// Age sequence table on occasion to handle a super rare edge case
 		call RareUpdate.startOneShot(PeriodRare);	// Restart timer
 		

@@ -13,44 +13,32 @@ module CommandHandlerP
 
 implementation
 {
+	command void CommandHandler.initialize()
+	{
+		
+	} // End initialize
+	
 	// Receives a packet and figures out what to do with it
 	command error_t CommandHandler.receive(pack* Packet)
-	{
-		// dbg("Project1F", "Package Payload: %s\n", Packet->payload);
-		
-		// Check if this packet was given via command
-		if(Packet->protocol == PROTOCOL_CMD)
-		{
-			call CommandHandler.processCommand(Packet);
-			return SUCCESS;
-		}
-		
-		return FAIL;
-		
-	} // End receive
-	
-	event void NeighborDiscovery.neighborChanged()
-	{
-		// TODO: this is horrible design and you know it
-	} // End neighborChanged
-	
-	// Packet with command protocol
-	command error_t CommandHandler.processCommand(pack *Packet)
 	{
 		uint8_t commandID;
 		uint8_t* buff;
 		
+		// Check if this packet was given via command
+		if(Packet->protocol != PROTOCOL_CMD)
+			return FAIL;
+			
+		dbg("cmdDebug", "A Command has been Issued.\n");
+		
 		buff = (uint8_t*) Packet->payload;
 		commandID = buff[0];
-		
-		dbg("cmdDebug", "A Command has been Issued.\n");
 		
 		// Find out which command was called and call related command
 		if(commandID == CMD_PING)
 		{
 			dbg("cmdDebug", "Command Type: Ping\n");
 			dbg("Project1F", "Sending packet %d->%d\n", TOS_NODE_ID, buff[1]);
-			call CommandHandler.broadCast(&buff[2], buff[1]);
+			call CommandHandler.ping(&buff[2], buff[1]);
 			return SUCCESS;
 		}
 		else if(commandID == CMD_NEIGHBOR_DUMP)
@@ -74,7 +62,7 @@ implementation
 		else if(commandID == CMD_TEST_CLIENT)
 		{
 			dbg("cmdDebug", "Command Type: Client (Preparing for %d, %d connecting with %d, %d)\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
-			call CommandHandler.setTestClient(buff[2], buff[3], buff[1], buff[4]);
+			call CommandHandler.setTestClient(buff[2], buff[3], buff[1], (uint16_t*)&buff[4]);
 			return SUCCESS;
 		}
 		else if(commandID == CMD_TEST_SERVER)
@@ -83,13 +71,13 @@ implementation
 			call CommandHandler.setTestServer(buff[1]);
 			return SUCCESS;
 		}
-		dbg("cmdDebug", "Ooops.\n");
+		
 		dbg("cmdDebug", "CMD_ERROR: \"%s\" does not match any known commands.\n", commandID);
 		return FAIL;
 		
-	} // End processCommand
+	} // End receive
 	
-	command void CommandHandler.broadCast(uint8_t *payload, uint16_t destination)
+	command void CommandHandler.ping(uint8_t *payload, uint16_t destination)
 	{
 		call PacketHandler.createAndSend(payload, destination);
 		
@@ -122,37 +110,13 @@ implementation
 
 	command void CommandHandler.setTestServer(uint8_t listenPort)
 	{
-		/*if (!call TCPTablePTR.contains(listenPort))
-		{
-			// Begin listening //TODO: Time out on this!
-			signal TCP.setConnectionPTR(listenPort, SOCK_LISTEN);
-			dbg("Project3", "\tOpened socket %d\n", listenPort);
-		}
-		else
-		{
-			dbg("Project3", "\tSocket %d already open\n", listenPort);
-		}*/
+		call Transport.setTestServer(listenPort);
 		
 	} // End setTestServer
 
-	command void CommandHandler.setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t targetPort, uint16_t transfer)
+	command void CommandHandler.setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t targetPort, uint16_t* transfer)
 	{
-		// uint32_t keyVal = call TCP.getKeyFromHeaderData(targetAddress, sendPort, targetPort);
-		/*socket_storage_t* connectionData;
-		
-		if (!call TCPTablePTR.contains(sendPort))
-		{
-			// Begin listening
-			dbg("Project3", "\tTrying to connect from %d, %d to %d, %d\n", TOS_NODE_ID, sendPort, targetAddress, targetPort);
-			signal TCP.setConnectionPTR(sendPort, SOCK_SYN_SENT);
-			connectionData =  signal TCP.getConnectionState(sendPort);
-			signal TCP.updateHeader(sendPort, TOS_NODE_ID, sendPort, targetAddress, targetPort);
-			signal TCP.createAndSend(connectionData, targetAddress); //socket_addr_t
-		}
-		else
-		{
-			dbg("Project3", "\tConnection exists from %d, %d to %d, %d\n", TOS_NODE_ID, sendPort, targetAddress, targetPort);
-		}*/
+		call Transport.setTestClient(targetAddress, sendPort, targetPort, *transfer);
 	
 	} // End setTestClient
 

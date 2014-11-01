@@ -155,15 +155,13 @@ implementation
 	
 	command bool PacketHandler.isPacketDuplicate(pack *Package)
 	{
-		// Check SRC/SEQ pair to see if we have received this packet already
+		
 		if (call PacketHandler.containsSrcSeqPair(Package->src, Package->seq))
 		{
-			//dbg ("Project1F", "\tDenied packet %d->%d. Payload: %s\n", Packet->src, TOS_NODE_ID, Packet->payload);
-			return TRUE;
+			return TRUE;	// Have received this packet already
 		}
-		//dbg ("Project1F", "\tAccpted packet %d->%d. Payload: %s\n", Packet->src, TOS_NODE_ID, Packet->payload);
-		// Packet is not a looping packet
-		return FALSE;
+		
+		return FALSE;		// Packet is not a looping packet
 		
 	} // End isPacketDuplicate
 	

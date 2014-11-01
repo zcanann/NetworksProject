@@ -32,6 +32,7 @@ implementation
 	CommandHandlerC.LinkStateRouting -> LinkStateRoutingC;
 	CommandHandlerC.Transport -> TransportC;
 	NeighborDiscoveryC.PacketHandler -> PacketHandlerC;
+	NeighborDiscoveryC.LinkStateRouting -> LinkStateRoutingC;
 	LinkStateRoutingC.PacketHandler -> PacketHandlerC;
 	TransportC.PacketHandler -> PacketHandlerC;
 	
@@ -54,11 +55,12 @@ implementation
 	TransportC.TCPTablePTR -> TCPTablePTR;
 	
 	// Timers
-	components RandomC as Random;					// Random component
-	components new TimerMilliC() as FrequentUpdate;	// Frequent timer component
-	components new TimerMilliC() as ModerateUpdate;	// Moderate timer component
-	components new TimerMilliC() as SparseUpdate;	// Sparse timer component
-	components new TimerMilliC() as RareUpdate;		// Rare timer component
+	components RandomC as Random;						// Random component
+	components new TimerMilliC() as FrequentUpdate;		// Frequent timer component
+	components new TimerMilliC() as ModerateUpdate;		// Moderate timer component
+	components new TimerMilliC() as SparseUpdate;		// Sparse timer component
+	components new TimerMilliC() as RareUpdate;			// Rare timer component
+	components new TimerMilliC() as AttemptConnection;	// Timer to attempt tcp connection component
 	
 	// Wire timers
 	Node.Random -> Random;
@@ -66,5 +68,7 @@ implementation
 	Node.ModerateUpdate -> ModerateUpdate;
 	Node.SparseUpdate -> SparseUpdate;
 	Node.RareUpdate -> RareUpdate;
+	PacketHandlerC.Random -> Random;
+	TransportC.Random -> Random;
 
 } // End implementation

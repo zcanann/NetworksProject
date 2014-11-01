@@ -23,6 +23,7 @@ implementation
 	bool unconsidered[ROUTING_TABLE_SIZE];		// Nodes I have not considered
 	bool existing[ROUTING_TABLE_SIZE];			// Nodes I know exist
 	
+	bool NeighborsChanged = FALSE;
 	bool LSChanged = FALSE;	// Indicates if Dijkstra needs to run again due to changed LS
 	
 	command void LinkStateRouting.initialize()
@@ -36,6 +37,12 @@ implementation
 		memset(unconsidered, 0, sizeof(unconsidered));
 		
 	} // End initialize
+	
+	command void LinkStateRouting.neighborChanged()
+	{
+		NeighborsChanged = TRUE; // Indicate that a neighbor has changed
+		
+	} // End neighborChanged
 	
 	command void LinkStateRouting.insertCostHop(uint32_t src, uint16_t cost, uint16_t hop)
 	{
@@ -256,7 +263,7 @@ implementation
 	} // End SendNeighbors
 	
 	// Shares neighbor info with nearby neighbors
-	command void LinkStateRouting.shareLinkState()
+	command void LinkStateRouting.shareLinkState(bool forcedShare)
 	{
 		uint16_t *destinations;
 		uint32_t *keys;
@@ -264,6 +271,14 @@ implementation
 		uint32_t copyInd;
 		uint16_t connectionState;
 		bool unsentData = FALSE;
+		
+		if (!forcedShare)
+		{
+			if (!NeighborsChanged)
+				return;
+			
+			NeighborsChanged = ! NeighborsChanged;
+		}
 		
 		// Zero our packet memory, as zeros will indicate lack of information
 		memset(linkStatePacket, 0, sizeof(linkStatePacket));

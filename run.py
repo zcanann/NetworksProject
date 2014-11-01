@@ -98,6 +98,7 @@ CMD_NEIGHBOR_DUMP = "1"
 CMD_ROUTE_DUMP = "3"
 CMD_TEST_CLIENT = "4"
 CMD_TEST_SERVER = "5"
+CMD_CLIENT_CLOSE = "6"
 
 # Generic Command
 def sendCMD(string):
@@ -130,8 +131,14 @@ def cmdRouteDMP(destination):
 def cmdTestServer(destination, port):
     sendCMD(str(destination) +" "+ CMD_TEST_SERVER + chr(int(port)));
 
-def cmdTestClient(source, destination, srcPort, destPort, transfer):
-    sendCMD(str(source) +" "+ CMD_TEST_CLIENT + chr(int(srcPort)) + chr(int(destPort)) + chr(int(destination)) + str(transfer));
+def cmdTestClient(client, destination, srcPort, destPort, transfer):
+    sendCMD(str(client) +" "+ CMD_TEST_CLIENT + chr(int(srcPort)) + chr(int(destPort)) + chr(int(destination)) + string_to_byteArr(transfer, 2));
+    
+def cmdClientClose(client, destination, srcPort, destPort):
+    sendCMD(str(client) +" "+ CMD_CLIENT_CLOSE + chr(int(srcPort)) + chr(int(destPort)) + chr(int(destination)));
+
+def string_to_byteArr(stringVal, num_bytes):
+    return str(bytearray([(int(stringVal) & (0xff << pos * 8)) >> pos * 8 for pos in range(num_bytes)]))
 
 def addChannel(channelName):
     print 'Adding Channel', channelName;
@@ -167,20 +174,17 @@ cmdRouteDMP(1);
 runTime(10);
 cmdPing("6", "3", "Hello, World 1");
 runTime(10);
-cmdPing("2", "4", "Hello, World 1");
+cmdPing("2", "4", "Hello, World 2");
 runTime(10);
-cmdTestServer("1", "9");
+cmdTestServer("1", "80");
 runTime(10);
-cmdTestServer("1", "9");
-runTime(10);
-cmdTestClient("2", "12", "9", "1", "666");
-cmdPing("1", "12", "Hello, World 1");
+cmdTestClient("2", "12", "80", "1", "65535");
 runTime(50);
 #moteOff(6);
 #runTime(100);
 #cmdRouteDMP(1);
 #runTime(10);
-#cmdPing("1", "12", "Hello, World 1");
+#cmdPing("1", "12", "Hello, World 3");
 #runTime(25);
 #cmdPing("1", "10", "Goodbye, World 1");
 #runTime(10);

@@ -21,24 +21,23 @@ interface Transport
 	command uint32_t getKeyFromHeaderData(uint16_t dest, uint8_t srcPort, uint8_t destPort);
 	command void createAndSend(socket_storage_t *TCPHeader, uint16_t destination);
 	
+	command void setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t targetPort, uint16_t transfer);
+	command void setTestServer(uint8_t listenPort);
+	
 	// TCP connection table functions
-	/*event uint32_t* getConnectionKeys();
-	event socket_storage_t* getConnectionStatePTR(uint32_t connectionKey);
-	event void setConnectionPTR(uint32_t connectionKey, uint8_t initialState);
+	command void setConnectionPTR(uint32_t connectionKey, uint8_t initialState);
 	
-	event socket_storage_t* getConnectionState(uint32_t connectionKey);
-	event bool containsConnection(uint32_t connectionKey);
+	command socket_storage_t* getConnectionState(uint32_t connectionKey);
 	
-	event void updateHeader(uint32_t connectionKey, uint16_t src, uint8_t srcPort, uint16_t dest, uint8_t destPort);
-	event void setConnectionState(uint32_t connectionKey, uint8_t state);
-	*/
+	command void updateHeader(uint32_t connectionKey, uint16_t src, uint8_t srcPort, uint16_t dest, uint8_t destPort);
+	command void setConnectionState(uint32_t connectionKey, uint8_t state);
 	
 	/*
 	* Get a socket if there is one available.
 	* @Side Client/Server
 	* @return
 	*    socket_t - return a socket file descriptor which is a number
-	*    associated with a socket. If you are unable to allocated
+	*    associated with a socket. If you are unable to allocate
 	*    a socket then return a NULL socket_t.
 	*/
 	command socket_t socket();

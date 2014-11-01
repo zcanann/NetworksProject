@@ -14,10 +14,12 @@ typedef enum socketState
 
 enum
 {
-	POINTER_NULL = 0,					// Temporary socket value
 	SOCKET_SEND_BUFFER_SIZE = 128,
 	SOCKET_RECEIVE_BUFFER_SIZE = 128,
+	
+	POINTER_NULL = 0,					// Temporary socket value
 	NULL_SOCKET = 0,
+	LISTEN_PORT = 80,
 	TOTAL_PORTS = 255
 };
 

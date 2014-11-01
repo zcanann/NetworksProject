@@ -7,6 +7,7 @@ module NeighborDiscoveryP
 {
 	provides interface NeighborDiscovery;
 	uses interface PacketHandler;
+	uses interface LinkStateRouting;
 	
 	uses interface Hashmap<uint16_t> as neighborTable;
 
@@ -19,7 +20,6 @@ implementation
 	
 	command void NeighborDiscovery.initialize()
 	{
-		call neighborTable.insert(0, 0); // Why the hell do I do this? I cant remember.
 		memset(pingPacket, 0, sizeof(pingPacket));
 		
 	} // End initialize
@@ -60,7 +60,7 @@ implementation
 			// We are getting pinged by a neighbor and they can connect to us -- packetHandler will reply
 			if (connectionState == CONNECTION_NONE || (connectionStateOriginal & CONNECTION_TIMED_OUT))
 			{
-				signal NeighborDiscovery.neighborChanged();
+				call LinkStateRouting.neighborChanged();
 				dbg ("Project1N", "Connection discovered:\t %d -> %d\n", Packet->src, TOS_NODE_ID);
 			}
 			
@@ -72,7 +72,7 @@ implementation
 			// The neighbor replied -- we have a 2 way connection
 			if ((connectionState & CONNECTION_SEND) == 0 || (connectionStateOriginal & CONNECTION_TIMED_OUT))
 			{
-				signal NeighborDiscovery.neighborChanged();
+				call LinkStateRouting.neighborChanged();
 				dbg("Project1N", "Conection discovered:\t %d <-> %d\n", Packet->src, TOS_NODE_ID);
 			}
 			connectionState |= CONNECTION_SEND;
@@ -122,7 +122,7 @@ implementation
 					
 					if ((connectionState & CONNECTION_TIMED_OUT) == 0)
 					{
-						signal NeighborDiscovery.neighborChanged();
+						call LinkStateRouting.neighborChanged();
 						dbg ("Project1N", "Connection timed out:\t %d -> %d\n", TOS_NODE_ID, keys[keyInd]);
 					}
 					
