@@ -3,7 +3,7 @@
 configuration NodeC
 {
 	
-}
+} // End configuration
 
 implementation
 {
@@ -12,27 +12,28 @@ implementation
 	components MainC;				// Main class
 	components new AMReceiverC(6);	// ??
 	components ActiveMessageC;		// ??
-	components SimpleSendC;			// Class for sending things
+	components PacketHandlerC;		// Packet processing and sending component
+	components CommandHandlerC;		// Command processing component
+	components NeighborDiscoveryC;	// Neighbor discovery component
+	components LinkStateRoutingC;	// Link state routing component
+	components TransportC;			// TCP component
 	
 	// Wire core components
 	Node -> MainC.Boot;
 	Node.Receive -> AMReceiverC;
-	Node.AMControl -> ActiveMessageC;
-	Node.Sender -> SimpleSendC;
-	
-	// Main modules
-	components CommandHandlerC;		// Command processing component
-	components PacketHandlerC;		// Packet processing component
-	components NeighborDiscoveryC;	// Neighbor discovery component
-	components LinkStateRoutingC;	// Link state routing component
-	components TCPC;				// TCP component
-	
-	// Wire main modules
-	Node.CommandHandler -> CommandHandlerC;
+	Node.SplitControl -> ActiveMessageC;
 	Node.PacketHandler -> PacketHandlerC;
+	Node.CommandHandler -> CommandHandlerC;
 	Node.NeighborDiscovery -> NeighborDiscoveryC;
 	Node.LinkStateRouting -> LinkStateRoutingC;
-	Node.TCP -> TCPC;
+	Node.Transport -> TransportC;
+	CommandHandlerC.PacketHandler -> PacketHandlerC;
+	CommandHandlerC.NeighborDiscovery -> NeighborDiscoveryC;
+	CommandHandlerC.LinkStateRouting -> LinkStateRoutingC;
+	CommandHandlerC.Transport -> TransportC;
+	NeighborDiscoveryC.PacketHandler -> PacketHandlerC;
+	LinkStateRoutingC.PacketHandler -> PacketHandlerC;
+	TransportC.PacketHandler -> PacketHandlerC;
 	
 	// Tables
 	components new HashmapC(uint16_t, NEIGHBOR_TABLE_SIZE) as neighborTable;	// Neighbor Table
@@ -43,14 +44,14 @@ implementation
 	// Wire tables
 	Node.neighborTable -> neighborTable;
 	NeighborDiscoveryC.neighborTable -> neighborTable;
-	LinkStateRoutingC.neighborTable -> neighborTable;
-	
 	Node.sequenceTable -> sequenceTable;
-	
 	Node.routingTable -> routingTable;
-	LinkStateRoutingC.routingTable -> routingTable;
-	
 	Node.TCPTablePTR -> TCPTablePTR;
+	PacketHandlerC.sequenceTable -> sequenceTable;
+	PacketHandlerC.routingTable -> routingTable;
+	LinkStateRoutingC.neighborTable -> neighborTable;
+	LinkStateRoutingC.routingTable -> routingTable;
+	TransportC.TCPTablePTR -> TCPTablePTR;
 	
 	// Timers
 	components RandomC as Random;					// Random component
@@ -65,4 +66,5 @@ implementation
 	Node.ModerateUpdate -> ModerateUpdate;
 	Node.SparseUpdate -> SparseUpdate;
 	Node.RareUpdate -> RareUpdate;
-}
+
+} // End implementation

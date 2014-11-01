@@ -10,12 +10,8 @@ enum
 	PACKET_MAX_PAYLOAD_SIZE32 = PACKET_MAX_PAYLOAD_SIZE8 / 4,
 	
 	UNSPECIFIED = 0,
-	SEQUENCE_START = 0,
-	
-	TTL_ONE_HOP = 1,
 	MAX_TTL = 15
 };
-
 
 typedef nx_struct pack
 {
@@ -28,12 +24,6 @@ typedef nx_struct pack
 	
 } pack;
 
-/*
- * logPack
- * 	Sends packet information to the "genDebug" channel.
- * @param:
- * 		pack *input = pack to be printed.
- */
 void logPack(pack *input)
 {
 	dbg("genDebug", "Src: %hhu Dest: %hhu Seq: %hhu TTL: %hhu Protocol:%hhu  Payload: %s\n",

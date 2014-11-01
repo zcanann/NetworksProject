@@ -1,23 +1,35 @@
-
 #include <Timer.h>
-#include "../../packet.h"
-#include "../../command.h"
-#include "../../neighbor.h"
+#include "../../Headers/packet.h"
+#include "../../Headers/command.h"
+#include "../../Headers/neighbor.h"
 
 module NeighborDiscoveryP
 {
 	provides interface NeighborDiscovery;
+	uses interface PacketHandler;
+	
 	uses interface Hashmap<uint16_t> as neighborTable;
-}
+
+} // End module
 	
 implementation
 {
+	uint8_t pingPacket[PACKET_MAX_PAYLOAD_SIZE8];
 	bool TimeOutState = TRUE;	// Alternates state of waiting for a response and declaring a time-out
 	
 	command void NeighborDiscovery.initialize()
 	{
-		call neighborTable.insert(0,0);
-	}
+		call neighborTable.insert(0, 0); // Why the hell do I do this? I cant remember.
+		memset(pingPacket, 0, sizeof(pingPacket));
+		
+	} // End initialize
+	
+	command void NeighborDiscovery.discoverNeighbors()
+	{
+		call PacketHandler.makePack(UNSPECIFIED, PROTOCOL_PING, pingPacket);
+		call PacketHandler.send(AM_BROADCAST_ADDR, FALSE);
+		
+	} // End discoverNeighbors
 	
 	command error_t NeighborDiscovery.receive(pack* Packet)
 	{
@@ -69,7 +81,8 @@ implementation
 		}
 		
 		return SUCCESS;
-	}
+		
+	} // End receive
 	
 	// Determines if a neighbor has been dropped based on lack of responses
 	command void NeighborDiscovery.timeOutCheck()
@@ -123,7 +136,8 @@ implementation
 		
 		// Flip the state for the next timer call
 		TimeOutState = !TimeOutState;
-	}
+		
+	} // End timeOutCheck
 	
 	command void NeighborDiscovery.printNeighbors()
 	{
@@ -150,5 +164,7 @@ implementation
 			else if (connectionState & CONNECTION_RECEIVE)
 				dbg("Project1N", "\tNeighbor %d ->  %d\n", keys[keyInd], TOS_NODE_ID);
 		}
-	}
-}
+		
+	} // End printNeighbors
+
+} // End implementation

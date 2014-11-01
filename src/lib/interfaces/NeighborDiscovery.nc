@@ -1,4 +1,4 @@
-#include "../../packet.h"
+#include "../../Headers/packet.h"
 
 interface NeighborDiscovery
 {
@@ -6,14 +6,8 @@ interface NeighborDiscovery
 	command void initialize();
 	command void timeOutCheck();
 	command void printNeighbors();
+	command void discoverNeighbors();
 	
-	event void discoverNeighbors();
 	event void neighborChanged();
-	
-	/*event uint32_t* getNeighborKeys();
-	event uint16_t getNeighborConnection(uint32_t src);
-	event void insertNeighbor(uint32_t src, uint16_t connection);
-	event bool containsNeighbor(uint32_t src);*/
-	
-	
-}
+
+} // End interface

@@ -143,11 +143,11 @@ def addChannel(channelName):
 
 runTime(10);
 #loadTopo("long_line.topo");
-loadTopo("short_line.topo");
+#loadTopo("short_line.topo");
 #loadTopo("linkstate.topo");
 #loadTopo("complex.topo");
 #loadTopo("complex2.topo");
-#loadTopo("pizza.topo");
+loadTopo("pizza.topo");
 #loadTopo("well_connected.topo");
 #loadTopo("diamond.topo");
 #loadTopo("diamond_dexter.topo");
@@ -164,18 +164,18 @@ addChannel("Project3");
 
 runTime(50);
 cmdRouteDMP(1);
-#runTime(10);
-#cmdPing("6", "3", "Hello, World 1");
-#runTime(10);
-#cmdPing("2", "4", "Hello, World 1");
+runTime(10);
+cmdPing("6", "3", "Hello, World 1");
+runTime(10);
+cmdPing("2", "4", "Hello, World 1");
 runTime(10);
 cmdTestServer("1", "9");
 runTime(10);
 cmdTestServer("1", "9");
 runTime(10);
 cmdTestClient("2", "12", "9", "1", "666");
-#cmdPing("1", "12", "Hello, World 1");
-#runTime(50);
+cmdPing("1", "12", "Hello, World 1");
+runTime(50);
 #moteOff(6);
 #runTime(100);
 #cmdRouteDMP(1);
