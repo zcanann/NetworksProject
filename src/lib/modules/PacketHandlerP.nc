@@ -223,7 +223,7 @@ implementation
 		
 		// TTL Check
 		if (sendPackage.TTL <= 0)
-			return FAIL;
+			return SUCCESS;
 		
 		// Replace broadcast address with next hop if applicable
 		if (sendPackage.dest != UNSPECIFIED && dest == AM_BROADCAST_ADDR && sendPackage.protocol == PROTOCOL_PING) // ie not neighbor discovery pings
@@ -236,7 +236,7 @@ implementation
 			else
 			{
 				dbg("Project2", "\tEntry for %d not found in routing table. Aborting.\n", sendPackage.dest);
-				return FAIL;
+				return SUCCESS;
 			}
 		}
 		
@@ -247,7 +247,9 @@ implementation
 		input->packet = sendPackage;
 		input->dest = dest;
 		
-		call Queue.enqueue(input);
+		if (call Queue.enqueue(input) == FAIL)
+			return FAIL;
+		
 		call PacketHandler.postSendTask();
 		
 		return SUCCESS;

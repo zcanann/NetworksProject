@@ -6,9 +6,10 @@ module TransportP
 {
 	provides interface Transport;
 	uses interface PacketHandler;
+	uses interface DataTransfer;
 	
 	uses interface Random;
-	uses interface Timer<TMilli> as AttemptConnection;
+	uses interface Timer<TMilli> as WriteTimer;
 	uses interface Hashmap<socket_storage_t*> as TCPTablePTR;
 
 } // End module
@@ -16,52 +17,144 @@ module TransportP
 implementation
 {
 	socket_storage_t TCPTable[TOTAL_PORTS];
-	uint8_t TCPPacket[PACKET_MAX_PAYLOAD_SIZE8];
-	
-	uint32_t Attempt_Connection_Time;
+	transfer_packet TCPPacket;
 	
 	command void Transport.initialize()
 	{
 		memset(TCPTable, 0, sizeof(TCPTable));
-		Attempt_Connection_Time = (call Random.rand32() % 200) + 3999;
+		
+		call DataTransfer.initialize(&TCPPacket);
+	}
+	
+	command void Transport.printConnectionStates()
+	{
+		uint32_t* keys;
+		uint32_t keyInd;
+		socket_storage_t* connectionState;
+		
+		keys = call TCPTablePTR.getKeys();
+		
+		dbg("Project3", "NODE %d STATES:\n", TOS_NODE_ID);
+		
+		for (keyInd = 0; keyInd < TOTAL_PORTS; keyInd++)
+		{
+			// Ignore empty entries
+			if (keys[keyInd] == 0)
+				continue;
+			
+			connectionState = call Transport.getConnectionState(keys[keyInd]);
+			
+			switch (connectionState->state)
+			{
+				case SOCK_CLOSED:
+					dbg("Project3", "\tPORT %d CLOSED\n", keys[keyInd]);
+					break;
+				case SOCK_LISTEN:
+					dbg("Project3", "\tPORT %d LISTEN\n", keys[keyInd]);
+					break;
+				case SOCK_SYN_SENT:
+					dbg("Project3", "\tPORT %d SYN_SENT\n", keys[keyInd]);
+					break;
+				case SOCK_SYN_RECEIVED:
+					dbg("Project3", "\tPORT %d SYN_RECEIVED\n", keys[keyInd]);
+					break;
+				case SOCK_ESTABLISHED:
+					dbg("Project3", "\tPORT %d ESTABLISHED\n", keys[keyInd]);
+					break;
+				case SOCK_FIN_WAIT1:
+					dbg("Project3", "\tPORT %d FIN_WAIT1\n", keys[keyInd]);
+					break;
+				case SOCK_FIN_WAIT2:
+					dbg("Project3", "\tPORT %d FIN_WAIT2\n", keys[keyInd]);
+					break;
+				case SOCK_CLOSING:
+					dbg("Project3", "\tPORT %d CLOSING\n", keys[keyInd]);
+					break;
+				case SOCK_TIME_WAIT:
+					dbg("Project3", "\tPORT %d TIME_WAIT\n", keys[keyInd]);
+					break;
+				case SOCK_CLOSE_WAIT:
+					dbg("Project3", "\tPORT %d CLOSE_WAIT\n", keys[keyInd]);
+					break;
+				case SOCK_LAST_ACK:
+					dbg("Project3", "\tPORT %d LAST_ACK\n", keys[keyInd]);
+					break;
+			}
+		}
 	}
 	
 	//////////////////////////////////////////////////
 	// SOCKET TABLE STUFF
 	//////////////////////////////////////////////////
 	
+	command bool Transport.isPortInUse(socket_addr_t* addr)
+	{
+		return (call TCPTablePTR.contains(addr->srcPort));
+	}
+	
+	command bool Transport.isConnectedTo(socket_addr_t* addr)
+	{
+		uint32_t* keys;
+		uint32_t keyInd;
+		socket_storage_t* connectionState;
+		
+		keys = call TCPTablePTR.getKeys();
+		
+		for (keyInd = 0; keyInd < TOTAL_PORTS; keyInd++)
+		{
+			// Ignore empty entries
+			if (keys[keyInd] == 0)
+				continue;
+			
+			connectionState = call Transport.getConnectionState(keys[keyInd]);
+			
+			// We are connected to this address/port already!
+			if (addr->destAddr == connectionState->sockAddr.destAddr &&
+				addr->destPort == connectionState->sockAddr.destPort)
+				return TRUE;
+		}
+		return FALSE;
+	}
+	
 	command socket_storage_t* Transport.getConnectionState(uint32_t connectionKey)
 	{
 		uint32_t tableIndex = call TCPTablePTR.getIndex(connectionKey);
-		dbg("Project3", "\tFetching ptr for %d, %d with index %d\n", TOS_NODE_ID, connectionKey, tableIndex);
+		
+		if (tableIndex > TOTAL_PORTS || tableIndex < 0)
+			return NULL;
+		
+		//dbg("Project3", "\tFetching ptr for %d, %d with index %d\n", TOS_NODE_ID, connectionKey, tableIndex);
 		return &TCPTable[tableIndex];
 		
 	} // End getConnectionState
 	
-	command void Transport.updateHeader(uint32_t connectionKey, uint16_t src, uint8_t srcPort, uint16_t dest, uint8_t destPort)
+	command void Transport.updateHeader(socket_addr_t* address)
 	{
+		uint32_t connectionKey;
 		uint32_t tableIndex;
+		connectionKey = address->srcPort;
 		tableIndex = call TCPTablePTR.getIndex(connectionKey);
+		TCPTable[tableIndex].sockAddr = *address;
 		
-		TCPTable[tableIndex].sockAddr.srcAddr = src;
-		TCPTable[tableIndex].sockAddr.srcPort = srcPort;
-		TCPTable[tableIndex].sockAddr.destAddr = dest;
-		TCPTable[tableIndex].sockAddr.destPort = destPort;
-		
-		dbg("Project3", "\tHeader saved for entry %d with key %d: %d, %d and %d, %d\n", TOS_NODE_ID, connectionKey, src, srcPort, dest, destPort);
-	
 	} // End updateHeader
 	
-	command void Transport.setConnectionState(uint32_t connectionKey, uint8_t state)
+	command void Transport.setConnectionState(uint32_t connectionKey, socketState state)
 	{
 		uint32_t tableIndex;
 		tableIndex = call TCPTablePTR.getIndex(connectionKey);
 		
+		if (tableIndex > TOTAL_PORTS)
+		{
+			dbg("Project3", "ATTEMPTED TO ACCESS INVALID TABLE ENTRY\n", connectionKey);
+			return;
+		}
 		TCPTable[tableIndex].state = state;
+		
+		call Transport.printConnectionStates();
 	
 	} // End setConnectionState
 	
-	command void Transport.setConnectionPTR(uint32_t connectionKey, uint8_t initialState)
+	command void Transport.setConnectionPTR(uint32_t connectionKey, socketState initialState)
 	{
 		uint32_t insertionIndex;
 		
@@ -75,167 +168,331 @@ implementation
 		// Initialize with our initial state
 		call Transport.setConnectionState(connectionKey, initialState);
 		
-		dbg("Project3", "\tTable entry made for %d with key %d\n", TOS_NODE_ID, connectionKey);
+		//dbg("Project3", "\tTable entry made for %d with key %d\n", TOS_NODE_ID, connectionKey);
 		
 	} // End setConnectionPTR
 	
-	command void Transport.createAndSend(socket_storage_t *TCPHeader, uint16_t destination)
+	//////////////////////////////////////////////////
+	// SEND / RECEIVE / MISC
+	//////////////////////////////////////////////////
+	
+	command void Transport.resendSynAck()
 	{
-		dbg("Project3", "\tSending with header %d, %d to %d, %d\n",
-			TCPHeader->sockAddr.srcAddr, TCPHeader->sockAddr.srcPort, TCPHeader->sockAddr.destAddr, TCPHeader->sockAddr.destPort);
-		call PacketHandler.makePack(destination, PROTOCOL_TCP, (uint8_t*)TCPHeader);
-		call PacketHandler.send(AM_BROADCAST_ADDR, FALSE);
+		socket_t portID;
+		socket_storage_t* connectionData;
+		// TODO maybe instead of this keep track of # syns sent. if > k then mark as dead
+		// TODO: this should be using keys, otherwise its O(n^2-k)
+		for (portID = 1; portID < TOTAL_PORTS; portID++)
+		{
+			if (call TCPTablePTR.contains(portID))
+			{
+				connectionData =  call Transport.getConnectionState(portID);
+				if (connectionData->state == SOCK_SYN_SENT)
+				{
+					dbg("Project3", "Resending SYN...\n");
+					call Transport.createAndSend(connectionData, SYN, NO_OFFSET);
+				}
+				else if (connectionData->state == SOCK_SYN_RECEIVED)
+				{
+					dbg("Project3", "Resending SYNACK...\n");
+					call Transport.createAndSend(connectionData, SYNACK, NO_OFFSET);
+				}
+			}
+		}
+	}
+	
+	command error_t Transport.createAndSend(socket_storage_t* connectionData, transferProtocol protocol, uint8_t offset)
+	{
+		uint8_t temp;
+		
+		// Prepare the TCP header
+		TCPPacket.protocol = (uint8_t)protocol;
+		TCPPacket.srcPort = connectionData->sockAddr.srcPort;
+		TCPPacket.destPort = connectionData->sockAddr.destPort;
+		
+		// Initialize sequence numbers
+		if (protocol == SYN)
+		{
+			// Initialize sequence number for client
+			connectionData->baseSeqNum = (uint8_t)(call Random.rand16());
+			TCPPacket.seqNum = connectionData->baseSeqNum;
+			TCPPacket.ackNum = 0;
+		}
+		else if (protocol == SYNACK)
+		{
+			// Initialize sequence number for server
+			connectionData->baseSeqNum = (uint8_t)(call Random.rand16());
+			TCPPacket.seqNum = connectionData->baseSeqNum;
+			
+			// Increment client sequence number
+			TCPPacket.ackNum = (uint8_t)(connectionData->baseAckNum + (uint8_t)DATA_SIZE * offset);
+		}
+		else if (protocol == ACK)
+		{
+			// Create acks with increasing sequence number (calculated as an offset from the current base)
+			TCPPacket.seqNum = (uint8_t)(connectionData->baseSeqNum + (uint8_t)DATA_SIZE * offset);
+			TCPPacket.ackNum = (uint8_t)(connectionData->baseAckNum + (uint8_t)DATA_SIZE * offset);
+		}
+		else if (protocol == ACK_NODATA)
+		{
+			// Respond to acks
+			TCPPacket.seqNum = (uint8_t)(TCPPacket.seqNum + (uint8_t)DATA_SIZE);
+			TCPPacket.ackNum = (uint8_t)(TCPPacket.ackNum + (uint8_t)DATA_SIZE);
+			//dbg("Project3", "Got a packet acknowledged Seq %d Ack %d\n", TCPPacket.seqNum, TCPPacket.ackNum);
+		}
+		
+		
+		dbg("Project3", "SENDING: Protocol %d Seq %d\tAck %d\t>> Dest/Port %d/%d to Dest/Port %d/%d Payload:%s\n", protocol,
+			TCPPacket.seqNum, TCPPacket.ackNum,
+			TOS_NODE_ID, TCPPacket.srcPort, connectionData->sockAddr.destAddr, TCPPacket.destPort, TCPPacket.data);
+		
+		// Make and send packet
+		call PacketHandler.makePack(connectionData->sockAddr.destAddr, PROTOCOL_TCP, (uint8_t*)&TCPPacket);
+		
+		return call PacketHandler.send(AM_BROADCAST_ADDR, FALSE);
 		
 	} // End createAndSend
 	
-	// DEPRECATED // Combines the 3 identifiers of a TCP connection into one single value (4th identifier is NODE_ID)
-	command uint32_t Transport.getKeyFromHeaderData(uint16_t dest, uint8_t srcPort, uint8_t destPort)
+	// Time out on writing data
+	event void WriteTimer.fired()
 	{
-		uint32_t destMask;
-		uint32_t srcPortMask;
-		uint32_t destPortMask;
 		
-		destMask = (uint32_t)dest << 24;
-		srcPortMask = (uint32_t)srcPort << 8;
-		destPortMask = (uint32_t)destPort;
 		
-		return (destMask | srcPortMask | destPortMask);
-		
-	} // End getKeyFromHeaderData
-	
-	//////////////////////////////////////////////////
-	// SOCKET INITIALIZATION FUNCTIONS
-	//////////////////////////////////////////////////
-	
-	command void Transport.setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t targetPort, uint16_t transfer)
-	{
-		// uint32_t keyVal = call TCP.getKeyFromHeaderData(targetAddress, sendPort, targetPort);
-		socket_storage_t* connectionData;
-		
-		if (!call TCPTablePTR.contains(sendPort))
-		{
-			// Begin listening
-			dbg("Project3", "\tTrying to connect from %d, %d to %d, %d with transfer %d\n", TOS_NODE_ID, sendPort, targetAddress, targetPort, transfer);
-			call Transport.setConnectionPTR(sendPort, SOCK_SYN_SENT);
-			connectionData =  call Transport.getConnectionState(sendPort);
-			call Transport.updateHeader(sendPort, TOS_NODE_ID, sendPort, targetAddress, targetPort);
-			call Transport.createAndSend(connectionData, targetAddress); //socket_addr_t
-		}
-		else
-		{
-			dbg("Project3", "\tConnection exists from %d, %d to %d, %d\n", TOS_NODE_ID, sendPort, targetAddress, targetPort);
-		}
-	
-	} // End setTestClient
-	
-	command void Transport.setTestServer(uint8_t listenPort)
-	{
-		socket_t fd;
-		socket_addr_t address;
-		
-		//fd = call Transport.socket();
-		fd = listenPort;
-		address.srcAddr = TOS_NODE_ID;
-		address.srcPort = listenPort;
-		
-		call Transport.bind(fd, &address);
-		
-		call AttemptConnection.startOneShot(Attempt_Connection_Time);
-		
-	} // End setTestServer
-	
-	//////////////////////////////////////////////////
-	// RECEIVE PACKET / MISC
-	//////////////////////////////////////////////////
-	
-	// Time out on connection attempt
-	event void AttemptConnection.fired()
-	{
-		socket_t newFd = call Transport.accept(0); // TODO fix
-		if (newFd != NULL_SOCKET)
-		{
-			// Add to list of accepted sockets
-		}
-		else
-		{
-			// print all sockets
-		}
-		
-	} // End AttemptConnection
+	} // End WriteTimer
 	
 	command error_t Transport.receive(pack* Packet)
 	{
-		socket_storage_t *TCPHeader;
+		transfer_packet *TCPPayload;
 		
 		// Neighbors are determined exclusively through ping and ping replies
 		if (Packet->protocol != PROTOCOL_TCP || Packet->dest != TOS_NODE_ID)
 			return FAIL;
 		
-		TCPHeader = (socket_storage_t*)Packet->payload;
+		TCPPayload = (transfer_packet*)Packet->payload;
 		
-		switch (TCPHeader->state)
+		switch (TCPPayload->protocol)
 		{
-			case SOCK_ESTABLISHED:
-			
+			case SYN:
+				call Transport.receiveSyn(Packet);
 				break;
-			case SOCK_LISTEN:
-				
+			case SYNACK:
+				call Transport.receiveSynAck(Packet);
 				break;
-			case SOCK_CLOSED:
-			
+			case ACK:
+				call Transport.receiveAck(Packet);
 				break;
-			case SOCK_SYN_SENT:
-				dbg("Project3", "Recieved sync packet from from %d, %d to %d, %d\n",
-					TCPHeader->sockAddr.srcAddr, TCPHeader->sockAddr.srcPort, TCPHeader->sockAddr.destAddr, TCPHeader->sockAddr.destPort);
+			case ACK_NODATA:
+				// See DataTransfer for processing of these packets.
 				break;
-			case SOCK_CLOSE_WAIT:
-			
-				break;
-			case SOCK_FIN_WAIT:
-			
+			case FIN:
+				dbg("Project3", "Recieved FIN packet from from %d, %d to %d, %d\n",
+					Packet->src, TCPPayload->srcPort, Packet->dest, TCPPayload->destPort);
 				break;
 		}
 		
-		//connectionKey = call TCP.getKeyFromHeaderData(dest, srcPort, destPort);
-		
-		//if (!signal TCP.containsConnection(connectionKey))
-		{
-			
-		}
+		call DataTransfer.receive(Packet);
 		
 		return SUCCESS;
 		
 	} // End receive
 	
-	command socket_t Transport.socket()
+	//////////////////////////////////////////////////
+	// FINITE STATE FUNCTIONS
+	//////////////////////////////////////////////////
+	
+	command void Transport.receiveAck(pack* Packet)
 	{
-		return LISTEN_PORT;
+		transfer_packet *TCPPayload;		// TCP Payload of packet being sent
+		socket_storage_t *connectionData;	// Current connection state with the sender
+		
+		TCPPayload = (transfer_packet*)Packet->payload;								// Grab payload
+		connectionData = call Transport.getConnectionState(TCPPayload->destPort);	// Grab table entry
+		
+		dbg("Project3", "Recieved ACK packet from from %d, %d to %d, %d Payload: %s\n",
+					Packet->src, TCPPayload->srcPort, Packet->dest, TCPPayload->destPort, TCPPayload->data);
+		
+		if (connectionData == NULL)
+		{
+			dbg("Project3", "\tRecieved ACK when not listening!\n");
+			return;
+		}
+		
+		switch (connectionData->state)
+		{
+			/*SOCK_CLOSED			= 0
+				SOCK_LISTEN			= 1
+				SOCK_SYN_SENT		= 2
+				SOCK_SYN_RECEIVED	= 3
+				SOCK_ESTABLISHED	= 4
+				SOCK_FIN_WAIT1		= 5
+				SOCK_FIN_WAIT2		= 6
+				SOCK_CLOSING		= 7
+				SOCK_TIME_WAIT		= 8
+				SOCK_CLOSE_WAIT		= 9
+				SOCK_LAST_ACK		= 10*/
+			case SOCK_SYN_RECEIVED:
+				//dbg("Project3", "\tChanging state to ESTABLISHED (ss)\n");
+				call Transport.setConnectionState(connectionData->sockAddr.srcPort, SOCK_ESTABLISHED);
+				break;
+			default:
+				//dbg("Project3", "\tRecieved ACK packet but was not expecting one! State: %d\n", connectionData->state);
+				break;
+				
+			}
+	}
+	
+	command void Transport.receiveSynAck(pack* Packet)
+	{
+		transfer_packet *TCPPayload;		// TCP Payload of packet being sent
+		socket_storage_t *connectionData;	// Current connection state with the sender
+		
+		TCPPayload = (transfer_packet*)Packet->payload;								// Grab payload
+		connectionData = call Transport.getConnectionState(TCPPayload->destPort);	// Grab table entry
+		
+		dbg("Project3", "Recieved SYNACK packet from from %d, %d to %d, %d\n",
+					Packet->src, TCPPayload->srcPort, Packet->dest, TCPPayload->destPort);
+		
+		if (connectionData == NULL)
+		{
+			dbg("Project3", "\tRecieved SYNACK when not listening!\n");
+			return;
+		}
+		
+		switch (connectionData->state)
+		{
+			case SOCK_SYN_SENT:
+				//dbg("Project3", "\tChanging state to ESTABLISHED (cs) and changing destination port to %d\n", TCPPayload->srcPort);
+				if (TCPPayload->ackNum == (uint8_t)(connectionData->baseSeqNum + (uint8_t)DATA_SIZE))
+				{
+					// Adopt sequence numbers
+					connectionData->baseSeqNum = TCPPayload->ackNum;
+					connectionData->baseAckNum = TCPPayload->seqNum;
+					
+					// Update port we are connecting to
+					connectionData->sockAddr.destPort = TCPPayload->srcPort;
+					
+					// Move state to established
+					call Transport.setConnectionState(connectionData->sockAddr.srcPort, SOCK_ESTABLISHED);
+				}
+				else
+				{
+					dbg("Project3", "\tRecieved SYNACK with invalid sequence number!\n");
+				}
+				//call Transport.createAndSend(connectionData, ACK);
+				break;
+			default:
+				//dbg("Project3", "\tRecieved SYNACK packet but was not expecting one! State: %d", connectionData->state);
+				break;
+				
+			}
+	}
+	
+	command void Transport.receiveSyn(pack* Packet)
+	{
+		transfer_packet *TCPPayload;		// TCP Payload of packet being sent
+		socket_storage_t *connectionData;	// Current connection state with the sender
+		socket_addr_t newAddress;			// Assignment to a new location to connect
+		socket_t newPort;
+		
+		TCPPayload = (transfer_packet*)Packet->payload;								// Grab payload
+		connectionData = call Transport.getConnectionState(TCPPayload->destPort);	// Grab table entry
+		
+		dbg("Project3", "Recieved SYN packet from from %d, %d to %d, %d\n",
+			Packet->src, TCPPayload->srcPort, Packet->dest, TCPPayload->destPort);
+		
+		if (connectionData == NULL)
+		{
+			dbg("Project3", "\tRecieved SYN when not listening!\n");
+			return;
+		}
+		
+		switch (connectionData->state)
+		{
+			/*case SOCK_ESTABLISHED:
+			case SOCK_CLOSED:
+			case SOCK_SYN_SENT:
+			case SOCK_CLOSE_WAIT:
+			case SOCK_FIN_WAIT:*/
+			case SOCK_LISTEN:
+			
+				// Find new entry to communicate on
+				newPort = call Transport.getSocket(&connectionData->sockAddr);
+					
+				// Create new socketAddr data
+				newAddress.srcAddr = TOS_NODE_ID;
+				newAddress.srcPort = (nx_uint8_t)newPort;
+				newAddress.destAddr = Packet->src;
+				newAddress.destPort = TCPPayload->srcPort;
+				
+				if (call Transport.isConnectedTo(&newAddress))
+				{
+					//dbg("Project3", "\tRecieved duplicate SYN. Ignoring it.\n", newPort);
+					break;
+				}
+				
+				if (call Transport.bind(&newAddress, SOCK_SYN_RECEIVED) == FAIL)
+					break;
+				
+				//dbg("Project3", "\tOpened socket %d with state SYN_RCVD (ss)\n", newPort);
+				// call AttemptConnection.startOneShot(Attempt_Connection_Time);
+				
+				connectionData =  call Transport.getConnectionState(newPort);
+				connectionData->baseAckNum = TCPPayload->seqNum;	// Always adopt ackNum from Syns
+				call Transport.createAndSend(connectionData, SYNACK, NO_OFFSET);
+				
+				break;
+			default:
+				//dbg("Project3", "\tRecieved SYN packet but was not expecting one! State: %d\n", connectionData->state);
+				break;
+				
+			}
+	}
+	
+	//////////////////////////////////////////////////
+	// CORE FUNCTIONS
+	//////////////////////////////////////////////////
+	
+	command socket_t Transport.getSocket(socket_addr_t* addr)
+	{
+		int portInd;
+		
+		for (portInd = 1; portInd < TOTAL_PORTS; portInd++)
+		{
+			if (call TCPTablePTR.contains(portInd))
+				continue;
+			return portInd;
+		}
+		return NULL_SOCKET;
 		
 	} // End socket
 	
-	command error_t Transport.bind(socket_t fd, socket_addr_t *addr)
+	command error_t Transport.bind(socket_addr_t *addr, socketState initialState)
 	{
+		socket_t fd = addr->srcPort;
+		
+		if (call TCPTablePTR.contains(fd))
+		{
+			dbg("Project3", "\tSocket %d already open\n", fd);
+			return FAIL;
+		}
+		
 		if (fd == NULL_SOCKET)
 		{
-			dbg("Project3", "\fd unable to allocate resources\n", addr->srcPort);
+			dbg("Project3", "\tAttempting to use null socket\n", fd);
 			return FAIL;
 		}
 		
-		if (call TCPTablePTR.contains(addr->srcPort))
-		{
-			dbg("Project3", "\tSocket %d already open\n", addr->srcPort);
-			return FAIL;
-		}
-		
-		call Transport.listen(addr->srcPort);
+		call Transport.setConnectionPTR(fd, initialState);
+		call Transport.updateHeader(addr);
 		
 		return SUCCESS;
 		
 	} // End bind
 	
-	command socket_t Transport.accept(socket_t fd)
+	command socket_t Transport.accept(socket_addr_t *addr)
 	{
-		return FAIL;
+		//socket_t fd;
+		return NULL_SOCKET;
 		
 	} // End accept
 
@@ -251,29 +508,59 @@ implementation
 		
 	} // End read
 	
-	command error_t Transport.connect(socket_t fd, socket_addr_t * addr)
-	{
-		return FAIL;
-		
-	} // End connect
-	
-	command error_t Transport.close(socket_t fd)
+	command error_t Transport.close(socket_addr_t *addr)
 	{
 		return FAIL;
 		
 	} // End close
 	
-	command error_t Transport.release(socket_t fd)
+	command error_t Transport.release(socket_addr_t *addr)
 	{
 		return FAIL;
 		
 	} // End release
 	
-	command error_t Transport.listen(socket_t fd)
+	command error_t Transport.connect(socket_addr_t* addr, uint16_t transfer)
 	{
-		call Transport.setConnectionPTR(fd, SOCK_LISTEN);
-		dbg("Project3", "\tOpened socket %d for listening\n", fd);
-		return SUCCESS;
+		socket_storage_t* connectionData;
+		socket_t fd = addr->srcPort; //fd = call Transport.socket();
+		
+		//call WriteTimer.startOneShot(Client_Write_Time);
+		if (!call Transport.isPortInUse(addr))
+		{
+			// Begin listening
+			dbg("Project3", "\tTrying to connect from %d, %d to %d, %d\n", TOS_NODE_ID, addr->srcPort, addr->destAddr, addr->destPort);
+			call Transport.bind(addr, SOCK_SYN_SENT);
+			
+			connectionData =  call Transport.getConnectionState(fd);
+			call DataTransfer.updateTransferAmount(connectionData, transfer);
+			call Transport.createAndSend(connectionData, SYN, NO_OFFSET); //socket_addr_t
+		}
+		else
+		{
+			dbg("Project3", "Port already in use!\n");
+		}
+		
+		return FAIL;
+		
+	} // End connect
+	
+	command error_t Transport.listen(socket_t socket)
+	{
+		socket_addr_t address;
+		
+		address.srcAddr = TOS_NODE_ID;
+		address.srcPort = (uint8_t)socket;
+		// other details are not yet determined until we connect to a client
+		
+		if (call Transport.bind(&address, SOCK_LISTEN) == SUCCESS)
+		{
+			dbg("Project3", "\tOpened socket %d for listening\n", socket);
+			return SUCCESS;
+		}
+		
+		dbg("Project3", "\tUnable to open socket %d for listening\n", socket);
+		return FAIL;
 		
 	} // End listen
 

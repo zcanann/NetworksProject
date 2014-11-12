@@ -39,41 +39,44 @@ implementation
 			dbg("cmdDebug", "Command Type: Ping\n");
 			dbg("Project1F", "Sending packet %d->%d\n", TOS_NODE_ID, buff[1]);
 			call CommandHandler.ping(&buff[2], buff[1]);
-			return SUCCESS;
 		}
 		else if(commandID == CMD_NEIGHBOR_DUMP)
 		{
 			dbg("cmdDebug", "Command Type: Neighbor Dump\n");
 			call CommandHandler.printNeighbors();
-			return SUCCESS;
 		}
 		else if(commandID == CMD_LINKSTATE_DUMP)
 		{
 			dbg("cmdDebug", "Command Type: Link State Dump\n");
 			call CommandHandler.printLinkState();
-			return SUCCESS;
 		}
 		else if(commandID == CMD_ROUTETABLE_DUMP)
 		{
 			dbg("cmdDebug", "Command Type: Route Table Dump\n");
 			call CommandHandler.printRouteTable();
-			return SUCCESS;
 		}
 		else if(commandID == CMD_TEST_CLIENT)
 		{
 			dbg("cmdDebug", "Command Type: Client (Preparing for %d, %d connecting with %d, %d)\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
 			call CommandHandler.setTestClient(buff[2], buff[3], buff[1], (uint16_t*)&buff[4]);
-			return SUCCESS;
 		}
 		else if(commandID == CMD_TEST_SERVER)
 		{
 			dbg("cmdDebug", "Command Type: Server (Opening socket %d for Listening)\n", buff[1]);
 			call CommandHandler.setTestServer(buff[1]);
-			return SUCCESS;
+		}
+		else if (commandID == CMD_KILL)
+		{
+			dbg("cmdDebug", "Command Type: Server (Opening socket %d for Listening)\n", buff[1]);
+			call CommandHandler.clientClose(buff[2], buff[3], buff[1]);
+		}
+		else
+		{
+			dbg("cmdDebug", "CMD_ERROR: \"%s\" does not match any known commands.\n", commandID);
+			return FAIL;
 		}
 		
-		dbg("cmdDebug", "CMD_ERROR: \"%s\" does not match any known commands.\n", commandID);
-		return FAIL;
+		return SUCCESS;
 		
 	} // End receive
 	
@@ -110,15 +113,32 @@ implementation
 
 	command void CommandHandler.setTestServer(uint8_t listenPort)
 	{
-		call Transport.setTestServer(listenPort);
+		call Transport.listen(listenPort);
 		
 	} // End setTestServer
 
-	command void CommandHandler.setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t targetPort, uint16_t* transfer)
+	command void CommandHandler.setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint16_t* transfer)
 	{
-		call Transport.setTestClient(targetAddress, sendPort, targetPort, *transfer);
+		socket_addr_t address;
+		address.srcAddr = TOS_NODE_ID;
+		address.srcPort = sendPort;
+		address.destAddr = targetAddress;
+		address.destPort = destPort;
+		
+		call Transport.connect(&address, *transfer);
 	
 	} // End setTestClient
+	
+	command void CommandHandler.clientClose(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort)
+	{
+		socket_addr_t address;
+		address.srcAddr = TOS_NODE_ID;
+		address.srcPort = sendPort;
+		address.destAddr = targetAddress;
+		address.destPort = destPort;
+		
+		call Transport.close(&address);
+	}
 
 	command void CommandHandler.setAppServer()
 	{

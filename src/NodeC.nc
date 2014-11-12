@@ -1,4 +1,10 @@
 #include <Timer.h>
+#include "../../Headers/command.h"
+#include "../../Headers/packet.h"
+#include "../../Headers/neighbor.h"
+#include "../../Headers/sendInfo.h"
+#include "../../Headers/linkstate.h"
+#include "../../Headers/socket.h"
 
 configuration NodeC
 {
@@ -17,6 +23,7 @@ implementation
 	components NeighborDiscoveryC;	// Neighbor discovery component
 	components LinkStateRoutingC;	// Link state routing component
 	components TransportC;			// TCP component
+	components DataTransferC;		// TCP transfer component
 	
 	// Wire core components
 	Node -> MainC.Boot;
@@ -35,12 +42,16 @@ implementation
 	NeighborDiscoveryC.LinkStateRouting -> LinkStateRoutingC;
 	LinkStateRoutingC.PacketHandler -> PacketHandlerC;
 	TransportC.PacketHandler -> PacketHandlerC;
+	TransportC.DataTransfer -> DataTransferC;
+	DataTransferC.PacketHandler -> PacketHandlerC;
+	DataTransferC.Transport -> TransportC;
 	
 	// Tables
 	components new HashmapC(uint16_t, NEIGHBOR_TABLE_SIZE) as neighborTable;	// Neighbor Table
 	components new HashmapC(uint16_t, SEQUENCE_TABLE_SIZE) as sequenceTable;	// Sequence Table
 	components new HashmapC(uint32_t, ROUTING_TABLE_SIZE) as routingTable;		// Routing table
 	components new HashmapC(socket_storage_t*, TOTAL_PORTS) as TCPTablePTR;		// TCP Table
+	components new ListC(uint8_t, SOCKET_SEND_BUFFER_SIZE) as slidingWindow;	// Sliding window
 	
 	// Wire tables
 	Node.neighborTable -> neighborTable;
@@ -53,6 +64,8 @@ implementation
 	LinkStateRoutingC.neighborTable -> neighborTable;
 	LinkStateRoutingC.routingTable -> routingTable;
 	TransportC.TCPTablePTR -> TCPTablePTR;
+	DataTransferC.TCPTablePTR -> TCPTablePTR;
+	DataTransferC.slidingWindow -> slidingWindow;
 	
 	// Timers
 	components RandomC as Random;						// Random component
@@ -70,5 +83,6 @@ implementation
 	Node.RareUpdate -> RareUpdate;
 	PacketHandlerC.Random -> Random;
 	TransportC.Random -> Random;
+	DataTransferC.Random -> Random;
 
 } // End implementation

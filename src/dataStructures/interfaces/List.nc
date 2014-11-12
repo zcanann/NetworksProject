@@ -12,6 +12,7 @@ interface List<t>
 	command t front();
 	command t back();
 	command bool isEmpty();
+	command void pointTo(t* array, uint16_t* newSize);
 	command uint16_t size();
 	command t get(uint16_t position);
 }

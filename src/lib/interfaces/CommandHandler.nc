@@ -13,6 +13,7 @@ interface CommandHandler
 	
 	command void setTestServer(uint8_t listenPort);
 	command void setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint16_t* transfer);
+	command void clientClose(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort);
 	command void setAppServer();
 	command void setAppClient();
 	

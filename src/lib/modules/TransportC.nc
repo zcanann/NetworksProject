@@ -1,10 +1,12 @@
 #include "../../Headers/packet.h"
 #include "../../Headers/command.h"
+#include "../../Headers/socket.h"
 
 configuration TransportC
 {
 	provides interface Transport;
 	uses interface PacketHandler;
+	uses interface DataTransfer;
 	
 	uses interface Random;
 	uses interface Hashmap<socket_storage_t*> as TCPTablePTR;
@@ -14,12 +16,11 @@ configuration TransportC
 implementation
 {
 	components TransportP as App;
-	components new TimerMilliC() as AttemptConnection;
 	
 	Transport = App.Transport;
 	App.PacketHandler = PacketHandler;
+	App.DataTransfer = DataTransfer;
 	App.TCPTablePTR = TCPTablePTR;
 	App.Random = Random;
-	App.AttemptConnection -> AttemptConnection;
 
 } // End implementation

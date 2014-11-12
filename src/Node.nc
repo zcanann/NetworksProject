@@ -28,6 +28,7 @@ module Node
 	uses interface Hashmap<uint16_t> as sequenceTable;			// Stores sequence table data
 	uses interface Hashmap<uint32_t> as routingTable;			// Stores routing table data
 	uses interface Hashmap<socket_storage_t*> as TCPTablePTR;	// Stores [pointer to] TCP connection state struct
+	uses interface List<uint8_t> as slidingWindow;				// Active sliding window (will point to the respective window later)
 
 } // End module
 
@@ -52,6 +53,7 @@ implementation
 		call PacketHandler.initialize();
 		call NeighborDiscovery.initialize();
 		call Transport.initialize();
+		
 		
 		// Initialize all update timer periods
 		PeriodFrequent = (call Random.rand32() % 200) + 3999;
@@ -123,7 +125,7 @@ implementation
 	{
 		call LinkStateRouting.calculateRoute();			// Calculate routes via link states
 		call SparseUpdate.startOneShot(PeriodSparse);	// Restart timer
-		
+		call Transport.resendSynAck();
 	} // End doSparseEvents
 	
 	task void doRareEvents()
