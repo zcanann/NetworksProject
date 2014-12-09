@@ -13,7 +13,11 @@ enum
 	CMD_TEST_CLIENT='4',
 	CMD_TEST_SERVER='5',
 	CMD_KILL='6',
-	CMD_ERROR='9'
+	CMD_HELLO='7',
+	CMD_MSG='8',
+	CMD_WHISPER='9',
+	CMD_LIST_USR='!',
+	CMD_ERROR='@'
 };
 
 enum

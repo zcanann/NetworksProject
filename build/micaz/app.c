@@ -828,7 +828,6 @@ enum __nesc_unnamed4299 {
   PROTOCOL_LINKSTATE = 2, 
   PROTOCOL_NAME = 3, 
   PROTOCOL_TCP = 4, 
-  PROTOCOL_DV = 5, 
   PROTOCOL_CMD = 99
 };
 # 5 "/root/workspace/Project1/src/lib/modules/../../Headers/packet.h"
@@ -884,14 +883,18 @@ enum __nesc_unnamed4302 {
   CMD_TEST_CLIENT = '4', 
   CMD_TEST_SERVER = '5', 
   CMD_KILL = '6', 
-  CMD_ERROR = '9'
+  CMD_HELLO = '7', 
+  CMD_MSG = '8', 
+  CMD_WHISPER = '9', 
+  CMD_LIST_USR = '!', 
+  CMD_ERROR = '@'
 };
 
 enum __nesc_unnamed4303 {
 
   CMD_LENGTH = 1
 };
-# 17 "/root/workspace/Project1/src/lib/modules/../../Headers/socket.h"
+# 16 "/root/workspace/Project1/src/lib/modules/../../Headers/socket.h"
 #line 4
 typedef enum socketState {
 
@@ -900,12 +903,11 @@ typedef enum socketState {
   SOCK_SYN_SENT = 2, 
   SOCK_SYN_RECEIVED = 3, 
   SOCK_ESTABLISHED = 4, 
-  SOCK_FIN_WAIT1 = 5, 
-  SOCK_FIN_WAIT2 = 6, 
-  SOCK_CLOSING = 7, 
+  SOCK_CLOSE_WAIT = 5, 
+  SOCK_FIN_WAIT1 = 6, 
+  SOCK_FIN_WAIT2 = 7, 
   SOCK_TIME_WAIT = 8, 
-  SOCK_CLOSE_WAIT = 9, 
-  SOCK_LAST_ACK = 10
+  SOCK_LAST_ACK = 9
 } socketState;
 
 
@@ -916,7 +918,7 @@ typedef enum socketState {
 
 
 
-#line 19
+#line 18
 typedef enum transferProtocol {
 
   SYN = 0, 
@@ -936,28 +938,17 @@ enum __nesc_unnamed4304 {
   NULL_SOCKET = 0, 
   LISTEN_PORT = 80, 
   TOTAL_PORTS = 255, 
+  NO_OFFSET = 0, 
+  DATA_SIZE = 12, 
+  ACK_TIMEOUT = 80000, 
+  TRANSITION_TIMEOUT = 200000, 
+  CLOSE_TIMEOUT = 400000, 
+  CONNECT_TIMEOUT = 4000000, 
 
-  NO_OFFSET = 1, 
-
-  DATA_SIZE = 12
+  MAX_MSG_LEN = 255
 };
-
-
-
-
-
-
-
-#line 44
-typedef nx_struct socket_addr_t {
-
-  nx_uint8_t srcPort;
-  nx_uint8_t destPort;
-  nx_uint16_t srcAddr;
-  nx_uint16_t destAddr;
-} __attribute__((packed)) socket_addr_t;
-#line 62
-#line 52
+#line 58
+#line 47
 typedef struct transfer_packet {
 
   uint8_t protocol;
@@ -966,51 +957,77 @@ typedef struct transfer_packet {
   uint8_t seqNum;
   uint8_t ackNum;
   uint8_t advWindow;
-  uint8_t *data[12];
-} 
-transfer_packet;
-#line 87
-#line 64
+  uint8_t nextByteExpected;
+  uint8_t packet_size;
+  uint8_t *data[DATA_SIZE];
+} transfer_packet;
+
+
+
+
+
+
+
+#line 60
+typedef nx_struct socket_addr_t {
+
+  nx_uint8_t srcPort;
+  nx_uint8_t destPort;
+  nx_uint16_t srcAddr;
+  nx_uint16_t destAddr;
+} __attribute__((packed)) socket_addr_t;
+#line 109
+#line 68
 typedef struct socket_storage_t {
+
+
+  uint8_t *userName;
+  uint8_t *transferMessage[MAX_MSG_LEN];
+
+
 
   socketState state;
   socket_addr_t sockAddr;
-  uint16_t ackedBuffSize;
-  uint8_t acked[SOCKET_RECEIVE_BUFFER_SIZE];
+
+  int64_t timeInState;
+
+  uint8_t advWindow;
+
   uint8_t baseSeqNum;
   uint8_t baseAckNum;
 
+
+  uint16_t transfer_Amount_Original;
   uint16_t transfer_Amount;
-  int16_t maxTransmit;
+  int16_t inBuffer;
+  int16_t inTransit;
 
   uint16_t sendBuffSize;
   uint8_t sendBuff[SOCKET_SEND_BUFFER_SIZE];
+  uint16_t ackedBuffSize;
+  uint8_t acked[SOCKET_RECEIVE_BUFFER_SIZE];
   uint16_t lastByteSent;
   uint16_t lastByteWritten;
   uint16_t lastByteAck;
 
+
   uint16_t recBuffSize;
+  uint16_t hasRecBuffSize;
   uint8_t recBuff[SOCKET_RECEIVE_BUFFER_SIZE];
+  uint8_t hasRecvd[SOCKET_RECEIVE_BUFFER_SIZE];
   uint16_t lastByteRec;
   uint16_t lastByteRead;
   uint16_t lastByteExpected;
-} socket_storage_t;
+} 
+socket_storage_t;
 
 typedef uint16_t socket_t;
-typedef TMilli DataTransferP__WriteTimer__precision_tag;
 typedef uint8_t DataTransferP__slidingWindow__t;
 typedef socket_storage_t *DataTransferP__TCPTablePTR__t;
-# 91 "/root/workspace/Project1/src/lib/modules/DataTransferP.nc"
-enum DataTransferP____nesc_unnamed4305 {
-#line 91
-  DataTransferP__sendData = 0U
-};
-#line 91
-typedef int DataTransferP____nesc_sillytask_sendData[DataTransferP__sendData];
 # 61 "/root/local/tinyos-2.1.1/tos/system/SchedulerBasicP.nc"
-enum SchedulerBasicP____nesc_unnamed4306 {
+enum SchedulerBasicP____nesc_unnamed4305 {
 
-  SchedulerBasicP__NUM_TASKS = 1U, 
+  SchedulerBasicP__NUM_TASKS = 0U, 
   SchedulerBasicP__NO_TASK = 255
 };
 # 92 "/root/local/tinyos-2.1.1/tos/chips/atm128/atm128hardware.h"

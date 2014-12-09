@@ -54,7 +54,6 @@ implementation
 		call NeighborDiscovery.initialize();
 		call Transport.initialize();
 		
-		
 		// Initialize all update timer periods
 		PeriodFrequent = (call Random.rand32() % 200) + 3999;
 		PeriodModerate = (call Random.rand32() % 2000) + 19991;
@@ -109,13 +108,16 @@ implementation
 	task void doFrequentEvents()
 	{
 		call NeighborDiscovery.discoverNeighbors();			// Send neighbor discovery packets
+		call Transport.checkTimeOuts(PeriodFrequent);		// Check if a particular connection or if sending has timed out
+		call Transport.read();								// Try and read any data received
+		call Transport.write();								// Try to write any data
 		call FrequentUpdate.startOneShot(PeriodFrequent); 	// Restart timer
 		
 	} // End doFrequentEvents
 	
 	task void doModerateEvents()
 	{
-		call NeighborDiscovery.timeOutCheck();				// Time out neighbors that have died
+		
 		call LinkStateRouting.shareLinkState(FALSE);		// Send link state on changed neighbor
 		call ModerateUpdate.startOneShot(PeriodModerate);	// Restart timer
 
@@ -123,14 +125,17 @@ implementation
 	
 	task void doSparseEvents()
 	{
+		call NeighborDiscovery.timeOutCheck();			// Time out neighbors that have died
+		call LinkStateRouting.shareLinkState(TRUE);		// Share link state regardless of neighbor changes
+		call Transport.resendTimeOut();					// Resends SYNs, ACKs, FINs, etc
 		call LinkStateRouting.calculateRoute();			// Calculate routes via link states
 		call SparseUpdate.startOneShot(PeriodSparse);	// Restart timer
-		call Transport.resendSynAck();
+		
 	} // End doSparseEvents
 	
 	task void doRareEvents()
 	{
-		call LinkStateRouting.shareLinkState(TRUE);	// Share link state regardless of neighbor changes
+		
 		call PacketHandler.ageSequenceTable();		// Age sequence table on occasion to handle a super rare edge case
 		call RareUpdate.startOneShot(PeriodRare);	// Restart timer
 		

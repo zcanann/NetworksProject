@@ -111,10 +111,11 @@ implementation
 		// Repeat packet check called externally from Node.nc
 		
 		// Handle packet based on protocol
-		if(Package->protocol == PROTOCOL_PING)
+		if(Package->protocol == PROTOCOL_PING || Package->protocol == PROTOCOL_TCP)
 		{
 			// Reply to packet
-			call PacketHandler.reply(Package->src);
+			if (Package->protocol == PROTOCOL_PING)
+				call PacketHandler.reply(Package->src);
 			
 			// Do not process single-ping broadcast packets (lots of speed gained here)
 			if (Package->dest == UNSPECIFIED)
@@ -126,7 +127,7 @@ implementation
 			if (Package->dest == TOS_NODE_ID)
 			{
 				// Received packet addressed to this node!
-				dbg ("Project2", "\tReceived packet %d->%d. Payload: %s\n", Package->src, TOS_NODE_ID, Package->payload);
+				//dbg ("Project2", "\tReceived packet %d->%d. Payload: %s\n", Package->src, TOS_NODE_ID, Package->payload);
 			}
 			else
 			{
@@ -226,12 +227,12 @@ implementation
 			return SUCCESS;
 		
 		// Replace broadcast address with next hop if applicable
-		if (sendPackage.dest != UNSPECIFIED && dest == AM_BROADCAST_ADDR && sendPackage.protocol == PROTOCOL_PING) // ie not neighbor discovery pings
+		if (sendPackage.dest != UNSPECIFIED && dest == AM_BROADCAST_ADDR && (sendPackage.protocol == PROTOCOL_PING || sendPackage.protocol == PROTOCOL_TCP)) // ie not neighbor discovery pings
 		{
 			if (call routingTable.contains(sendPackage.dest))
 			{
 				dest = (uint16_t)(call routingTable.get(sendPackage.dest));
-				//dbg("Project2", "Replaced broadcast with destination: %d\n", address);
+				//dbg("Project2", "Replaced broadcast with destination: %d\n", dest);
 			}
 			else
 			{
@@ -240,8 +241,8 @@ implementation
 			}
 		}
 		
-		if (dest != AM_BROADCAST_ADDR && sendPackage.protocol == PROTOCOL_PING)
-			dbg("Project2", "\tDelivering to hopping through %d to reach %d\n", dest, sendPackage.dest);
+		//if (dest != AM_BROADCAST_ADDR && (sendPackage.protocol == PROTOCOL_PING || sendPackage.protocol == PROTOCOL_TCP))
+		//	dbg("Project2", "\tDelivering to hopping through %d to reach %d\n", dest, sendPackage.dest);
 		
 		input = call Pool.get();
 		input->packet = sendPackage;

@@ -17,7 +17,7 @@ configuration DataTransferC
 implementation
 {
 	components DataTransferP as App;
-	components new TimerMilliC() as WriteTimer;
+	//components new TimerMilliC() as ProcessTimer;
 	
 	DataTransfer = App.DataTransfer;
 	App.PacketHandler = PacketHandler;
@@ -25,6 +25,6 @@ implementation
 	App.TCPTablePTR = TCPTablePTR;
 	App.slidingWindow = slidingWindow;
 	App.Random = Random;
-	App.WriteTimer -> WriteTimer;
+	//App.ProcessTimer -> ProcessTimer;
 
 } // End implementation

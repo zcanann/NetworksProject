@@ -58,7 +58,7 @@ implementation
 		else if(commandID == CMD_TEST_CLIENT)
 		{
 			dbg("cmdDebug", "Command Type: Client (Preparing for %d, %d connecting with %d, %d)\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
-			call CommandHandler.setTestClient(buff[2], buff[3], buff[1], (uint16_t*)&buff[4]);
+			call CommandHandler.setTestClient(buff[2], buff[3], buff[1], (uint8_t*)&buff[4]);
 		}
 		else if(commandID == CMD_TEST_SERVER)
 		{
@@ -67,8 +67,27 @@ implementation
 		}
 		else if (commandID == CMD_KILL)
 		{
-			dbg("cmdDebug", "Command Type: Server (Opening socket %d for Listening)\n", buff[1]);
+			dbg("cmdDebug", "Command Type: Client (Closing %d, %d connection with %d, %d)\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
 			call CommandHandler.clientClose(buff[2], buff[3], buff[1]);
+		}
+		else if (commandID == CMD_HELLO)
+		{
+			dbg("cmdDebug", "Sending Hello: %d, %d to %d, %d\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
+			call CommandHandler.sendHello(buff[2], buff[3], buff[1], (uint8_t*)&buff[4]);
+		}
+		else if (commandID == CMD_MSG)
+		{
+			dbg("cmdDebug", "Sending Message: %d, %d to %d, %d\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
+			call CommandHandler.sendMsg(buff[2], buff[3], buff[1], (uint8_t*)&buff[4]);
+		}
+		else if (commandID == CMD_WHISPER)
+		{
+			dbg("cmdDebug", "Sending Message: %d, %d to %d, %d\n", TOS_NODE_ID, buff[3], buff[2], buff[1]);
+			//call CommandHandler.sendWhisper(buff[1], buff[2], (uint8_t*)&buff[4]);
+		}
+		else if (commandID == CMD_LIST_USR)
+		{
+			
 		}
 		else
 		{
@@ -117,7 +136,7 @@ implementation
 		
 	} // End setTestServer
 
-	command void CommandHandler.setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint16_t* transfer)
+	command void CommandHandler.setTestClient(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint8_t* transfer)
 	{
 		socket_addr_t address;
 		address.srcAddr = TOS_NODE_ID;
@@ -125,7 +144,7 @@ implementation
 		address.destAddr = targetAddress;
 		address.destPort = destPort;
 		
-		call Transport.connect(&address, *transfer);
+		call Transport.connect(&address, transfer);
 	
 	} // End setTestClient
 	
@@ -137,8 +156,30 @@ implementation
 		address.destAddr = targetAddress;
 		address.destPort = destPort;
 		
-		call Transport.close(&address);
+		call Transport.release(&address);
 	}
+	
+	command void CommandHandler.sendHello(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint8_t*msg)
+	{
+		call CommandHandler.setTestClient(targetAddress, sendPort, destPort, msg);
+		
+	} // End sendHello
+	
+	command void CommandHandler.sendMsg(uint16_t targetAddress, uint8_t sendPort, uint8_t destPort, uint8_t*msg)
+	{
+		call CommandHandler.setTestClient(targetAddress, sendPort, destPort, msg);
+		
+	} // End sendMsg
+	
+	command void CommandHandler.sendWhisper(uint16_t targetAddress, uint8_t sendPort, uint8_t nameLen, uint8_t*user, uint8_t*msg)
+	{
+		
+	} // End sendWhisper
+	
+	command void CommandHandler.listUsers()
+	{
+		
+	} // End listUsers
 
 	command void CommandHandler.setAppServer()
 	{
